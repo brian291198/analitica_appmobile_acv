@@ -28,7 +28,7 @@ def objetive2_view(page, app_state):
             ),
             )
 
-        #titulo del objetivo 1
+        #titulo del objetivo 2
         txt_objetivo = ft.Text("Segmentación de pacientes", style=ft.TextStyle(size=20, weight="bold", color=ft.colors.WHITE))
         
         #breve descripcion del tema

@@ -605,24 +605,7 @@ def objetive1_view(page, app_state):
 
 
 
-        """ page.controls.append(
-            ft.Column(
-                controls=[
-                    ft.Text("Formulario de Predicción", style=ft.TextStyle(size=20, weight="bold", color="#333333")),
-                    
-                    
-                    # Botones
-                    ft.Column([
-                        ft.ElevatedButton(text="Guardar"),
-                        ft.ElevatedButton(text="Regresar")
-                    ], spacing=10, alignment="center")
-                ],
-                spacing=10,
-                alignment="center",
-                width=page.window_width * 0.8,  # 90% del ancho de la ventana
-                auto_scroll=True 
+          
          
-            )
-        )
-      
-        page.update()  """  
+  
+ 

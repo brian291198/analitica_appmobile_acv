@@ -127,7 +127,6 @@ def home_view(page, app_state):
         controls=[cards],
         expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
     )
-    #appbar_component(page, app_state)
     navigator_component(page, app_state)
     page.controls.clear()
     page.controls.append(cards_scrollable)
