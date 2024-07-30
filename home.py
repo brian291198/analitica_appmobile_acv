@@ -41,17 +41,17 @@ def home_view(page, app_state):
             if img == 1:
                 imagen_principal = ft.Container(
                     content=ft.Column(controls=[
-                        ft.Image(src=f"/obj1.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,)
+                        ft.Image(src=f"/obj1.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.CONTAIN)
                 ]),width=100)
             elif img == 2:
                 imagen_principal = ft.Container(
                     content=ft.Column(controls=[
-                        ft.Image(src=f"/obj2.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,)
+                        ft.Image(src=f"/obj2.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.CONTAIN)
                 ]),width=100)
             else:
                 imagen_principal = ft.Container(
                     content=ft.Column(controls=[
-                        ft.Image(src=f"/obj2.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,)
+                        ft.Image(src=f"/obj3.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.CONTAIN)
                 ]),width=100)
 
 

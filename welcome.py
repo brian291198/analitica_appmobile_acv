@@ -22,7 +22,7 @@ def welcome_view (page, app_state):
                         
         ])
     t_s = ft.Text(value='"Cuida tu futuro hoy"',size=15, color='#333333')
-    i_p= ft.Image(src=f"/principal.png", width=300, height=300, repeat=ft.ImageRepeat.NO_REPEAT,)
+    i_p= ft.Image(src=f"/principal.png", width=300, height=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
     b_p = ft.FilledButton(
         text="Continuar",
         width=300, 

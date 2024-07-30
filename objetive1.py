@@ -129,7 +129,7 @@ def objetive1_view(page, app_state):
         ip_trabajo=ft.Dropdown(
             label="Tipo de Trabajo",
             hint_text="Seleccionar opción",
-            prefix_icon=ft.icons.WORK,
+            prefix_icon=ft.icons.WORK_OUTLINE,
             options=[
                 ft.dropdown.Option("1", "Trabajador por cuenta propia"),
                 ft.dropdown.Option("2", "Trabajador para el gobierno"),
@@ -159,7 +159,7 @@ def objetive1_view(page, app_state):
         ip_hipertension=ft.Dropdown(
             label="Hipertensión",
             hint_text="Seleccionar opción",
-            prefix_icon=ft.icons.MEDICATION_ROUNDED,
+            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             options=[
                 ft.dropdown.Option("0", "No"),
                 ft.dropdown.Option("1", "Sí")
@@ -187,7 +187,7 @@ def objetive1_view(page, app_state):
         ip_cardiopatia=ft.Dropdown(
             label="Cardiopatía",
             hint_text="Seleccionar opción",
-            prefix_icon=ft.icons.MEDICATION_ROUNDED,
+            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             options=[
                 ft.dropdown.Option("0", "No"),
                 ft.dropdown.Option("1", "Sí")
@@ -215,7 +215,7 @@ def objetive1_view(page, app_state):
         ip_glucosa=ft.TextField(
             label="Nivel de Glucosa Promedio",
             keyboard_type="number",
-            prefix_icon=ft.icons.MEDICATION_ROUNDED,
+            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             hint_text="0",
             content_padding=0,
             color="#333333",
@@ -242,7 +242,7 @@ def objetive1_view(page, app_state):
         ip_imc= ft.TextField(
             label="ICM",
             keyboard_type="number",
-            prefix_icon=ft.icons.MEDICATION_ROUNDED,
+            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             hint_text="0",
             content_padding=0,
             color="#333333",
@@ -269,7 +269,7 @@ def objetive1_view(page, app_state):
         ip_fumador= ft.Dropdown(
             label="Estado de Fumador",
             hint_text="Seleccionar opción",
-            prefix_icon=ft.icons.MEDICATION_ROUNDED,
+            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             options=[
                 ft.dropdown.Option("1", "Anteriormente fumó"),
                 ft.dropdown.Option("2", "Nunca fumó"),

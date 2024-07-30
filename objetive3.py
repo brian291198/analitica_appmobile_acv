@@ -67,6 +67,247 @@ def objetive3_view(page, app_state):
             focused_border_color=ft.colors.BLUE_300,
             border_color="#dddddd"
         )
+#input para fumador frecuente
+        ip_fumador=ft.Dropdown(
+            label="¿Fumador frecuente?",
+            hint_text="Seleccionar opcion",
+            prefix_icon=ft.icons.SMOKING_ROOMS,
+            options=[
+                ft.dropdown.Option("0", "No"),
+                ft.dropdown.Option("1", "Si")
+            ],
+            content_padding=0,
+            color="#333333",
+            hint_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            prefix_style=ft.TextStyle(
+                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            bgcolor=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#dddddd"
+        )
+
+        #input para bebedor frecuente
+        ip_bebedor=ft.Dropdown(
+            label="¿Bebedor frecuente?",
+            hint_text="Seleccionar opcion",
+            prefix_icon=ft.icons.LIQUOR,
+            options=[
+                ft.dropdown.Option("0", "No"),
+                ft.dropdown.Option("1", "Si")
+            ],
+            content_padding=0,
+            color="#333333",
+            hint_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            prefix_style=ft.TextStyle(
+                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            bgcolor=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#dddddd"
+        )
+
+        #input para actividad física frecuente
+        ip_fisica=ft.Dropdown(
+            label="¿Actividad física frecuente?",
+            hint_text="Seleccionar opcion",
+            prefix_icon=ft.icons.DIRECTIONS_RUN,
+            options=[
+                ft.dropdown.Option("0", "No"),
+                ft.dropdown.Option("1", "Si")
+            ],
+            content_padding=0,
+            color="#333333",
+            hint_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            prefix_style=ft.TextStyle(
+                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            bgcolor=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#dddddd"
+        )
+
+        #input para horas dormidas
+        ip_horas=ft.TextField(
+            label="Horas dormidas",
+            keyboard_type="number",
+            prefix_icon=ft.icons.HOTEL,
+            hint_text="0",
+            content_padding=0,
+            color="#333333",
+            hint_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            selection_color="#333333",
+            prefix_style=ft.TextStyle(
+                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            cursor_color="#333333",
+            fill_color=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#dddddd"
+        )
+
+        #input para rango de edad
+        ip_edad=ft.Dropdown(
+            label="Rango de edad",
+            hint_text="Seleccionar opcion",
+            prefix_icon=ft.icons.CALENDAR_MONTH,
+            options=[
+                    ft.dropdown.Option("0", "18-24"),
+                    ft.dropdown.Option("1", "25-29"),
+                    ft.dropdown.Option("2", "30-34"),
+                    ft.dropdown.Option("3", "35-39"),
+                    ft.dropdown.Option("4", "40-44"),
+                    ft.dropdown.Option("5", "45-49"),
+                    ft.dropdown.Option("6", "50-54"),
+                    ft.dropdown.Option("7", "55-59"),
+                    ft.dropdown.Option("8", "60-64"),
+                    ft.dropdown.Option("9", "65-69"),
+                    ft.dropdown.Option("10", "70-74"),
+                    ft.dropdown.Option("11", "75-79"),
+                    ft.dropdown.Option("12", "80 a más"),
+            ],
+            content_padding=0,
+            color="#333333",
+            hint_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            prefix_style=ft.TextStyle(
+                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            bgcolor=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#dddddd"
+        )
+
+         #input para el genero
+        ip_genero=ft.Dropdown(
+            label="Género",
+            hint_text="Seleccionar un género",
+            prefix_icon=ft.icons.MALE,
+            options=[
+                ft.dropdown.Option("0", "Femenino"),
+                ft.dropdown.Option("1", "Masculino")
+            ],
+            content_padding=0,
+            color="#333333",
+            hint_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            prefix_style=ft.TextStyle(
+                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            bgcolor=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#dddddd"
+        )
+
+        #input para la etnia
+        ip_etnia=ft.Dropdown(
+            label="Etnia",
+            hint_text="Seleccionar opción",
+            prefix_icon=ft.icons.DIVERSITY_3,
+            options=[
+                    ft.dropdown.Option("0", "Indígena"),
+                    ft.dropdown.Option("1", "Asiático"),
+                    ft.dropdown.Option("2", "Negro"),
+                    ft.dropdown.Option("3", "Hispano"),
+                    ft.dropdown.Option("4", "Blanco"),
+                    ft.dropdown.Option("4", "Otro"),
+            ],
+            content_padding=0,
+            color="#333333",
+            hint_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color="#dddddd",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            prefix_style=ft.TextStyle(
+                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            bgcolor=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#dddddd"
+        )
+
+        #botón -> Diagnosticar
+        btn_diagnosticar= ft.FilledButton(
+            text="Segmentar",
+            width=300, 
+            height=40,  
+            #on_click=ir_home,  #AQUI LLAMAMOS A LA FUNCIÓN QUE NOS PERMITIRÁ OBTENER LA PREDICCIÓN
+            style=ft.ButtonStyle(
+                shape=ft.StadiumBorder(),
+                color={
+                    ft.ControlState.HOVERED: ft.colors.WHITE,
+                    ft.ControlState.FOCUSED: ft.colors.WHITE,
+                    ft.ControlState.DEFAULT: ft.colors.WHITE,
+                },
+                bgcolor={
+                    ft.ControlState.HOVERED: ft.colors.BLUE_300,
+                    ft.ControlState.DEFAULT: ft.colors.BLUE_600,
+                },
+            )
+            )
+
+        #etiqueta -> Obtener resultado
+        txt_sub_resultado= ft.Text("Resultado Obtenido por factores de calidad de vida:", style=ft.TextStyle(size=16, color="#333333"))
+
+        #text, para mostrar el resultado de predicción
+        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=12, color=ft.colors.BLUE_600))
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -104,6 +345,86 @@ def objetive3_view(page, app_state):
             margin=10, 
             #border=ft.border.all()
             )
+        
+        col_fumador=ft.Container(content=ft.Column([
+                ip_fumador
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_bebedor=ft.Container(content=ft.Column([
+                ip_bebedor
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_fisica=ft.Container(content=ft.Column([
+                ip_fisica
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_horas=ft.Container(content=ft.Column([
+                ip_horas
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_edad=ft.Container(content=ft.Column([
+                ip_edad
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_genero=ft.Container(content=ft.Column([
+                ip_genero
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_etnia=ft.Container(content=ft.Column([
+                ip_etnia
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+        
+        col_boton=ft.Container(content=ft.Column([
+                btn_diagnosticar
+            ]
+            ), width=300, 
+            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_resultado=ft.Container(content=ft.Column([
+                txt_sub_resultado,
+                prediccion_resultado
+            ]
+            ), width=300,
+            height=150, 
+            margin=10,
+            padding=20, 
+            border_radius=10,
+            border=ft.border.all(
+                color=ft.colors.BLUE_200,  # Color del borde
+                width=1  # Ancho del borde)
+                )
+            )
+
 
         #----------------------------------------------------------------------------------------------------------------------------------------------  
         #CONTAINERS PARA SEPARAR FILAS DE ELEMENTOS
@@ -142,6 +463,80 @@ def objetive3_view(page, app_state):
         #border=ft.border.all()
         )
 
+        row_fumador=ft.Container(content=ft.Column([
+              col_fumador
+        ]
+        ),
+        alignment=ft.alignment.center, 
+        #border=ft.border.all()
+        )
+
+        row_bebedor=ft.Container(content=ft.Column([
+              col_bebedor
+        ]
+        ),
+        alignment=ft.alignment.center, 
+        #border=ft.border.all()
+        )
+
+        row_fisica=ft.Container(content=ft.Column([
+              col_fisica
+        ]
+        ),
+        alignment=ft.alignment.center, 
+        #border=ft.border.all()
+        )
+
+        row_horas=ft.Container(content=ft.Column([
+              col_horas
+        ]
+        ),
+        alignment=ft.alignment.center, 
+        #border=ft.border.all()
+        )
+
+        row_edad=ft.Container(content=ft.Column([
+              col_edad
+        ]
+        ),
+        alignment=ft.alignment.center, 
+        #border=ft.border.all()
+        )
+
+        row_genero=ft.Container(content=ft.Column([
+              col_genero
+        ]
+        ),
+        alignment=ft.alignment.center, 
+        #border=ft.border.all()
+        )
+
+        row_etnia=ft.Container(content=ft.Column([
+              col_etnia
+        ]
+        ),
+        alignment=ft.alignment.center, 
+        #border=ft.border.all()
+        )
+        row_boton=ft.Container(content=ft.Column([
+              col_boton
+        ]
+        ),
+        alignment=ft.alignment.center,
+        #border=ft.border.all() 
+        #width=360,
+        )
+        row_resultado=ft.Container(content=ft.Column([
+              col_resultado
+        ]
+        ),
+        alignment=ft.alignment.center,
+        #border=ft.border.all() ,
+        width=300,
+        )
+
+
+        
         #----------------------------------------------------------------------------------------------------------------------------------------------       
         #CONTAINER PRINCIPAL
 
@@ -156,7 +551,16 @@ def objetive3_view(page, app_state):
         row_form=ft.Container(content=ft.Column([
               row_titulo_form,
               row_paciente,
-],
+              row_edad,
+              row_genero,
+              row_etnia,
+              row_horas,
+              row_fisica,
+              row_fumador,
+              row_bebedor,
+              row_boton,
+              row_resultado
+        ],
               spacing=0,
               alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
               horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
