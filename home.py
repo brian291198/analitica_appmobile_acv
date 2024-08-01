@@ -117,8 +117,8 @@ def home_view(page, app_state):
 
                 option_container_home,
                 create_card("Diagnóstico de ACV", "Diagnóstico rápido realizado mediante machine learning", "form_1", 1),
-                create_card("Segmentación de pacientes", "Clasificados bajo estilo de vida", "form_2", 2),
-                create_card("Segmentación de pacientes", "Clasificados bajo factores médicos", "form_3", 3),
+                create_card("Segmentación de pacientes", "Clasificados bajo factores médicos", "form_2", 2),
+                create_card("Segmentación de pacientes", "Clasificados bajo estilo de vida", "form_3", 3),
             ],
             alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
