@@ -24,9 +24,9 @@ def objetive1_view(page, app_state):
                 "Nombre del paciente": ip_paciente.value,
                 "Genero": ip_genero.value,  # Actualizado
                 "Edad": ip_edad.value,
-                "TipoTrabajo": ip_trabajo.value,  # Actualizado
                 "Hipertension": ip_hipertension.value,  # Actualizado
                 "Cardiopatia": ip_cardiopatia.value,  # Actualizado
+                "TipoTrabajo": ip_trabajo.value,  # Actualizado
                 "Nivel_GlucosaPromedio": ip_glucosa.value,  # Actualizado
                 "ICM": ip_imc.value,  # Actualizado
                 "EstadoFumador": ip_fumador.value,  # Actualizado
@@ -233,10 +233,10 @@ def objetive1_view(page, app_state):
             hint_text="Seleccionar opción",
             prefix_icon=ft.icons.WORK_OUTLINE,
             options=[
-                ft.dropdown.Option("1", "Trabajador por cuenta propia"),
-                ft.dropdown.Option("2", "Trabajador para el gobierno"),
-                ft.dropdown.Option("3", "Nunca trabajó"),
-                ft.dropdown.Option("4", "Trabajador privado")
+                ft.dropdown.Option("0", "Trabajador para el gobierno"),
+                ft.dropdown.Option("1", "Nunca trabajó"),
+                ft.dropdown.Option("2", "Trabajador privado"),
+                ft.dropdown.Option("3", "Trabajador por cuenta propia"),
             ],
             content_padding=0,
             color="#333333",
@@ -373,6 +373,7 @@ def objetive1_view(page, app_state):
             hint_text="Seleccionar opción",
             prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             options=[
+                ft.dropdown.Option("0", "No opina"),
                 ft.dropdown.Option("1", "Anteriormente fumó"),
                 ft.dropdown.Option("2", "Nunca fumó"),
                 ft.dropdown.Option("3", "Fuma")
