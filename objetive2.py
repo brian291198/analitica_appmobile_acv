@@ -27,8 +27,61 @@ def objetive2_view(page, app_state):
                 "Nivel_GlucosaPromedio": ip_glucosa.value,  # Actualizado
                 "ICM": ip_imc.value,  # Actualizado
                 "TipoTrabajo": ip_trabajo.value,  # Actualizado
-
             }
+            
+            if not datos["Nombre del paciente"]:
+                prediccion_resultado.value = "Error: El nombre del paciente es obligatorio."
+                page.update()
+                return
+
+            if not datos["Edad"]:
+                prediccion_resultado.value = "Error: La edad es obligatorio."
+                page.update()
+                return
+            
+            if not datos["Genero"]:
+                prediccion_resultado.value = "Error: El género es obligatorio."
+                page.update()
+                return
+            
+            # Asegúrate de que todos los dropdowns tengan un valor seleccionado
+            for campo in ["TipoTrabajo", "Hipertension", "Cardiopatia"]:
+                if datos[campo] not in ["1", "2", "3", "4", "0"]:
+                    prediccion_resultado.value = f"Error: El campo '{campo}' es obligatorio y debe ser válido."
+                    page.update()
+                    return
+
+            # Validar que los campos de número no estén vacíos y sean números
+            for campo in ["Nivel_GlucosaPromedio", "ICM"]:
+                if not datos[campo].replace('.', '', 1).isdigit():
+                    prediccion_resultado.value = f"Error: El campo '{campo}' debe ser un número válido."
+                    page.update()
+                    return
+                
+            def validar_numero(valor, min_valor, max_valor):
+                try:
+                    numero = float(valor)
+                    if min_valor <= numero <= max_valor:
+                        return True
+                    return False
+                except ValueError:
+                    return False
+            
+            errores = []
+
+            if not validar_numero(ip_edad.value, 1, 120):
+                errores.append("La edad debe ser un número entre 1 y 120.")
+            
+            if not validar_numero(ip_glucosa.value, 30, 300):
+                errores.append("El nivel de glucosa debe ser un número entre 30 y 300.")
+            
+            if not validar_numero(ip_imc.value, 10, 100):
+                errores.append("El IMC debe ser un número entre 10 y 100.")
+                
+            if errores:
+                prediccion_resultado.value = "\n".join(errores)
+                page.update()
+                return
             
             # Imprimir los datos en la consola
             print(datos)
@@ -353,7 +406,7 @@ def objetive2_view(page, app_state):
         txt_sub_resultado= ft.Text("Resultado Obtenido por factores médicos:", style=ft.TextStyle(size=16, color="#333333"))
 
         #text, para mostrar el resultado de predicción
-        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=12, color=ft.colors.BLUE_600))
+        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=15, color=ft.colors.BLUE_600))
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
 

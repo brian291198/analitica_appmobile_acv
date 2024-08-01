@@ -30,6 +30,49 @@ def objetive3_view(page, app_state):
                 
             }
             
+            if not datos["Nombre del paciente"]:
+                prediccion_resultado.value = "Error: El nombre del paciente es obligatorio."
+                page.update()
+                return
+            
+            if not datos["horasDormidas"]:
+                prediccion_resultado.value = "Error: Horas dormidas es un campo obligatorio."
+                page.update()
+                return
+            
+            # Asegúrate de que todos los dropdowns tengan un valor seleccionado
+            for campo in ["edadRango", "genero", "etnia", "fumador", "bebedorFrecuente", "actividadFisica"]:
+                if datos[campo] not in ["1", "2", "3", "4", "0"]:
+                    prediccion_resultado.value = f"Error: El campo '{campo}' es obligatorio y debe ser válido."
+                    page.update()
+                    return
+
+            # Validar que los campos de número no estén vacíos y sean números
+            for campo in ["horasDormidas"]:
+                if not datos[campo].replace('.', '', 1).isdigit():
+                    prediccion_resultado.value = f"Error: El campo '{campo}' debe ser un número válido."
+                    page.update()
+                    return
+
+            def validar_numero(valor, min_valor, max_valor):
+                try:
+                    numero = float(valor)
+                    if min_valor <= numero <= max_valor:
+                        return True
+                    return False
+                except ValueError:
+                    return False
+                
+            errores = []
+
+            if not validar_numero(ip_horas.value, 1, 20):
+                errores.append("La edad debe ser un número entre 1 y 20.")
+
+            if errores:
+                prediccion_resultado.value = "\n".join(errores)
+                page.update()
+                return
+
             # Imprimir los datos en la consola
             print(datos)
 
@@ -358,7 +401,7 @@ def objetive3_view(page, app_state):
         txt_sub_resultado= ft.Text("Resultado Obtenido por factores de calidad de vida:", style=ft.TextStyle(size=16, color="#333333"))
 
         #text, para mostrar el resultado de predicción
-        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=12, color=ft.colors.BLUE_600))
+        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=15, color=ft.colors.BLUE_600))
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
 
