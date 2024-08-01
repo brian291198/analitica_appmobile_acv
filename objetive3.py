@@ -1,7 +1,11 @@
 import flet as ft
+import requests
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 3
 def objetive3_view(page, app_state):
+        global prediccion_resultado        
+        API_URL = 'http://127.0.0.1:8080/api/acv3'
+
         page.controls.clear()
         page.padding=0
         #----------------------------------------------------------------------------------------------------------------------------------------------
@@ -11,6 +15,52 @@ def objetive3_view(page, app_state):
             page.controls.clear()
             app_state.show_home()
             page.update()
+
+        def diagnosticar(e):
+            # Recoger los valores de los campos del formulario
+            datos = {
+                "Nombre del paciente": ip_paciente.value,
+                "edadRango": ip_edad.value,
+                "genero": ip_genero.value,
+                "etnia": ip_etnia.value,
+                "fumador": ip_fumador.value,
+                "bebedorFrecuente": ip_bebedor.value,
+                "actividadFisica": ip_fisica.value,
+                "horasDormidas": ip_horas.value,
+                
+            }
+            
+            # Imprimir los datos en la consola
+            print(datos)
+
+            # Enviar una solicitud POST a la API
+            try:
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(API_URL, json=datos, headers=headers)
+                if response.status_code == 200:
+                    # Manejar la respuesta exitosa
+                    response_json = response.json()
+                    prediction_value = response_json.get('prediction', [0])[0]
+                    print(prediction_value)
+
+                    if prediction_value == 0:
+                        mensaje = "Predicción: Pertenece al grupo de precaución mayor"
+                    elif prediction_value == 1:
+                        mensaje = "Predicción: Pertenece al grupo de precaución menor"
+                    else:
+                        mensaje = "Predicción: Pertenece al grupo de precaución intermedia"
+                    
+                    prediccion_resultado.value = mensaje
+                    print(mensaje)                        
+                    page.update()
+
+                else:
+                    # Imprimir mensaje de error detallado
+                    print(f"Error: {response.status_code} - {response.text}")
+                    prediccion_resultado.value = f"Error: {response.status_code}"
+            except Exception as e:
+                print(f"Ocurrió un error: {e}")
+                prediccion_resultado.value = f"Ocurrió un error: {e}"
 
         #ELEMENTOS DE INTERFAZ
 
@@ -288,6 +338,7 @@ def objetive3_view(page, app_state):
             text="Segmentar",
             width=300, 
             height=40,  
+            on_click=diagnosticar,
             #on_click=ir_home,  #AQUI LLAMAMOS A LA FUNCIÓN QUE NOS PERMITIRÁ OBTENER LA PREDICCIÓN
             style=ft.ButtonStyle(
                 shape=ft.StadiumBorder(),
