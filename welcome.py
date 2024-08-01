@@ -77,6 +77,7 @@ def welcome_view (page, app_state):
         width=400,
         #border=ft.border.all()
         )
+   
     content_principal_scrollable = ft.ListView(
         controls=[contenedor_principal,],
         expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
