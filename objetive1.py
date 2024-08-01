@@ -1,8 +1,12 @@
 import flet as ft
+import requests
 
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
 def objetive1_view(page, app_state):
+        global prediccion_resultado        
+        API_URL = 'http://127.0.0.1:8080/api/acv1'
+
         page.controls.clear()
         page.padding=0
         
@@ -14,10 +18,109 @@ def objetive1_view(page, app_state):
             app_state.show_home()
             page.update()
         
+        def diagnosticar(e):
+            # Recoger los valores de los campos del formulario
+            datos = {
+                "Nombre del paciente": ip_paciente.value,
+                "Genero": ip_genero.value,  # Actualizado
+                "Edad": ip_edad.value,
+                "Hipertension": ip_hipertension.value,  # Actualizado
+                "Cardiopatia": ip_cardiopatia.value,  # Actualizado
+                "TipoTrabajo": ip_trabajo.value,  # Actualizado
+                "Nivel_GlucosaPromedio": ip_glucosa.value,  # Actualizado
+                "ICM": ip_imc.value,  # Actualizado
+                "EstadoFumador": ip_fumador.value,  # Actualizado
+            }
+                        
+            # Validaciones
+            if not datos["Nombre del paciente"]:
+                prediccion_resultado.value = "Error: El nombre del paciente es obligatorio."
+                page.update()
+                return
+            
+            if not datos["Edad"]:
+                prediccion_resultado.value = "Error: La edad es obligatorio."
+                page.update()
+                return
+            
+            if not datos["Genero"]:
+                prediccion_resultado.value = "Error: El género es obligatorio."
+                page.update()
+                return
+            
+            # Asegúrate de que todos los dropdowns tengan un valor seleccionado
+            for campo in ["TipoTrabajo", "Hipertension", "Cardiopatia", "EstadoFumador"]:
+                if datos[campo] not in ["1", "2", "3", "4", "0"]:
+                    prediccion_resultado.value = f"Error: El campo '{campo}' es obligatorio y debe ser válido."
+                    page.update()
+                    return
+                
+            # Validar que los campos de número no estén vacíos y sean números
+            for campo in ["Nivel_GlucosaPromedio", "ICM"]:
+                if not datos[campo].replace('.', '', 1).isdigit():
+                    prediccion_resultado.value = f"Error: El campo '{campo}' debe ser un número válido."
+                    page.update()
+                    return
+                
+            def validar_numero(valor, min_valor, max_valor):
+                try:
+                    numero = float(valor)
+                    if min_valor <= numero <= max_valor:
+                        return True
+                    return False
+                except ValueError:
+                    return False
+            
+            errores = []
+
+            if not validar_numero(ip_edad.value, 1, 120):
+                errores.append("La edad debe ser un número entre 1 y 120.")
+            
+            if not validar_numero(ip_glucosa.value, 30, 300):
+                errores.append("El nivel de glucosa debe ser un número entre 30 y 300.")
+            
+            if not validar_numero(ip_imc.value, 10, 100):
+                errores.append("El IMC debe ser un número entre 10 y 100.")
+
+            if errores:
+                prediccion_resultado.value = "\n".join(errores)
+                page.update()
+                return
+            
+            # Imprimir los datos en la consola
+            print(datos)
+                
+            # Enviar una solicitud POST a la API
+            try:
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(API_URL, json=datos, headers=headers)
+                if response.status_code == 200:
+                    # Manejar la respuesta exitosa
+                    response_json = response.json()
+                    prediction_value = response_json.get('prediction', [0])[0]
+                    print(prediction_value)
+
+                    if prediction_value == 0:
+                        mensaje = "Predicción: No tiene riesgo de sufrir ACV"
+                    elif prediction_value == 1:
+                        mensaje = "Predicción: Tiene riesgo de sufrir ACV"
+                    else:
+                        mensaje = "Valor de predicción desconocido"
+                    
+                    prediccion_resultado.value = mensaje
+                    print(mensaje)                        
+                    page.update()
+
+                else:
+                    # Imprimir mensaje de error detallado
+                    print(f"Error: {response.status_code} - {response.text}")
+                    prediccion_resultado.value = f"Error: {response.status_code}"
+            except Exception as e:
+                print(f"Ocurrió un error: {e}")
+                prediccion_resultado.value = f"Ocurrió un error: {e}"
         #----------------------------------------------------------------------------------------------------------------------------------------------
         
         #ELEMENTOS DE INTERFAZ
-
         #boton en texto -> < VOLVER
         texto_volver = ft.TextButton(
             on_click=accion_volver_home,
@@ -28,8 +131,7 @@ def objetive1_view(page, app_state):
                     ft.Text("Volver", color=ft.colors.WHITE)
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
-            ),
-             
+            ),             
             )
 
         #titulo del objetivo 1
@@ -131,10 +233,10 @@ def objetive1_view(page, app_state):
             hint_text="Seleccionar opción",
             prefix_icon=ft.icons.WORK_OUTLINE,
             options=[
-                ft.dropdown.Option("1", "Trabajador por cuenta propia"),
-                ft.dropdown.Option("2", "Trabajador para el gobierno"),
-                ft.dropdown.Option("3", "Nunca trabajó"),
-                ft.dropdown.Option("4", "Trabajador privado")
+                ft.dropdown.Option("0", "Trabajador para el gobierno"),
+                ft.dropdown.Option("1", "Nunca trabajó"),
+                ft.dropdown.Option("2", "Trabajador privado"),
+                ft.dropdown.Option("3", "Trabajador por cuenta propia"),
             ],
             content_padding=0,
             color="#333333",
@@ -271,6 +373,7 @@ def objetive1_view(page, app_state):
             hint_text="Seleccionar opción",
             prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             options=[
+                ft.dropdown.Option("0", "No opina"),
                 ft.dropdown.Option("1", "Anteriormente fumó"),
                 ft.dropdown.Option("2", "Nunca fumó"),
                 ft.dropdown.Option("3", "Fuma")
@@ -299,7 +402,7 @@ def objetive1_view(page, app_state):
             text="Diagnosticar",
             width=300, 
             height=40,  
-            #on_click=ir_home,  #AQUI LLAMAMOS A LA FUNCIÓN QUE NOS PERMITIRÁ OBTENER LA PREDICCIÓN
+            on_click=diagnosticar,
             style=ft.ButtonStyle(
                 shape=ft.StadiumBorder(),
                 color={
@@ -318,7 +421,7 @@ def objetive1_view(page, app_state):
         txt_sub_resultado= ft.Text("Resultado Obtenido:", style=ft.TextStyle(size=16, color="#333333"))
 
         #text, para mostrar el resultado de predicción
-        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=12, color=ft.colors.BLUE_600))
+        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=15, color=ft.colors.BLUE_600))
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -332,12 +435,12 @@ def objetive1_view(page, app_state):
             )
         
         col_derecha=ft.Container(content=ft.Column([
-                  txt_objetivo,
-                  txt_descripcion
+                    txt_objetivo,
+                    txt_descripcion
 
             ]), width=200)
         col_izquierda=ft.Container(content=ft.Column([
-                 imagen_principal
+                    imagen_principal
             ]), width=100)
         
         col_titulo_form=ft.Container(content=ft.Column([
@@ -437,15 +540,15 @@ def objetive1_view(page, app_state):
         #----------------------------------------------------------------------------------------------------------------------------------------------  
         #CONTAINERS PARA SEPARAR FILAS DE ELEMENTOS
         row_volver_container=ft.Container(content=ft.Column([
-              col_volver
+                col_volver
         ]
         ), 
         width=360,
         border=None,
         )
         row_titulo_container=ft.Container(content=ft.Row([
-              col_derecha,
-              col_izquierda
+                col_derecha,
+                col_izquierda
         ], spacing=0,
         ), 
         width=360,
@@ -454,7 +557,7 @@ def objetive1_view(page, app_state):
         )
 
         row_titulo_form=ft.Container(content=ft.Column([
-              col_titulo_form
+                col_titulo_form
         ]
         ), 
         #width=360,
@@ -462,70 +565,70 @@ def objetive1_view(page, app_state):
         #border=ft.border.all()
         )
         row_paciente=ft.Container(content=ft.Column([
-              col_paciente
+                col_paciente
         ]
         ),
         alignment=ft.alignment.center, 
         #border=ft.border.all()
         )
         row_genero=ft.Container(content=ft.Column([       
-              col_genero]
+                col_genero]
         ), 
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_edad=ft.Container(content=ft.Column([         
-              col_edad]
+                col_edad]
         ), 
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
         
         row_trabajo=ft.Container(content=ft.Column([
-              col_trabajo
+                col_trabajo
         ]
         ), 
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
         row_hipertension=ft.Container(content=ft.Column([
-              col_hipertension]
+                col_hipertension]
         ),
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_cardiopatia=ft.Container(content=ft.Column([
-              col_cardiopatia]
+                col_cardiopatia]
         ),
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_glucosa=ft.Container(content=ft.Column([
-              col_glucosa]
+                col_glucosa]
         ),
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_imc=ft.Container(content=ft.Column([
-              col_imc]
+                col_imc]
         ),
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_fumador=ft.Container(content=ft.Column([
-              col_fumador]
+                col_fumador]
         ),
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_boton=ft.Container(content=ft.Column([
-              col_boton
+                col_boton
         ]
         ),
         alignment=ft.alignment.center,
@@ -533,7 +636,7 @@ def objetive1_view(page, app_state):
         #width=360,
         )
         row_resultado=ft.Container(content=ft.Column([
-              col_resultado
+                col_resultado
         ]
         ),
         alignment=ft.alignment.center,
@@ -545,9 +648,8 @@ def objetive1_view(page, app_state):
         #CONTAINER PRINCIPAL
 
         row_superior=ft.Container(content=ft.Column([
-              row_volver_container,
-              row_titulo_container,
-              
+                row_volver_container,
+                row_titulo_container,              
         ],spacing=0,
         ), 
         bgcolor=ft.colors.BLUE_600,
@@ -555,35 +657,35 @@ def objetive1_view(page, app_state):
         )
 
         row_form=ft.Container(content=ft.Column([
-              row_titulo_form,
-              row_paciente,
-              row_genero,
-              row_edad,
-              row_trabajo,
-              ft.Container(height=1, width=300, margin=20, bgcolor='#dddddd'),
-              row_hipertension,
-              row_cardiopatia,
-              row_glucosa,
-              row_imc,
-              row_fumador,
-              row_boton,
-              row_resultado],
-              spacing=0,
-              alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
-              horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
-              ),
-              bgcolor=ft.colors.WHITE,
-              margin=15,
-              padding=10,
-              width=350,
-              alignment=ft.alignment.center,
-              border_radius=20
+                row_titulo_form,
+                row_paciente,
+                row_genero,
+                row_edad,
+                row_trabajo,
+                ft.Container(height=1, width=300, margin=20, bgcolor='#dddddd'),
+                row_hipertension,
+                row_cardiopatia,
+                row_glucosa,
+                row_imc,
+                row_fumador,
+                row_boton,
+                row_resultado],
+                spacing=0,
+                alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
+                ),
+                bgcolor=ft.colors.WHITE,
+                margin=15,
+                padding=10,
+                width=350,
+                alignment=ft.alignment.center,
+                border_radius=20
 
-              )
+                )
 
         principal_container=ft.Container(content=ft.Column([
-              row_superior,
-              row_form
+                row_superior,
+                row_form
         ],
         spacing=0,
         alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
@@ -605,7 +707,3 @@ def objetive1_view(page, app_state):
 
 
 
-          
-         
-  
- 

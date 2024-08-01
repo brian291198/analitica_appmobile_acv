@@ -1,8 +1,11 @@
 import flet as ft
+import requests
 
-
-#VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 2
+#VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 3
 def objetive2_view(page, app_state):
+        global prediccion_resultado        
+        API_URL = 'http://127.0.0.1:8080/api/acv3'
+
         page.controls.clear()
         page.padding=0
         #----------------------------------------------------------------------------------------------------------------------------------------------
@@ -12,6 +15,95 @@ def objetive2_view(page, app_state):
             page.controls.clear()
             app_state.show_home()
             page.update()
+
+        def diagnosticar(e):
+            # Recoger los valores de los campos del formulario
+            datos = {
+                "Nombre del paciente": ip_paciente.value,
+                "edadRango": ip_edad.value,
+                "genero": ip_genero.value,
+                "etnia": ip_etnia.value,
+                "fumador": ip_fumador.value,
+                "bebedorFrecuente": ip_bebedor.value,
+                "actividadFisica": ip_fisica.value,
+                "horasDormidas": ip_horas.value,
+                
+            }
+            
+            if not datos["Nombre del paciente"]:
+                prediccion_resultado.value = "Error: El nombre del paciente es obligatorio."
+                page.update()
+                return
+            
+            if not datos["horasDormidas"]:
+                prediccion_resultado.value = "Error: Horas dormidas es un campo obligatorio."
+                page.update()
+                return
+            
+            # Asegúrate de que todos los dropdowns tengan un valor seleccionado
+            for campo in ["edadRango", "genero", "etnia", "fumador", "bebedorFrecuente", "actividadFisica"]:
+                if datos[campo] not in ["1", "2", "3", "4", "0"]:
+                    prediccion_resultado.value = f"Error: El campo '{campo}' es obligatorio y debe ser válido."
+                    page.update()
+                    return
+
+            # Validar que los campos de número no estén vacíos y sean números
+            for campo in ["horasDormidas"]:
+                if not datos[campo].replace('.', '', 1).isdigit():
+                    prediccion_resultado.value = f"Error: El campo '{campo}' debe ser un número válido."
+                    page.update()
+                    return
+
+            def validar_numero(valor, min_valor, max_valor):
+                try:
+                    numero = float(valor)
+                    if min_valor <= numero <= max_valor:
+                        return True
+                    return False
+                except ValueError:
+                    return False
+                
+            errores = []
+
+            if not validar_numero(ip_horas.value, 1, 20):
+                errores.append("La edad debe ser un número entre 1 y 20.")
+
+            if errores:
+                prediccion_resultado.value = "\n".join(errores)
+                page.update()
+                return
+
+            # Imprimir los datos en la consola
+            print(datos)
+
+            # Enviar una solicitud POST a la API
+            try:
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(API_URL, json=datos, headers=headers)
+                if response.status_code == 200:
+                    # Manejar la respuesta exitosa
+                    response_json = response.json()
+                    prediction_value = response_json.get('prediction', [0])[0]
+                    print(prediction_value)
+
+                    if prediction_value == 0:
+                        mensaje = "Predicción: Pertenece al grupo de precaución mayor"
+                    elif prediction_value == 1:
+                        mensaje = "Predicción: Pertenece al grupo de precaución menor"
+                    else:
+                        mensaje = "Predicción: Pertenece al grupo de precaución intermedia"
+                    
+                    prediccion_resultado.value = mensaje
+                    print(mensaje)                        
+                    page.update()
+
+                else:
+                    # Imprimir mensaje de error detallado
+                    print(f"Error: {response.status_code} - {response.text}")
+                    prediccion_resultado.value = f"Error: {response.status_code}"
+            except Exception as e:
+                print(f"Ocurrió un error: {e}")
+                prediccion_resultado.value = f"Ocurrió un error: {e}"
 
         #ELEMENTOS DE INTERFAZ
 
@@ -28,11 +120,11 @@ def objetive2_view(page, app_state):
             ),
             )
 
-        #titulo del objetivo 2
+        #titulo del objetivo 3
         txt_objetivo = ft.Text("Segmentación de pacientes", style=ft.TextStyle(size=20, weight="bold", color=ft.colors.WHITE))
         
         #breve descripcion del tema
-        txt_descripcion = ft.Text("Clasificados bajo estilo de vida", style=ft.TextStyle(size=14, color=ft.colors.WHITE))
+        txt_descripcion = ft.Text("Clasificados bajo factores médicos", style=ft.TextStyle(size=14, color=ft.colors.WHITE))
         imagen_principal = ft.Container(
                     content=ft.Column(controls=[
                         ft.Image(src=f"/obj2.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,)
@@ -68,8 +160,7 @@ def objetive2_view(page, app_state):
             focused_border_color=ft.colors.BLUE_300,
             border_color="#dddddd"
         )
-
-        #input para fumador frecuente
+#input para fumador frecuente
         ip_fumador=ft.Dropdown(
             label="¿Fumador frecuente?",
             hint_text="Seleccionar opcion",
@@ -290,6 +381,7 @@ def objetive2_view(page, app_state):
             text="Segmentar",
             width=300, 
             height=40,  
+            on_click=diagnosticar,
             #on_click=ir_home,  #AQUI LLAMAMOS A LA FUNCIÓN QUE NOS PERMITIRÁ OBTENER LA PREDICCIÓN
             style=ft.ButtonStyle(
                 shape=ft.StadiumBorder(),
@@ -306,10 +398,10 @@ def objetive2_view(page, app_state):
             )
 
         #etiqueta -> Obtener resultado
-        txt_sub_resultado= ft.Text("Resultado Obtenido por factores médicos:", style=ft.TextStyle(size=16, color="#333333"))
+        txt_sub_resultado= ft.Text("Resultado Obtenido por factores de calidad de vida:", style=ft.TextStyle(size=16, color="#333333"))
 
         #text, para mostrar el resultado de predicción
-        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=12, color=ft.colors.BLUE_600))
+        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=15, color=ft.colors.BLUE_600))
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -403,6 +495,7 @@ def objetive2_view(page, app_state):
             margin=10, 
             #border=ft.border.all()
             )
+        
         col_boton=ft.Container(content=ft.Column([
                 btn_diagnosticar
             ]
@@ -587,11 +680,11 @@ def objetive2_view(page, app_state):
         alignment=ft.alignment.center,
         )
 
-        objetive2_scrollable = ft.ListView(
+        objetive3_scrollable = ft.ListView(
         controls=[principal_container],
         expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
     )
 
         page.controls.clear()
-        page.controls.append(objetive2_scrollable)
+        page.controls.append(objetive3_scrollable)
         page.update()
