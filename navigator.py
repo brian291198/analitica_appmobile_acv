@@ -38,7 +38,8 @@ def navigator_component(page, app_state):
         ], 
         bgcolor=ft.colors.BLUE_600,
         on_change=on_navigation_change,
-        indicator_color=ft.colors.BLUE_300
+        indicator_color=ft.colors.BLUE_300,
+        overlay_color=ft.colors.BLUE_300,
     )
 
 

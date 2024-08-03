@@ -14,7 +14,7 @@ def welcome_view (page, app_state):
     t_p=ft.Text(
         spans=[
                 ft.TextSpan(
-                    "La mejor APP para predecir el riesgo de ",
+                    "La mejor APP para predecir el riesgo \n de ",
                     ft.TextStyle(size=30, color='#333333')),
                 ft.TextSpan(
                     "ACV",
@@ -60,7 +60,7 @@ def welcome_view (page, app_state):
     boton_principal = ft.Container(content=ft.Column(controls =[b_p],
         alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
-        ), width=300)
+        ), width=300,margin=ft.margin.only(top=50),)
   
     #CONTAINER PRINCIPAL DE VISTA PRINCIPAL
     contenedor_principal= ft.Container( content=ft.Column([
