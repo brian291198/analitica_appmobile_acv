@@ -29,7 +29,7 @@ def objetive1_view(page, app_state):
                 "Cardiopatia": ip_cardiopatia.value,  # Actualizado
                 "TipoTrabajo": ip_trabajo.value,  # Actualizado
                 "Nivel_GlucosaPromedio": ip_glucosa.value,  # Actualizado
-                "IMC": ip_imc.value,  # Actualizado
+                "ICM": ip_imc.value,  # Actualizado
                 "EstadoFumador": ip_fumador.value,  # Actualizado
             }
 
@@ -119,7 +119,7 @@ def objetive1_view(page, app_state):
                 errores.append("• Error: Campo 'Glucosa' requerido.")
                 style_vacio_textfield(col_valid_glucosa, ip_glucosa, txt_valid_glucosa, icon_valid_glucosa)
             
-            if not datos["IMC"]:
+            if not datos["ICM"]:
                 errores.append("• Error: Campo 'IMC' requerido.")
                 style_vacio_textfield(col_valid_imc, ip_imc, txt_valid_imc, icon_valid_imc)
                          
