@@ -60,28 +60,27 @@ def objetive1_view(page, app_state):
 
             errores=[]
 
+            #Estilo estándar error
+            def style_standar_error_vacio(col_valid, txt_valid, icon):
+                col_valid.height=40
+                txt_valid.value= "Error: Campo obligatorio."
+                txt_valid.color=ft.colors.RED_300
+                txt_valid.size=12
+                icon.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
+                icon.color=ft.colors.RED_300
+                icon.size=15
+            
             #Estilos para error por campo vacío para textfields
             def style_vacio_textfield(col_valid, ip, txt_valid, icon):
-                col_valid.height=40
                 ip.border_color = ft.colors.RED_300
-                ip.focused_border_color = ft.colors.RED_300
-                txt_valid.value= "Error: Campo obligatorio."
-                txt_valid.color=ft.colors.RED_300
-                txt_valid.size=12
-                icon.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon.color=ft.colors.RED_300
-                icon.size=15
-
-            #Estilos para error por campo vacío para radiobuttons
-            def style_vacio_radio(col_valid, col_tipo, txt_valid, icon):
-                col_valid.height=40
-                col_tipo.border = ft.border.all(color=ft.colors.RED_300)
-                txt_valid.value= "Error: Campo obligatorio."
-                txt_valid.color=ft.colors.RED_300
-                txt_valid.size=12
-                icon.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon.color=ft.colors.RED_300
-                icon.size=15
+                ip.focused_border_color = ft.colors.RED_300 
+                style_standar_error_vacio(col_valid, txt_valid, icon)
+            
+            #Estilos para error por campo vacío para radiobuttons 
+            def style_vacio_radio(col_valid, col_tipo, txt_valid, icon): 
+                col_tipo.border = ft.border.all(color=ft.colors.RED_300) 
+                style_standar_error_vacio(col_valid, txt_valid, icon)
+             
                                 
             # VALIDACIONES PARA CAMPOS VACÍOS
             if not datos["Nombre del paciente"]:
