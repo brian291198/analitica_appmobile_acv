@@ -16,7 +16,23 @@ def home_view(page, app_state):
     def create_card(objetivo, nombre, form_id, img):
 
             #ELEMENTOS PARA DERECHA_CONTAINER          
-            txt_objetivo = ft.Text(objetivo, style=ft.TextStyle(size=16, weight="bold", color=ft.colors.BLUE_500))
+            #txt_objetivo = ft.Text(objetivo, style=ft.TextStyle(size=18, color=ft.colors.BLUE_500, font_family="RoundsNeue-3"))
+
+            txt_objetivo = ft.Text(spans=[
+                ft.TextSpan(
+                    objetivo,
+                    ft.TextStyle(
+                        font_family="RoundsNeue-3",
+                        size=18,
+                        weight=ft.FontWeight.BOLD,
+                        foreground=ft.Paint(
+                            gradient=ft.PaintLinearGradient(
+                                (0, 20), (150, 20), [ft.colors.BLUE_700, ft.colors.LIGHT_BLUE_400]
+                            )
+                        ),
+                    ),),
+                        
+        ])
             txt_descripcion =  ft.Text(nombre, style=ft.TextStyle(size=12, color='#333333'))
             btn_formulario = ft.FilledButton(
                     text="Continuar",

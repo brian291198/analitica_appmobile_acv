@@ -1,6 +1,6 @@
 import flet as ft
 import requests
-from message_whatsapp import message_whatsapp
+from api_whatsapp import message_whatsapp
 
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
@@ -39,7 +39,7 @@ def objetive1_view(page, app_state):
                 return ft.AlertDialog(
                 title=ft.Column(
                 controls=[
-                    ft.Text("Datos Incompletos", color=ft.colors.RED, text_align=ft.TextAlign.CENTER, size=20),
+                    ft.Text("🚫Datos Incompletos", color=ft.colors.RED, text_align=ft.TextAlign.CENTER, size=20),
                     ft.Container(height=1, width=350, margin=10, bgcolor=ft.colors.RED),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER

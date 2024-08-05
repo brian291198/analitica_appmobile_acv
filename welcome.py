@@ -14,14 +14,23 @@ def welcome_view (page, app_state):
     t_p=ft.Text(
         spans=[
                 ft.TextSpan(
-                    "La mejor APP para predecir el riesgo \n de ",
-                    ft.TextStyle(size=30, color='#333333')),
+                    "La mejor APP para predecir el riesgo \nde ",
+                    ft.TextStyle(size=30, color='#333333', font_family="RoundsNeue-1")),
                 ft.TextSpan(
                     "ACV",
-                    ft.TextStyle(size=30,weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_600))
+                    ft.TextStyle(
+                        font_family="RoundsNeue-4",
+                        size=40,
+                        weight=ft.FontWeight.BOLD,
+                        foreground=ft.Paint(
+                            gradient=ft.PaintLinearGradient(
+                                (0, 20), (150, 20), [ft.colors.BLUE_900, ft.colors.LIGHT_BLUE]
+                            )
+                        ),
+                    ),),
                         
         ])
-    t_s = ft.Text(value='"Cuida tu futuro hoy"',size=15, color='#333333')
+    t_s = ft.Text(value='"Cuida tu futuro hoy"',size=15, color='#333333', font_family="RoundsNeue-1")
     i_p= ft.Image(src=f"/principal.png", width=300, height=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
     b_p = ft.FilledButton(
         text="Continuar",

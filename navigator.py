@@ -30,15 +30,12 @@ def navigator_component(page, app_state):
         destinations=[
             ft.NavigationBarDestination(icon=ft.icons.EXPLORE, label="Explorar"),
             ft.NavigationBarDestination(icon=ft.icons.ONLINE_PREDICTION, label="Predecir"),
-            ft.NavigationBarDestination(
-                icon=ft.icons.BOOKMARK_BORDER,
-                selected_icon=ft.icons.BOOKMARK,
-                label="Resultados",
-            ),
+            ft.NavigationBarDestination(icon=ft.icons.AUTO_AWESOME_OUTLINED, label="IA"),
+            #ft.NavigationBarDestination(icon=ft.icons.BOOKMARK_BORDER, selected_icon=ft.icons.BOOKMARK, label="IA",),
         ], 
         bgcolor=ft.colors.BLUE_600,
         on_change=on_navigation_change,
-        indicator_color=ft.colors.BLUE_300,
+        indicator_color=ft.colors.BLUE_400,
         overlay_color=ft.colors.BLUE_300,
     )
 

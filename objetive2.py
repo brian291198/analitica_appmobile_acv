@@ -4,7 +4,7 @@ import requests
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 3
 def objetive2_view(page, app_state):
         global prediccion_resultado        
-        API_URL = 'http://127.0.0.1:8080/api/acv3'
+        API_URL = 'http://127.0.0.1:8000/api/acv3'
 
         page.controls.clear()
         page.padding=0
