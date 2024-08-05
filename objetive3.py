@@ -13,7 +13,7 @@ def objetive3_view(page, app_state):
             return
 
         global prediccion_resultado        
-        API_URL = 'http://127.0.0.1:8080/api/acv2'
+        API_URL = 'http://127.0.0.1:8000/api/acv2'
 
         page.controls.clear()
         page.padding=0

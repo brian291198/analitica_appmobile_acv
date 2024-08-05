@@ -1,8 +1,6 @@
 import flet as ft
 import requests
 
-#nos complace, lamentamos
-# si, no
 
 def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono):
 
@@ -43,11 +41,11 @@ def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono):
             response_mensaje = requests.post(f'https://graph.facebook.com/v20.0/{id_numero_telefono}/messages', json=data_mensaje, headers=headers)
 
             if response_mensaje.status_code == 200:
-                page.dialog = ft.AlertDialog(title=ft.Text("El resultado ha sido enviado a su whatsapp.",color="#333333", text_align=ft.TextAlign.CENTER, size=15),
+                page.dialog = ft.AlertDialog(title=ft.Text("✅ El resultado del diagnóstico ha sido enviado a su whatsapp.",color="#333333", text_align=ft.TextAlign.CENTER, size=15),
                                 bgcolor=ft.colors.WHITE,
                                 shape=ft.RoundedRectangleBorder(10))
             else:
-                page.dialog = ft.AlertDialog(title=ft.Text("El resultado no pudo ser enviado a su whatsapp debido a un problema inesperado.",color="#333333", text_align=ft.TextAlign.CENTER, size=15),
+                page.dialog = ft.AlertDialog(title=ft.Text("⚠️ El resultado del diganóstico no pudo ser enviado a su whatsapp debido a un problema inesperado.",color="#333333", text_align=ft.TextAlign.CENTER, size=15),
                                 bgcolor=ft.colors.WHITE,
                                 shape=ft.RoundedRectangleBorder(10))
                 print(f"Error: {response_mensaje.status_code} - {response_mensaje.text}")
