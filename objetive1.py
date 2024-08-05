@@ -1,9 +1,19 @@
 import flet as ft
 import requests
+# from message_whatsapp import message_whatsapp
+from login import login_view
+from api_whatsapp import message_whatsapp
 
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
 def objetive1_view(page, app_state):
+        if not app_state.token:
+        # Si no hay token, redirigir al inicio de sesión
+            page.controls.clear()
+            login_view(page, app_state)
+            page.update()
+            return
+
         global prediccion_resultado  
         API_URL = 'http://127.0.0.1:8080/api/acv1'
 
@@ -38,14 +48,13 @@ def objetive1_view(page, app_state):
                 return ft.AlertDialog(
                 title=ft.Column(
                 controls=[
-                    ft.Text("Datos Incompletos", color=ft.colors.RED, text_align=ft.TextAlign.CENTER, size=20),
+                    ft.Text("🚫Datos Incompletos", color=ft.colors.RED, text_align=ft.TextAlign.CENTER, size=20),
                     ft.Container(height=1, width=350, margin=10, bgcolor=ft.colors.RED),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 ),
                 #on_dismiss=lambda e: page.add(ft.Text("Mensaje auxiliar")),
                 bgcolor=ft.colors.WHITE, 
-                shadow_color=ft.colors.SECONDARY,
                 shape=ft.RoundedRectangleBorder(10)
                 )
             page.update()
@@ -158,14 +167,21 @@ def objetive1_view(page, app_state):
                     print(prediction_value)
 
                     if prediction_value == 0:
-                        mensaje = "Predicción: No tiene riesgo de sufrir ACV"
-                    elif prediction_value == 1:
-                        mensaje = "Predicción: Tiene riesgo de sufrir ACV"
+                        mensaje1="nos complace"
+                        mensaje2 = "no presenta riesgo de padecer un accidente cerebrovascular (ACV) en su evaluación actual."
                     else:
-                        mensaje = "Valor de predicción desconocido"
-                    
-                    prediccion_resultado.value = mensaje
-                    print(mensaje)                        
+                        mensaje1="lamentamos"
+                        mensaje2 = "sí presenta riesgo de padecer un accidente cerebrovascular (ACV) en su evaluación actual."
+
+                    prediccion=f"Estimado(a) {ip_paciente.value}, {mensaje1} informarle que, tras evaluar los datos requeridos para el diagnóstico, se determinó que {mensaje2}"
+                    prediccion_resultado.value = prediccion
+
+                    #numerito de prueba para enviar el mensaje, incluir el 51 por codigo del pais
+                    #telefono='51921351292'
+                    telefono=f"51{ip_telefono.value}"
+
+                    message_whatsapp(page, ip_paciente.value, mensaje1, mensaje2, telefono)
+                    print(prediccion)                        
                     page.update()
 
                 else:
@@ -483,6 +499,33 @@ def objetive1_view(page, app_state):
         #----------------------------------------------------------------------------------------------------------------------------------------------
         
         #ELEMENTOS DE INTERFAZ
+        #input pde prueba para ingresar el número de celular que recibirá el mensaje del resultado
+        ip_telefono=ft.TextField(
+            label="Teléfono",
+            prefix_icon=ft.icons.PERSON,
+            hint_text="000 000 000",
+            autofocus=True,
+            content_padding=0,
+            color="#333333",
+            text_size=14,
+            hint_style=ft.TextStyle(
+                color="#cccccc",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color="#cccccc",  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            selection_color="#333333",
+            cursor_color="#333333",
+            fill_color=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            border_color="#cccccc",
+        )
+
+
+
         #boton en texto -> < VOLVER
         texto_volver = ft.TextButton(
             on_click=accion_volver_home,
@@ -856,8 +899,9 @@ def objetive1_view(page, app_state):
             alignment=ft.alignment.center, 
             #border=ft.border.all()
             )
-
+        
         col_paciente=ft.Container(content=ft.Column([
+                ip_telefono,
                 ip_paciente
             ]
             ), width=300, 
