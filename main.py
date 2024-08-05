@@ -5,6 +5,8 @@ from welcome import welcome_view
 from objetive1 import objetive1_view
 from objetive2 import objetive2_view
 from objetive3 import objetive3_view
+from login import login_view
+from register import registration_view
 
 #administrar rutas de la APP
 class AppState:
@@ -17,6 +19,14 @@ class AppState:
     def show_home(self):
         if self.page:
             home_view(self.page, self)
+
+    def show_login(self):
+        if self.page:
+            login_view(self.page, self)
+
+    def show_register(self):
+        if self.page:
+            registration_view(self.page, self)
 
     def show_welcome(self):
         if self.page:
@@ -50,7 +60,7 @@ def main (page: ft.Page):
 
     app_state = AppState()
     app_state.set_page(page)
-    app_state.show_welcome()  # Muestra la vista principal al iniciar
+    app_state.show_login()  # Muestra la vista principal al iniciar
 
 ft.app(target=main, assets_dir="assets")
  

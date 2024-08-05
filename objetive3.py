@@ -1,8 +1,17 @@
 import flet as ft
 import requests
+from login import login_view
+
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 2
 def objetive3_view(page, app_state):
+        if not app_state.token:
+        # Si no hay token, redirigir al inicio de sesión
+            page.controls.clear()
+            login_view(page, app_state)
+            page.update()
+            return
+
         global prediccion_resultado        
         API_URL = 'http://127.0.0.1:8080/api/acv2'
 

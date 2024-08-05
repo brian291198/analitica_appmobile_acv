@@ -1,8 +1,18 @@
 import flet as ft
 from flet import *
+from login import login_view
 
 #VISTA PRINCIPAL
 def welcome_view (page, app_state):
+
+    if not app_state.token:
+        # Si no hay token, redirigir al inicio de sesión
+        page.controls.clear()
+        login_view(page, app_state)
+        page.update()
+        return
+        
+    username = app_state.user_data.get('username', 'Usuario')
 
     def ir_home(e):
         page.controls.clear()
@@ -13,14 +23,16 @@ def welcome_view (page, app_state):
 
     t_p=ft.Text(
         spans=[
-                ft.TextSpan(
-                    "La mejor APP para predecir el riesgo \n de ",
-                    ft.TextStyle(size=30, color='#333333')),
-                ft.TextSpan(
-                    "ACV",
-                    ft.TextStyle(size=30,weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_600))
-                        
-        ])
+            ft.TextSpan(
+                f"Bienvenido {username} a la mejor APP para predecir el riesgo \nde ",
+                ft.TextStyle(size=30, color='#333333')
+            ),
+            ft.TextSpan(
+                "ACV",
+                ft.TextStyle(size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_600)
+            )
+        ]
+    )
     t_s = ft.Text(value='"Cuida tu futuro hoy"',size=15, color='#333333')
     i_p= ft.Image(src=f"/principal.png", width=300, height=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
     b_p = ft.FilledButton(

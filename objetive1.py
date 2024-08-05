@@ -1,12 +1,21 @@
 import flet as ft
 import requests
 from message_whatsapp import message_whatsapp
+from login import login_view
+
 
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
 def objetive1_view(page, app_state):
+        if not app_state.token:
+        # Si no hay token, redirigir al inicio de sesión
+            page.controls.clear()
+            login_view(page, app_state)
+            page.update()
+            return
+
         global prediccion_resultado  
-        API_URL = 'http://127.0.0.1:8000/api/acv1'
+        API_URL = 'http://127.0.0.1:8080/api/acv1'
 
         page.controls.clear()
         page.padding=0

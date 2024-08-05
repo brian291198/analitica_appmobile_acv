@@ -1,8 +1,16 @@
 import flet as ft
 from navigator import navigator_component
+from login import login_view
 
 #VISTA CON OPCIONES DE PREDICCIÓN
 def home_view(page, app_state):
+    if not app_state.token:
+        # Si no hay token, redirigir al inicio de sesión
+        page.controls.clear()
+        login_view(page, app_state)
+        page.update()
+        return
+    
     def show_form(form_id, e):
             if form_id == "form_1":
                 app_state.show_objetive1()
