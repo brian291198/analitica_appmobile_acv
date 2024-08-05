@@ -94,8 +94,7 @@ def welcome_view (page, app_state):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
         ),
         expand=True,
-        width=400,
-        border=ft.border.all()
+        width=400
         )
    
     content_principal_scrollable = ft.ListView(

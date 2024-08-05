@@ -92,8 +92,30 @@ def login_view(page, app_state):
             page.update()
 
     # Elementos de la vista de inicio de sesión
-    username_field = ft.TextField(label="Nombre de Usuario",prefix_icon=ft.icons.PERSON, width=300)
-    password_field = ft.TextField(label="Contraseña",prefix_icon=ft.icons.LOCK, password=True, width=300)
+
+
+    username_field =ft.TextField(
+            label="Nombre de Usuario",
+            prefix_icon=ft.icons.PERSON,
+            width=300, 
+            color="#333333",
+            border=ft.InputBorder.UNDERLINE,
+            filled=True,
+            fill_color=ft.colors.WHITE,
+            content_padding=5,
+        )
+    password_field =ft.TextField(
+            label="Contraseña",
+            prefix_icon=ft.icons.LOCK,
+            password=True,
+            width=300, 
+            color="#333333",
+            border=ft.InputBorder.UNDERLINE,
+            filled=True,
+            fill_color=ft.colors.WHITE,
+            content_padding=5,
+        )
+    
 
     login_button = ft.FilledButton(
         text="Iniciar Sesión",
@@ -109,7 +131,7 @@ def login_view(page, app_state):
             },
             bgcolor={
                 ft.ControlState.HOVERED: ft.colors.BLUE_300,
-                ft.ControlState.DEFAULT: ft.colors.BLUE_600,
+                ft.ControlState.DEFAULT: "#0165BD",
             },
         )
     )
@@ -123,12 +145,16 @@ def login_view(page, app_state):
             color={
                 ft.ControlState.HOVERED: ft.colors.WHITE,
                 ft.ControlState.FOCUSED: ft.colors.WHITE,
-                ft.ControlState.DEFAULT: ft.colors.WHITE,
+                ft.ControlState.DEFAULT: "#333333",
             },
             bgcolor={
                 ft.ControlState.HOVERED: ft.colors.BLUE_300,
-                ft.ControlState.DEFAULT: ft.colors.BLUE_600,
+                ft.ControlState.DEFAULT: ft.colors.TRANSPARENT,
             },
+            side={
+                    ft.ControlState.DEFAULT: ft.BorderSide(1, ft.colors.BLUE),
+                    ft.ControlState.HOVERED: ft.BorderSide(2, ft.colors.BLUE),
+                },
         )
     )
 
@@ -138,16 +164,23 @@ def login_view(page, app_state):
         content=ft.Text(
             spans=[
                 ft.TextSpan(
-                    "APP para predecir el riesgo de ACV\n",
-                    ft.TextStyle(size=30, color='#333333')),
-                ft.TextSpan(
                     "Iniciar Sesión",
-                    ft.TextStyle(size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_600))
-            ],
-        ),
+                    ft.TextStyle(
+                        font_family="LTSaeada-2",
+                        size=30,
+                        height=1,
+                        weight=ft.FontWeight.BOLD,
+                        foreground=ft.Paint(
+                            gradient=ft.PaintLinearGradient(
+                                (0, 20), (150, 20), ["#002387", ft.colors.LIGHT_BLUE]
+                            )
+                        ),
+                    ))
+            ],text_align="center"
+        ),margin=ft.margin.only(top=10, bottom=20)
         # margin=ft.margin.only(bottom=10)  # Margen inferior para separar del formulario
     )
-    imagen= ft.Image(src=f"/login.png", width=220, height=220, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
+    imagen= ft.Image(src=f"/logo_redondeado.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
 
     campos_formulario = ft.Container(
         content=ft.Column(controls=[username_field, password_field], alignment=ft.MainAxisAlignment.CENTER),
@@ -162,12 +195,13 @@ def login_view(page, app_state):
     # Container principal de la vista de inicio de sesión
     contenedor_principal = ft.Container(
         content=ft.Column(
-            controls=[separador, titulo_principal, imagen,campos_formulario, botones],
+            controls=[separador, imagen, titulo_principal, campos_formulario, botones],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
         expand=True,
-        width=400
+        width=400,
+        margin=ft.margin.only(top=20)
     )
 
     content_scrollable = ft.ListView(
