@@ -25,23 +25,24 @@ def welcome_view (page, app_state):
         spans=[
                 ft.TextSpan(
                     f"Bienvenido {username} a la mejor APP para predecir el riesgo \nde ",
-                    ft.TextStyle(size=30, color='#333333', font_family="RoundsNeue-1")),
+                    ft.TextStyle(size=30, color='#333333', font_family="RoundsNeue-1", height=1)),
                 ft.TextSpan(
                     "ACV",
                     ft.TextStyle(
                         font_family="RoundsNeue-4",
                         size=40,
+                        height=1,
                         weight=ft.FontWeight.BOLD,
                         foreground=ft.Paint(
                             gradient=ft.PaintLinearGradient(
-                                (0, 20), (150, 20), [ft.colors.BLUE_900, ft.colors.LIGHT_BLUE]
+                                (0, 20), (150, 20), ["#002387", ft.colors.LIGHT_BLUE]
                             )
                         ),
                     ),),
                         
         ])
     t_s = ft.Text(value='"Cuida tu futuro hoy"',size=15, color='#333333', font_family="RoundsNeue-1")
-    i_p= ft.Image(src=f"/principal.png", width=300, height=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
+    i_p= ft.Image(src=f"/principal3.png", width=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
     b_p = ft.FilledButton(
         text="Continuar",
         width=300, 
@@ -55,9 +56,9 @@ def welcome_view (page, app_state):
                 ft.ControlState.DEFAULT: ft.colors.WHITE,
             },
             bgcolor={
-                ft.ControlState.HOVERED: ft.colors.BLUE_300,
-                ft.ControlState.DEFAULT: ft.colors.BLUE_600,
-            },
+                ft.ControlState.HOVERED: ft.colors.TRANSPARENT,
+                ft.ControlState.DEFAULT: "#0165BD",
+            }
         )
         )
     
@@ -75,11 +76,11 @@ def welcome_view (page, app_state):
         ]),width=300)
     imagen_principal = ft.Container(
         content=ft.Column(controls=[i_p
-        ]),width=300)
+        ]),width=300,margin=ft.margin.only(top=10))
     boton_principal = ft.Container(content=ft.Column(controls =[b_p],
         alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
-        ), width=300,margin=ft.margin.only(top=50),)
+        ), width=300,margin=ft.margin.only(top=10))
   
     #CONTAINER PRINCIPAL DE VISTA PRINCIPAL
     contenedor_principal= ft.Container( content=ft.Column([
@@ -94,7 +95,7 @@ def welcome_view (page, app_state):
         ),
         expand=True,
         width=400,
-        #border=ft.border.all()
+        border=ft.border.all()
         )
    
     content_principal_scrollable = ft.ListView(

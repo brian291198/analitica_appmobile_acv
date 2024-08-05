@@ -87,6 +87,7 @@ def registration_view(page, app_state):
                 threading.Timer(2.0, redirect_after_delay).start() 
 
             else:
+                print(data)
                 error_message = response.json().get('message', 'Error desconocido')
 
                 def close_error_dialog(e):

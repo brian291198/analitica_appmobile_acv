@@ -5,6 +5,7 @@ from welcome import welcome_view
 from objetive1 import objetive1_view
 from objetive2 import objetive2_view
 from objetive3 import objetive3_view
+from ia_chatbot import chatbot
 from login import login_view
 from register import registration_view
 
@@ -43,14 +44,19 @@ class AppState:
     def show_objetive3(self):
         if self.page:
             objetive3_view(self.page, self)
+    def show_chatbot(self):
+        if self.page:
+            chatbot(self.page, self)
+
 
 def main (page: ft.Page):
 
     #Configuraciones de la interfaz en general
     page.title = "App de predicción de ACV"
     page.window.width = 360  # Ajusta esto según el dispositivo
-    page.window.height = 660
+    page.window.height = 720
     page.bgcolor = "#dddddd"
+
 
     page.fonts={
         "Comfortaa-Light": "Comfortaa-Light.ttf",
@@ -71,7 +77,9 @@ def main (page: ft.Page):
 
 
     page.theme = ft.Theme(font_family="RoundsNeue-2")
-    page.theme_mode = ft.ThemeMode.LIGHT
+    page.theme_mode = ft.ThemeMode.DARK
+    page.horizontal_alignment="center"
+    page.vertical_alignment="center"
 
 
 
