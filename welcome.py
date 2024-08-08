@@ -14,6 +14,12 @@ def welcome_view (page, app_state):
         
     username = app_state.user_data.get('username', 'Usuario')
 
+    """ if isinstance(app_state.paciente_data, dict):
+            for key, value in app_state.paciente_data.items():
+                print(f"{key}: {value}")
+    else:
+            print("user_data no es un diccionario.") """
+
     def ir_home(e):
         page.controls.clear()
         app_state.show_home()

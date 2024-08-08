@@ -108,6 +108,7 @@ def login_view(page, app_state):
             label="Contraseña",
             prefix_icon=ft.icons.LOCK,
             password=True,
+            can_reveal_password=True,
             width=300, 
             color="#333333",
             border=ft.InputBorder.UNDERLINE,
@@ -143,17 +144,17 @@ def login_view(page, app_state):
         style=ft.ButtonStyle(
             shape=ft.StadiumBorder(),
             color={
-                ft.ControlState.HOVERED: ft.colors.WHITE,
-                ft.ControlState.FOCUSED: ft.colors.WHITE,
+                ft.ControlState.HOVERED: "#0165BD",
+                ft.ControlState.FOCUSED: "#0165BD",
                 ft.ControlState.DEFAULT: "#333333",
             },
             bgcolor={
-                ft.ControlState.HOVERED: ft.colors.BLUE_300,
+                ft.ControlState.HOVERED: ft.colors.TRANSPARENT,
                 ft.ControlState.DEFAULT: ft.colors.TRANSPARENT,
             },
             side={
-                    ft.ControlState.DEFAULT: ft.BorderSide(1, ft.colors.BLUE),
-                    ft.ControlState.HOVERED: ft.BorderSide(2, ft.colors.BLUE),
+                    ft.ControlState.DEFAULT: ft.BorderSide(1, "#333333"),
+                    ft.ControlState.HOVERED: ft.BorderSide(2, "#0165BD"),
                 },
         )
     )
@@ -211,4 +212,3 @@ def login_view(page, app_state):
 
     page.add(content_scrollable)
     page.update()
-

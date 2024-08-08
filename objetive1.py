@@ -3,7 +3,8 @@ import requests
 # from message_whatsapp import message_whatsapp
 from login import login_view
 from api_whatsapp import message_whatsapp
-
+from datetime import datetime
+from validation import validate_radiobutton, validate_intervalo
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
 def objetive1_view(page, app_state):
@@ -13,16 +14,50 @@ def objetive1_view(page, app_state):
             login_view(page, app_state)
             page.update()
             return
+        
+        token =app_state.token
 
         global prediccion_resultado  
-        API_URL = 'http://127.0.0.1:8080/api/acv1'
+        API_URL = 'http://127.0.0.1:8080/api/acv1/'
 
         page.controls.clear()
         page.padding=0
         
         #----------------------------------------------------------------------------------------------------------------------------------------------
        
-        #MÉTODOS    
+        #MÉTODOS  
+
+        #filtro para validaciones
+        def filtro_valid_objetive1(page, data_values, data_keys, errores):
+            # Validaciones
+            for i in range(len(data_values)):
+                value = data_values[i]
+                key = data_keys[i]
+                
+              
+                if key == "Hipertension":
+                    error = validate_radiobutton(page, value, col_valid_hipertension, txt_valid_hipertension, col_hipertension, icon_valid_hipertension)
+                elif key == "Cardiopatia":
+                    error = validate_radiobutton(page, value, col_valid_cardiopatia, txt_valid_cardiopatia, col_cardiopatia, icon_valid_cardiopatia)
+                elif key == "genero":
+                    error = validate_radiobutton(page, value, col_valid_genero, txt_valid_genero, col_genero, icon_valid_genero)
+                elif key == "TipoTrabajo":
+                    error = validate_radiobutton(page, value, col_valid_trabajo, txt_valid_trabajo, col_trabajo, icon_valid_trabajo)
+                elif key == "Nivel_GlucosaPromedio":
+                    error = validate_intervalo(page, value, col_valid_glucosa, txt_valid_glucosa, ip_glucosa, icon_valid_glucosa, 30, 300)
+                elif key == "ICM":
+                    error = validate_intervalo(page, value, col_valid_imc, txt_valid_imc, ip_imc, icon_valid_imc, 10, 100)
+                elif key == "EstadoFumador":
+                    error = validate_radiobutton(page, value, col_valid_fumador, txt_valid_fumador, col_fumador, icon_valid_fumador)
+                else:
+                    error = None
+
+                if error:
+                    errores.append(f"Error en {key}: {error}")
+
+
+
+
         def accion_volver_home(e):
             page.controls.clear()
             app_state.show_home()
@@ -42,443 +77,138 @@ def objetive1_view(page, app_state):
                 "ICM": ip_imc.value,  # Actualizado
                 "EstadoFumador": ip_fumador.value,  # Actualizado
             }
-
-            #Método para crear la alerta en un modal
-            def create_alert_dialog():
-                return ft.AlertDialog(
-                title=ft.Column(
-                controls=[
-                    ft.Text("🚫Datos Incompletos", color=ft.colors.RED, text_align=ft.TextAlign.CENTER, size=20),
-                    ft.Container(height=1, width=350, margin=10, bgcolor=ft.colors.RED),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                ),
-                #on_dismiss=lambda e: page.add(ft.Text("Mensaje auxiliar")),
-                bgcolor=ft.colors.WHITE, 
-                shape=ft.RoundedRectangleBorder(10)
-                )
-            page.update()
-
-            #Método para agregar el texto de las validaciones que mostrará el modal
-            def open_alert(content_text):
-                global alerta_validaciones
-                alerta_validaciones.content = ft.Text(content_text, color=ft.colors.RED)
-                page.open(alerta_validaciones)
-                #page.dialog_open = True
-                page.update()           
-
-            errores=[]
-
-            #Estilo estándar error
-            def style_standar_error_vacio(col_valid, txt_valid, icon):
-                col_valid.height=40
-                txt_valid.value= "Error: Campo obligatorio."
-                txt_valid.color=ft.colors.RED_300
-                txt_valid.size=12
-                icon.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon.color=ft.colors.RED_300
-                icon.size=15
             
-            #Estilos para error por campo vacío para textfields
-            def style_vacio_textfield(col_valid, ip, txt_valid, icon):
-                ip.border_color = ft.colors.RED_300
-                ip.focused_border_color = ft.colors.RED_300 
-                style_standar_error_vacio(col_valid, txt_valid, icon)
-            
-            #Estilos para error por campo vacío para radiobuttons 
-            def style_vacio_radio(col_valid, col_tipo, txt_valid, icon): 
-                col_tipo.border = ft.border.all(color=ft.colors.RED_300) 
-                style_standar_error_vacio(col_valid, txt_valid, icon)
-             
-                                
-            # VALIDACIONES PARA CAMPOS VACÍOS
-            if not datos["Nombre del paciente"]:
-                #prediccion_resultado.value = "Error: El nombre del paciente es obligatorio."
-                errores.append("• Error: Campo 'Nombre del paciente' requerido.")
-                style_vacio_textfield(col_valid_paciente, ip_paciente, txt_valid_paciente, icon_valid_paciente)
-            
-            if not datos["Edad"]:
-                #prediccion_resultado.value = "Error: La edad es obligatorio."
-                errores.append("• Error: Campo 'Edad' requerido.")
-                style_vacio_textfield(col_valid_edad, ip_edad, txt_valid_edad, icon_valid_edad)
-               
-            if not datos["Genero"]:
-                #prediccion_resultado.value = "Error: El género es obligatorio."
-                errores.append("• Error: Campo 'Género' requerido.")
-                style_vacio_radio(col_valid_genero, col_genero, txt_valid_genero, icon_valid_genero)
-            
-            if not datos["TipoTrabajo"]:
-                errores.append("• Error: Campo 'Tipo de trabajo' requerido.")
-                style_vacio_radio(col_valid_trabajo, col_trabajo, txt_valid_trabajo, icon_valid_trabajo)
+            datos_values = [value for key, value in datos.items()]
+            datos_keys = [key for key in datos.keys()]
 
-            if not datos["Hipertension"]:
-                errores.append("• Error: Campo 'Hipertensión' requerido.")
-                style_vacio_radio(col_valid_hipertension, col_hipertension, txt_valid_hipertension, icon_valid_hipertension)
+            # Lista para errores
+            errores = []
+            #Llamada al método para validaciones
+            filtro_valid_objetive1(page, datos_values, datos_keys, errores)
 
-            if not datos["Cardiopatia"]:
-                errores.append("• Error: Campo 'Cardiopatía' requerido.")
-                style_vacio_radio(col_valid_cardiopatia, col_cardiopatia, txt_valid_cardiopatia, icon_valid_cardiopatia)
-                
-            if not datos["EstadoFumador"]:
-                errores.append("• Error: Campo 'Estado Fumador' requerido.")
-                style_vacio_radio(col_valid_fumador, col_fumador, txt_valid_fumador, icon_valid_fumador)
-                            
-            if not datos["Nivel_GlucosaPromedio"]:
-                errores.append("• Error: Campo 'Glucosa' requerido.")
-                style_vacio_textfield(col_valid_glucosa, ip_glucosa, txt_valid_glucosa, icon_valid_glucosa)
-            
-            if not datos["ICM"]:
-                errores.append("• Error: Campo 'IMC' requerido.")
-                style_vacio_textfield(col_valid_imc, ip_imc, txt_valid_imc, icon_valid_imc)
-                         
-            if errores:      
-                alerta_validaciones = create_alert_dialog()
-                open_alert("\n".join(errores))
-                page.update()
-                return
-                
-            def validar_numero(valor, min_valor, max_valor):
-                try:
-                    numero = float(valor)
-                    if min_valor <= numero <= max_valor:
-                        return True
-                    return False
-                except ValueError:
-                    return False
+            # Imprimir errores
+
+            list_errores="\n".join(errores)
+             # Imprimir los datos en la consola
+            print(datos)
+            print(token)
+            print(f"URL: {API_URL}")
+            headers = {
+                        'Authorization': f'Token {token}',
+                        'Content-Type': 'application/json'}
+            print(f"Headers: {headers}")
+            print(f"Datos: {datos}")
 
             if errores:
-                #prediccion_resultado.value = "\n".join(errores)
-                alerta_validaciones.content.value ="\n".join(errores)
-                #alerta_active("\n".join(errores))
-                page.update()
-                return
-            
-            # Imprimir los datos en la consola
-            print(datos)
-                
-            # Enviar una solicitud POST a la API
-            try:
-                headers = {'Content-Type': 'application/json'}
-                response = requests.post(API_URL, json=datos, headers=headers)
-                if response.status_code == 200:
-                    # Manejar la respuesta exitosa
-                    response_json = response.json()
-                    prediction_value = response_json.get('prediction', [0])[0]
-                    print(prediction_value)
+                error_alert_objetive1 = ft.AlertDialog(
+                    title=ft.Text("Error", color=ft.colors.RED),
+                    content=ft.Text(list_errores, color=ft.colors.RED),
+                    bgcolor=ft.colors.WHITE,
+                    shape=ft.RoundedRectangleBorder(10)
+                )
+                page.open(error_alert_objetive1)
 
-                    if prediction_value == 0:
-                        mensaje1="nos complace"
-                        mensaje2 = "no presenta riesgo de padecer un accidente cerebrovascular (ACV) en su evaluación actual."
+            else:
+                    
+                # Enviar una solicitud POST a la API
+                try:
+    
+                    response = requests.post(API_URL, json=datos, headers=headers)
+                    
+                    if response.status_code == 201:
+                        response_json = response.json()
+                        
+                        prediction_value = response_json.get('prediction', [0])[0]
+                        print(prediction_value)
+
+                        if prediction_value == 0:
+                            mensaje1 = "Nos complace informarle que"
+                            mensaje2 = "no se han detectado indicios de un accidente cerebrovascular (ACV) en su evaluación actual. Esto es una buena noticia para su salud."
+                            mensaje3 = "Sin embargo, es recomendable que continúe con hábitos saludables para mantener su bienestar general. Si experimenta algún síntoma nuevo o inusual, le recomendamos que consulte con su médico."
+                        else:
+                            mensaje1 = "Le informamos que"
+                            mensaje2 = "hemos detectado algunos factores que indican un mayor riesgo de accidente cerebrovascular (ACV). Es importante que tome las siguientes medidas para su salud:"
+                            mensaje3 = "Consulta Médica: Programe una cita con su médico para una evaluación más detallada. Cambios en el Estilo de Vida: Considere adoptar un estilo de vida saludable, que incluya una dieta equilibrada y ejercicio regular. Monitoreo Regular: Es posible que necesite realizarse exámenes adicionales para monitorear su condición."
+
+                        prediccion = f"Estimado/a {ip_paciente.value},\n\n{mensaje1} , tras revisar los resultados de sus pruebas,{mensaje2}\n\n{mensaje3}"
+                        prediccion_resultado.value = prediccion
+
+                        # número de prueba para enviar el mensaje, incluir el 51 por código del país
+                        telefono = f"51{ip_telefono.value}"
+
+                        # Condicionar valores para mensaje de WhatsApp
+                        w_genero = "Femenino" if ip_genero.value == 0 else "Masculino"
+                        w_hipertension = "No" if ip_hipertension.value == 0 else "Sí"
+                        w_cardiopatia = "No" if ip_cardiopatia.value == 0 else "Sí"
+                        
+                        if ip_trabajo.value == 0:
+                            w_trabajo = "Trabajador para el gobierno"
+                        elif ip_trabajo.value == 1:
+                            w_trabajo = "Nunca trabajó"
+                        elif ip_trabajo.value == 2:
+                            w_trabajo = "Trabajador privado"
+                        else:
+                            w_trabajo = "Trabajador por cuenta propia"
+
+                        if ip_fumador.value == 0:
+                            w_fumador = "No opina"
+                        elif ip_fumador.value == 1:
+                            w_fumador = "Anteriormente fumó"
+                        elif ip_fumador.value == 2:
+                            w_fumador = "Nunca fumó"
+                        else:
+                            w_fumador = "Fuma"
+
+                        # Llamar a la función para enviar el mensaje de WhatsApp
+                        message_whatsapp(page, ip_paciente.value, mensaje1, mensaje2, mensaje3, telefono, w_genero, ip_edad.value, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, ip_glucosa.value, ip_imc.value)
+                        print(prediccion)
+                        page.update()
+
                     else:
-                        mensaje1="lamentamos"
-                        mensaje2 = "sí presenta riesgo de padecer un accidente cerebrovascular (ACV) en su evaluación actual."
+                        # Imprimir mensaje de error detallado
+                        print(f"Error: {response.status_code} - {response.text}")
+                        prediccion_resultado.value = f"Error: {response.status_code}"
 
-                    prediccion=f"Estimado(a) {ip_paciente.value}, {mensaje1} informarle que, tras evaluar los datos requeridos para el diagnóstico, se determinó que {mensaje2}"
-                    prediccion_resultado.value = prediccion
+                except requests.exceptions.RequestException as e:
+                    print(f"Ocurrió un error de red: {e}")
+                    prediccion_resultado.value = f"Ocurrió un error de red: {e}"
 
-                    #numerito de prueba para enviar el mensaje, incluir el 51 por codigo del pais
-                    #telefono='51921351292'
-                    telefono=f"51{ip_telefono.value}"
+                except ValueError as e:
+                    print(f"Error al procesar la respuesta JSON: {e}")
+                    prediccion_resultado.value = f"Error al procesar la respuesta JSON: {e}"
 
-                    message_whatsapp(page, ip_paciente.value, mensaje1, mensaje2, telefono)
-                    print(prediccion)                        
-                    page.update()
-
-                else:
-                    # Imprimir mensaje de error detallado
-                    print(f"Error: {response.status_code} - {response.text}")
-                    prediccion_resultado.value = f"Error: {response.status_code}"
-            except Exception as e:
-                print(f"Ocurrió un error: {e}")
-                prediccion_resultado.value = f"Ocurrió un error: {e}"
+                except Exception as e:
+                    print(f"Ocurrió un error inesperado: {e}")
+                    prediccion_resultado.value = f"Ocurrió un error inesperado: {e}"
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
+         
+             #OBTENER DATOS DEL PACIENTE
+
+        #Nombre completo
+        nombres = app_state.paciente_data.get('nombres', 'Nombres')
+        apPaterno = app_state.paciente_data.get('apPaterno', 'Apellido Paterno')
+        apMaterno = app_state.paciente_data.get('apMaterno', 'Apellido Materno')
+        nombre_completo = f"{nombres} {apPaterno} {apMaterno}"
+        #Género
+        genero = app_state.paciente_data.get('genero', 'Género')
+        if genero == "Femenino": #Dar un valor correspondiente a las opciones del radiobutton
+            genero_option=0
+        else:
+            genero_option=1
+        def option_ip_genero(e): #Género-método que impide cambiar de valor al radiobutton
+            if e.control.value != genero_option:
+                e.control.value = genero_option
+                page.update()
+        #Edad
+        fecha_nacimiento = app_state.paciente_data.get('fecha_nacimiento', 'Fecha Nacimiento')
+        fecha_nacimiento_str = datetime.strptime(fecha_nacimiento, '%Y-%m-%d') #cambiar de string a date
+        hoy = datetime.today() #obtener fecha actual
+        edad = hoy.year - fecha_nacimiento_str.year
+        #Verificar si la persona no ha cumplido años este año
+        if (hoy.month, hoy.day) < (fecha_nacimiento_str.month, fecha_nacimiento_str.day):
+            edad -= 1
         
-        #VALIDACIONES COMPLETAS POR CAMPO
-
-        def validate_ip_paciente(e):
-            input_value = e.control.value
-            if not input_value:
-                col_valid_paciente.height=40
-                txt_valid_paciente.value= "Error: Campo obligatorio."
-                txt_valid_paciente.color=ft.colors.RED_300
-                txt_valid_paciente.size=12
-                ip_paciente.border_color = ft.colors.RED_300
-                ip_paciente.focused_border_color = ft.colors.RED_300
-                icon_valid_paciente.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_paciente.color=ft.colors.RED_300
-                icon_valid_paciente.size=15
-            elif all(c.isalpha() or c.isspace() for c in input_value):
-                col_valid_paciente.height=40
-                txt_valid_paciente.value= "Campo válido"
-                txt_valid_paciente.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                txt_valid_paciente.size=12
-                ip_paciente.border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                ip_paciente.focused_border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_paciente.name=name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                icon_valid_paciente.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_paciente.size=15
-            else:
-                col_valid_paciente.height=40
-                txt_valid_paciente.value= "Error: Incluir solo letras y espacios."
-                txt_valid_paciente.color=ft.colors.RED_300
-                txt_valid_paciente.size=12
-                ip_paciente.border_color = ft.colors.RED_300
-                ip_paciente.focused_border_color = ft.colors.RED_300
-                icon_valid_paciente.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_paciente.color=ft.colors.RED_300
-                icon_valid_paciente.size=15
-            page.update()
-
-        def validate_ip_edad(e):
-            input_value = e.control.value
-            # Intentar convertir la entrada a un número entero
-            try:
-                age = int(input_value)
-            except ValueError:
-                age = None
-
-            if not input_value:
-                col_valid_edad.height=40
-                txt_valid_edad.value= "Error: Campo obligatorio."
-                txt_valid_edad.color=ft.colors.RED_300
-                txt_valid_edad.size=12
-                ip_edad.border_color = ft.colors.RED_300
-                ip_edad.focused_border_color = ft.colors.RED_300
-                icon_valid_edad.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_edad.color=ft.colors.RED_300
-                icon_valid_edad.size=15
-            elif age is None or not (1 <= age <= 120):
-                col_valid_edad.height=40
-                txt_valid_edad.value= "Error: Ingrese una edad entre 1 y 120."
-                txt_valid_edad.color=ft.colors.RED_300
-                txt_valid_edad.size=12
-                ip_edad.border_color = ft.colors.RED_300
-                ip_edad.focused_border_color = ft.colors.RED_300
-                icon_valid_edad.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_edad.color=ft.colors.RED_300
-                icon_valid_edad.size=15
-            else:
-                col_valid_edad.height=40
-                txt_valid_edad.value= "Campo válido"
-                txt_valid_edad.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                txt_valid_edad.size=12
-                ip_edad.border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                ip_edad.focused_border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_edad.name=name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                icon_valid_edad.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_edad.size=15
-            page.update()
-
-        def validate_ip_genero(e):
-            input_value = e.control.value
-
-            if not input_value:
-                col_valid_genero.height=40
-                txt_valid_genero.value= "Error: Campo obligatorio."
-                txt_valid_genero.color=ft.colors.RED_300
-                txt_valid_genero.size=12
-                col_genero.border = ft.border.all(color=ft.colors.RED_300)
-                icon_valid_genero.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_genero.color=ft.colors.RED_300
-                icon_valid_genero.size=15
-            else:
-                col_valid_genero.height=40
-                txt_valid_genero.value= "Campo válido"
-                txt_valid_genero.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                txt_valid_genero.size=12
-                col_genero.border = ft.border.all(color=ft.colors.LIGHT_GREEN_ACCENT_700)
-                icon_valid_genero.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                icon_valid_genero.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_genero.size=15
-            page.update()
-
-        def validate_ip_trabajo(e):
-            input_value = e.control.value
-
-            if not input_value:
-                col_valid_trabajo.height=40
-                txt_valid_trabajo.value= "Error: Campo obligatorio."
-                txt_valid_trabajo.color=ft.colors.RED_300
-                txt_valid_trabajo.size=12
-                col_trabajo.border = ft.border.all(color=ft.colors.RED_300)
-                icon_valid_trabajo.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_trabajo.color=ft.colors.RED_300
-                icon_valid_trabajo.size=15
-            else:
-                col_valid_trabajo.height=40
-                txt_valid_trabajo.value= "Campo válido"
-                txt_valid_trabajo.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                txt_valid_trabajo.size=12
-                col_trabajo.border = ft.border.all(color=ft.colors.LIGHT_GREEN_ACCENT_700)
-                icon_valid_trabajo.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                icon_valid_trabajo.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_trabajo.size=15
-            page.update()
-
-        def validate_ip_hipertension(e):
-            input_value = e.control.value
-
-            if not input_value:
-                col_valid_hipertension.height=40
-                txt_valid_hipertension.value= "Error: Campo obligatorio."
-                txt_valid_hipertension.color=ft.colors.RED_300
-                txt_valid_hipertension.size=12
-                col_hipertension.border = ft.border.all(color=ft.colors.RED_300)
-                icon_valid_hipertension.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_hipertension.color=ft.colors.RED_300
-                icon_valid_hipertension.size=15
-            else:
-                col_valid_hipertension.height=40
-                txt_valid_hipertension.value= "Campo válido"
-                txt_valid_hipertension.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                txt_valid_hipertension.size=12
-                col_hipertension.border = ft.border.all(color=ft.colors.LIGHT_GREEN_ACCENT_700)
-                icon_valid_hipertension.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                icon_valid_hipertension.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_hipertension.size=15
-
-            page.update()
-        def validate_ip_cardiopatia(e):
-            input_value = e.control.value
-
-            if not input_value:
-                col_valid_cardiopatia.height=40
-                txt_valid_cardiopatia.value= "Error: Campo obligatorio."
-                txt_valid_cardiopatia.color=ft.colors.RED_300
-                txt_valid_cardiopatia.size=12
-                col_cardiopatia.border = ft.border.all(color=ft.colors.RED_300)
-                icon_valid_cardiopatia.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_cardiopatia.color=ft.colors.RED_300
-                icon_valid_cardiopatia.size=15
-            else:
-                col_valid_cardiopatia.height=40
-                txt_valid_cardiopatia.value= "Campo válido"
-                txt_valid_cardiopatia.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                txt_valid_cardiopatia.size=12
-                col_cardiopatia.border = ft.border.all(color=ft.colors.LIGHT_GREEN_ACCENT_700)
-                icon_valid_cardiopatia.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                icon_valid_cardiopatia.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_cardiopatia.size=15
-
-            page.update()
-        def validate_ip_fumador(e):
-            input_value = e.control.value
-
-            if not input_value:
-                col_valid_fumador.height=40
-                txt_valid_fumador.value= "Error: Campo obligatorio."
-                txt_valid_fumador.color=ft.colors.RED_300
-                txt_valid_fumador.size=12
-                col_fumador.border = ft.border.all(color=ft.colors.RED_300)
-                icon_valid_fumador.name=name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_fumador.color=ft.colors.RED_300
-                icon_valid_fumador.size=15
-            else:
-                col_valid_fumador.height=40
-                txt_valid_fumador.value= "Campo válido"
-                txt_valid_fumador.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                txt_valid_fumador.size=12
-                col_fumador.border = ft.border.all(color=ft.colors.LIGHT_GREEN_ACCENT_700)
-                icon_valid_fumador.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                icon_valid_fumador.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                icon_valid_fumador.size=15
-            page.update()
-
-        def validate_ip_glucosa(e):
-            input_value = e.control.value
-            try:
-                # Intentar convertir el valor a flotante
-                glucosa_value = float(input_value)
-                if not input_value:
-                    col_valid_glucosa.height=40
-                    txt_valid_glucosa.value= "Error: Campo obligatorio."
-                    txt_valid_glucosa.color=ft.colors.RED_300
-                    txt_valid_glucosa.size=12
-                    ip_glucosa.border_color = ft.colors.RED_300
-                    ip_glucosa.focused_border_color = ft.colors.RED_300
-                    icon_valid_glucosa.name=ft.icons.ERROR_OUTLINE_ROUNDED
-                    icon_valid_glucosa.color=ft.colors.RED_300
-                    icon_valid_glucosa.size=15
-                elif 30 <= glucosa_value <= 300:
-                    col_valid_glucosa.height=40
-                    txt_valid_glucosa.value= "Campo válido"
-                    txt_valid_glucosa.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                    txt_valid_glucosa.size=12
-                    ip_glucosa.border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                    ip_glucosa.focused_border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                    icon_valid_glucosa.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                    icon_valid_glucosa.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                    icon_valid_glucosa.size=15
-                else:
-                    col_valid_glucosa.height=40
-                    txt_valid_glucosa.value= "Error: Ingrese un valor entre 30 y 300."
-                    txt_valid_glucosa.color=ft.colors.RED_300
-                    txt_valid_glucosa.size=12
-                    ip_glucosa.border_color = ft.colors.RED_300
-                    ip_glucosa.focused_border_color = ft.colors.RED_300
-                    icon_valid_glucosa.name=ft.icons.ERROR_OUTLINE_ROUNDED
-                    icon_valid_glucosa.color=ft.colors.RED_300
-                    icon_valid_glucosa.size=15 
-            except ValueError:
-                col_valid_glucosa.height=40
-                txt_valid_glucosa.value= "Error: Solo números enteros o decimales."
-                txt_valid_glucosa.color=ft.colors.RED_300
-                txt_valid_glucosa.size=12
-                ip_glucosa.border_color = ft.colors.RED_300
-                ip_glucosa.focused_border_color = ft.colors.RED_300
-                icon_valid_glucosa.name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_glucosa.color=ft.colors.RED_300
-                icon_valid_glucosa.size=15
-            page.update()
-
-        def validate_ip_imc(e):
-            input_value = e.control.value
-            try:
-                # Intentar convertir el valor a flotante
-                imc_value = float(input_value)
-                if not input_value:
-                    col_valid_imc.height=40
-                    txt_valid_imc.value= "Error: Campo obligatorio."
-                    txt_valid_imc.color=ft.colors.RED_300
-                    txt_valid_imc.size=12
-                    ip_imc.border_color = ft.colors.RED_300
-                    ip_imc.focused_border_color = ft.colors.RED_300
-                    icon_valid_imc.name=ft.icons.ERROR_OUTLINE_ROUNDED
-                    icon_valid_imc.color=ft.colors.RED_300
-                    icon_valid_imc.size=15
-                elif 10 <= imc_value <= 100:
-                    col_valid_imc.height=40
-                    txt_valid_imc.value= "Campo válido"
-                    txt_valid_imc.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                    txt_valid_imc.size=12
-                    ip_imc.border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                    ip_imc.focused_border_color = ft.colors.LIGHT_GREEN_ACCENT_700
-                    icon_valid_imc.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-                    icon_valid_imc.color=ft.colors.LIGHT_GREEN_ACCENT_700
-                    icon_valid_imc.size=15
-                else:
-                    col_valid_imc.height=40
-                    txt_valid_imc.value= "Error: Ingrese un valor entre 10 y 100."
-                    txt_valid_imc.color=ft.colors.RED_300
-                    txt_valid_imc.size=12
-                    ip_imc.border_color = ft.colors.RED_300
-                    ip_imc.focused_border_color = ft.colors.RED_300
-                    icon_valid_imc.name=ft.icons.ERROR_OUTLINE_ROUNDED
-                    icon_valid_imc.color=ft.colors.RED_300
-                    icon_valid_imc.size=15
-            except ValueError:
-                col_valid_imc.height=40
-                txt_valid_imc.value= "Error: Solo números enteros o decimales."
-                txt_valid_imc.color=ft.colors.RED_300
-                txt_valid_imc.size=12
-                ip_imc.border_color = ft.colors.RED_300
-                ip_imc.focused_border_color = ft.colors.RED_300
-                icon_valid_imc.name=ft.icons.ERROR_OUTLINE_ROUNDED
-                icon_valid_imc.color=ft.colors.RED_300
-                icon_valid_imc.size=15
-            page.update()
-           
          #----------------------------------------------------------------------------------------------------------------------------------------------
         
         #ÍCONO PARA VALIDACIONES
@@ -575,7 +305,8 @@ def objetive1_view(page, app_state):
             fill_color=ft.colors.WHITE,
             focused_border_color=ft.colors.BLUE_300,
             border_color="#cccccc",
-            on_change=validate_ip_paciente
+            read_only=True,
+            value=nombre_completo,
         )
         #texto para validacion de campo ip_paciente
         txt_valid_paciente=ft.Text()
@@ -593,18 +324,19 @@ def objetive1_view(page, app_state):
                 value="0", 
                 label="Femenino",
                 label_style=ft.TextStyle(
-                color="#cccccc",
+                color=ft.colors.BLACK,
                 size=14,
                 )),
             ft.Radio(
                 value="1", 
                 label="Masculino",
                 label_style=ft.TextStyle(
-                color="#cccccc",
+                color=ft.colors.BLACK,
                 size=14,
                 )),
             ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=validate_ip_genero 
+            on_change=option_ip_genero,
+            value=str(genero_option)
             )
         #texto para validacion de campo ip_genero
         txt_valid_genero=ft.Text()
@@ -634,7 +366,8 @@ def objetive1_view(page, app_state):
             fill_color=ft.colors.WHITE,
             focused_border_color=ft.colors.BLUE_300,
             border_color="#cccccc",
-            on_change=validate_ip_edad
+            read_only=True,
+            value=str(edad),
         )
         #texto para validacion de campo ip_edad
         txt_valid_edad=ft.Text() 
@@ -676,8 +409,7 @@ def objetive1_view(page, app_state):
                 color="#cccccc",
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=validate_ip_trabajo)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
         
         #texto para validacion de campo ip_trabajo
         txt_valid_trabajo=ft.Text()
@@ -705,8 +437,7 @@ def objetive1_view(page, app_state):
                 color="#cccccc",
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=validate_ip_hipertension)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
         
         #texto para validacion de campo ip_hipertension
         txt_valid_hipertension=ft.Text()
@@ -734,8 +465,7 @@ def objetive1_view(page, app_state):
                 color="#cccccc",
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=validate_ip_cardiopatia)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
         
         #texto para validacion de campo ip_cardiopatia
         txt_valid_cardiopatia=ft.Text()
@@ -765,7 +495,6 @@ def objetive1_view(page, app_state):
             fill_color=ft.colors.WHITE,
             focused_border_color=ft.colors.BLUE_300,
             border_color="#cccccc",
-            on_change=validate_ip_glucosa
             )
         
         #texto para validacion de campo ip_glucosa
@@ -795,9 +524,7 @@ def objetive1_view(page, app_state):
             cursor_color="#333333",
             fill_color=ft.colors.WHITE,
             focused_border_color=ft.colors.BLUE_300,
-            border_color="#cccccc",
-            on_change=validate_ip_imc
-            )
+            border_color="#cccccc",)
         
         #texto para validacion de campo ip_imc
         txt_valid_imc=ft.Text()
@@ -839,8 +566,7 @@ def objetive1_view(page, app_state):
                 color="#cccccc",
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=validate_ip_fumador)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
         
         #texto para validacion de campo ip_fumador
         txt_valid_fumador=ft.Text()
