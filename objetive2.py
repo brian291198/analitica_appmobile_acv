@@ -1,6 +1,8 @@
 import flet as ft
 import requests
 from login import login_view
+from datetime import datetime
+from validation import validate_radiobutton, validate_intervalo
 
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 2
@@ -11,6 +13,8 @@ def objetive2_view(page, app_state):
             login_view(page, app_state)
             page.update()
             return
+        #Obtener token
+        token =app_state.token
 
         global prediccion_resultado        
         API_URL = 'http://127.0.0.1:8080/api/acv2'
@@ -19,7 +23,31 @@ def objetive2_view(page, app_state):
         page.padding=0
         #----------------------------------------------------------------------------------------------------------------------------------------------
         
-        #MÉTODOS    
+        #MÉTODOS   
+
+        #filtro para validaciones
+        def filtro_valid_objetive1(page, data_values, data_keys, errores):
+            # Validaciones
+            for i in range(len(data_values)):
+                value = data_values[i]
+                key = data_keys[i]
+                      
+                if key == "Hipertension":
+                    error = validate_radiobutton(page, value, col_valid_hipertension, txt_valid_hipertension, col_hipertension, icon_valid_hipertension)
+                elif key == "Cardiopatia":
+                    error = validate_radiobutton(page, value, col_valid_cardiopatia, txt_valid_cardiopatia, col_cardiopatia, icon_valid_cardiopatia)
+                elif key == "TipoTrabajo":
+                    error = validate_radiobutton(page, value, col_valid_trabajo, txt_valid_trabajo, col_trabajo, icon_valid_trabajo)
+                elif key == "Nivel_GlucosaPromedio":
+                    error = validate_intervalo(page, value, col_valid_glucosa, txt_valid_glucosa, ip_glucosa, icon_valid_glucosa, 30, 300)
+                elif key == "ICM":
+                    error = validate_intervalo(page, value, col_valid_imc, txt_valid_imc, ip_imc, icon_valid_imc, 10, 100)
+                else:
+                    error = None
+
+                if error:
+                    errores.append(f"Error en {key}: {error}")
+
         def accion_volver_home(e):
             page.controls.clear()
             app_state.show_home()
@@ -29,7 +57,7 @@ def objetive2_view(page, app_state):
             # Recoger los valores de los campos del formulario
             datos = {
                 "Nombre del paciente": ip_paciente.value,
-                "Genero": ip_genero.value,
+                "Genero": genero_option,
                 "Edad": ip_edad.value,
                 "TipoTrabajo": ip_trabajo.value,  # Actualizado
                 "Hipertension": ip_hipertension.value,  # Actualizado
@@ -37,94 +65,113 @@ def objetive2_view(page, app_state):
                 "Nivel_GlucosaPromedio": ip_glucosa.value,  # Actualizado
                 "ICM": ip_imc.value,  # Actualizado
             }
-            
-            if not datos["Nombre del paciente"]:
-                prediccion_resultado.value = "Error: El nombre del paciente es obligatorio."
-                page.update()
-                return
 
-            if not datos["Edad"]:
-                prediccion_resultado.value = "Error: La edad es obligatorio."
-                page.update()
-                return
-            
-            if not datos["Genero"]:
-                prediccion_resultado.value = "Error: El género es obligatorio."
-                page.update()
-                return
-            
-            # Asegúrate de que todos los dropdowns tengan un valor seleccionado
-            for campo in ["TipoTrabajo", "Hipertension", "Cardiopatia"]:
-                if datos[campo] not in ["1", "2", "3", "4", "0"]:
-                    prediccion_resultado.value = f"Error: El campo '{campo}' es obligatorio y debe ser válido."
-                    page.update()
-                    return
+            datos_values = [value for key, value in datos.items()]
+            datos_keys = [key for key in datos.keys()]
 
-            # Validar que los campos de número no estén vacíos y sean números
-            for campo in ["Nivel_GlucosaPromedio", "ICM"]:
-                if not datos[campo].replace('.', '', 1).isdigit():
-                    prediccion_resultado.value = f"Error: El campo '{campo}' debe ser un número válido."
-                    page.update()
-                    return
-                
-            def validar_numero(valor, min_valor, max_valor):
-                try:
-                    numero = float(valor)
-                    if min_valor <= numero <= max_valor:
-                        return True
-                    return False
-                except ValueError:
-                    return False
-            
+            # Lista para errores
             errores = []
+            #Llamada al método para validaciones
+            filtro_valid_objetive1(page, datos_values, datos_keys, errores)
 
-            if not validar_numero(ip_edad.value, 1, 120):
-                errores.append("La edad debe ser un número entre 1 y 120.")
-            
-            if not validar_numero(ip_glucosa.value, 30, 300):
-                errores.append("El nivel de glucosa debe ser un número entre 30 y 300.")
-            
-            if not validar_numero(ip_imc.value, 10, 100):
-                errores.append("El IMC debe ser un número entre 10 y 100.")
-                
+            # Imprimir errores
+
+            list_errores="\n".join(errores)
+
+
             if errores:
-                prediccion_resultado.value = "\n".join(errores)
-                page.update()
-                return
-            
-            # Imprimir los datos en la consola
-            print(datos)
+                error_alert_objetive1 = ft.AlertDialog(
+                    title=ft.Text("Error", color=ft.colors.RED),
+                    content=ft.Text(list_errores, color=ft.colors.RED),
+                    bgcolor=ft.colors.WHITE,
+                    shape=ft.RoundedRectangleBorder(10)
+                )
+                page.open(error_alert_objetive1)
 
-            # Enviar una solicitud POST a la API
-            try:
-                headers = {'Content-Type': 'application/json'}
-                response = requests.post(API_URL, json=datos, headers=headers)
-                if response.status_code == 200:
-                    # Manejar la respuesta exitosa
-                    response_json = response.json()
-                    prediction_value = response_json.get('prediction', [0])[0]
-                    print(prediction_value)
+                # Imprimir los datos en la consola
+                print(datos)
 
-                    if prediction_value == 2:
-                        mensaje = "Predicción: Pertenece al grupo de precaución mayor"
-                    elif prediction_value == 0:
-                        mensaje = "Predicción: Pertenece al grupo de precaución menor"
+            else:  
+                headers = {
+                        'Authorization': f'Token {token}',
+                        'Content-Type': 'application/json'}
+                # Enviar una solicitud POST a la API
+                try:
+    
+                    response = requests.post(API_URL, json=datos, headers=headers)
+                    if response.status_code == 200:
+                        # Manejar la respuesta exitosa
+                        response_json = response.json()
+                        prediction_value = response_json.get('prediction', [0])[0]
+                        print(prediction_value)
+
+                        if prediction_value == 2:
+                            mensaje = "Predicción: Pertenece al grupo de precaución mayor"
+                        elif prediction_value == 0:
+                            mensaje = "Predicción: Pertenece al grupo de precaución menor"
+                        else:
+                            mensaje = "Predicción: Pertenece al grupo de precaución intermedia"
+                        
+                        prediccion_resultado.value = mensaje
+                        print(mensaje)                        
+                        page.update()
+
                     else:
-                        mensaje = "Predicción: Pertenece al grupo de precaución intermedia"
-                    
-                    prediccion_resultado.value = mensaje
-                    print(mensaje)                        
-                    page.update()
+                        # Imprimir mensaje de error detallado
+                        print(f"Error: {response.status_code} - {response.text}")
+                        prediccion_resultado.value = f"Error: {response.status_code}"
+                except Exception as e:
+                    print(f"Ocurrió un error: {e}")
+                    prediccion_resultado.value = f"Ocurrió un error: {e}"
 
-                else:
-                    # Imprimir mensaje de error detallado
-                    print(f"Error: {response.status_code} - {response.text}")
-                    prediccion_resultado.value = f"Error: {response.status_code}"
-            except Exception as e:
-                print(f"Ocurrió un error: {e}")
-                prediccion_resultado.value = f"Ocurrió un error: {e}"
+        
 
+
+    #----------------------------------------------------------------------------------------------------------------------------------------------
+         
+             #OBTENER DATOS DEL PACIENTE
+
+        #Nombre completo
+        nombres = app_state.paciente_data.get('nombres', 'Nombres')
+        apPaterno = app_state.paciente_data.get('apPaterno', 'Apellido Paterno')
+        apMaterno = app_state.paciente_data.get('apMaterno', 'Apellido Materno')
+        nombre_completo = f"{nombres} {apPaterno} {apMaterno}"
+        #Género
+        genero = app_state.paciente_data.get('genero', 'Género')
+        #Transformando valor de género
+        if genero == "Femenino": 
+            genero_option=0
+        else:
+            genero_option=1
+        #Edad
+        fecha_nacimiento = app_state.paciente_data.get('fecha_nacimiento', 'Fecha Nacimiento')
+        fecha_nacimiento_str = datetime.strptime(fecha_nacimiento, '%Y-%m-%d') #cambiar de string a date
+        hoy = datetime.today() #obtener fecha actual
+        edad = hoy.year - fecha_nacimiento_str.year
+        #Verificar si la persona no ha cumplido años este año
+        if (hoy.month, hoy.day) < (fecha_nacimiento_str.month, fecha_nacimiento_str.day):
+            edad -= 1
+        celular = app_state.paciente_data.get('celular', 'Celular')
+        
+         #----------------------------------------------------------------------------------------------------------------------------------------------
+        
+        #ÍCONO PARA VALIDACIONES
+       
+        icon_valid_trabajo=ft.Icon()
+        icon_valid_hipertension=ft.Icon()
+        icon_valid_cardiopatia=ft.Icon()
+        icon_valid_fumador=ft.Icon()
+        icon_valid_glucosa=ft.Icon()
+        icon_valid_imc=ft.Icon()
+
+        #----------------------------------------------------------------------------------------------------------------------------------------------
+        
         #ELEMENTOS DE INTERFAZ
+
+        #variables para colores
+        color="#404040"
+        color_hint="#C3C7CF"
+
         #boton en texto -> < VOLVER
         texto_volver = ft.TextButton(
             on_click=accion_volver_home,
@@ -135,21 +182,21 @@ def objetive2_view(page, app_state):
                     ft.Text("Volver", color=ft.colors.WHITE)
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
-            ),
+            ),             
             )
 
-        #titulo del objetivo 2
+        #titulo del objetivo 1
         txt_objetivo = ft.Text("Segmentación de pacientes", style=ft.TextStyle(size=20, weight="bold", color=ft.colors.WHITE))
         
         #breve descripcion del tema
-        txt_descripcion = ft.Text("Clasificados bajo factores médicos", style=ft.TextStyle(size=14, color=ft.colors.WHITE))
+        txt_descripcion = ft.Text("Clasificación de nivel de riesgo bajo factores médicos", style=ft.TextStyle(size=14, color=ft.colors.WHITE))
         imagen_principal = ft.Container(
                     content=ft.Column(controls=[
                         ft.Image(src=f"/obj2.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,)
                 ]),width=100)
         
         #titulo de formulario
-        txt_formulario = ft.Text("Formulario para Segmentación", style=ft.TextStyle(size=16, color='#333333'))
+        txt_formulario = ft.Text("Formulario para Segmentación", style=ft.TextStyle(size=16, color=color))
 
         #input para el nombre del paciente
         ip_paciente=ft.TextField(
@@ -158,25 +205,22 @@ def objetive2_view(page, app_state):
             hint_text="Nombre del paciente",
             autofocus=True,
             content_padding=0,
-            color="#333333",
+            color=color_hint,
             text_size=14,
             hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color_hint,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
                 ),
             label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
-            selection_color="#333333",
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            cursor_color="#333333",
             fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            border_color="#dddddd"
+            disabled=True,
+            border_color="#cccccc",
+            read_only=True,
+            value=nombre_completo,
         )
 
         #input para la edad
@@ -186,13 +230,14 @@ def objetive2_view(page, app_state):
             prefix_icon=ft.icons.CALENDAR_MONTH,
             hint_text="0",
             content_padding=0,
-            color="#333333",
+            color=color_hint,
+            text_size=14,
             hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color_hint,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             selection_color="#333333",
@@ -200,96 +245,134 @@ def objetive2_view(page, app_state):
                 bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
-            cursor_color="#333333",
             fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            border_color="#dddddd"
+            disabled=True,
+            border_color="#cccccc",
+            read_only=True,
+            value=str(edad),
         )
 
-        #input para el genero
-        ip_genero=ft.Dropdown(
+        #input para la genero
+        ip_genero=ft.TextField(
             label="Género",
-            hint_text="Seleccionar un género",
+            keyboard_type="number",
             prefix_icon=ft.icons.MALE,
-            options=[
-                ft.dropdown.Option("0", "Femenino"),
-                ft.dropdown.Option("1", "Masculino")
-            ],
+            hint_text="0",
             content_padding=0,
-            color="#333333",
+            color=color_hint,
+            text_size=14,
             hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color_hint,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
+                color=color,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             fill_color=ft.colors.WHITE,
-            bgcolor=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            border_color="#dddddd"
+            disabled=True,
+            border_color="#cccccc",
+            read_only=True,
+            value=genero
         )
 
-                #input para la hipertencion
-        ip_hipertension=ft.Dropdown(
-            label="Hipertensión",
-            hint_text="Seleccionar opción",
-            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
-            options=[
-                ft.dropdown.Option("0", "No"),
-                ft.dropdown.Option("1", "Sí")
-            ],
-            content_padding=0,
-            color="#333333",
-            hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            bgcolor=ft.colors.WHITE,
-            border_color="#dddddd")
+        #input para el tipo de trabajo
+        txt_trabajo=ft.Row(
+            [
+                ft.Icon(name=ft.icons.WORK_OUTLINE, color=color_hint),
+                ft.Text("Tipo de Trabajo", color=color)
+               # ft.Icon(name=ft.icons.AUDIOTRACK, color=ft.colors.GREEN_400, size=30),
+            ]
+        )        
+        ip_trabajo = ft.RadioGroup(content=ft.Column([
+            ft.Radio(
+                value="0", 
+                label="Trabajador para el gobierno",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ft.Radio(
+                value="1", 
+                label="Nunca trabajó",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ft.Radio(
+                value="2", 
+                label="Trabajador privado",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ft.Radio(
+                value="3", 
+                label="Trabajador por cuenta propia",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+        
+        #texto para validacion de campo ip_trabajo
+        txt_valid_trabajo=ft.Text()
+
+        #input para la hipertencion
+        txt_hipertension=ft.Row(
+            [
+                ft.Icon(name=ft.icons.MEDICAL_SERVICES_OUTLINED, color=color_hint),
+                ft.Text("Hipertensión", color=color)
+               # ft.Icon(name=ft.icons.AUDIOTRACK, color=ft.colors.GREEN_400, size=30),
+            ]
+        )        
+        ip_hipertension = ft.RadioGroup(content=ft.Column([
+            ft.Radio(
+                value="0", 
+                label="No",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ft.Radio(
+                value="1", 
+                label="Sí",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+        
+        #texto para validacion de campo ip_hipertension
+        txt_valid_hipertension=ft.Text()
 
         #input para la cardiopatia
-        ip_cardiopatia=ft.Dropdown(
-            label="Cardiopatía",
-            hint_text="Seleccionar opción",
-            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
-            options=[
-                ft.dropdown.Option("0", "No"),
-                ft.dropdown.Option("1", "Sí")
-            ],
-            content_padding=0,
-            color="#333333",
-            hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            bgcolor=ft.colors.WHITE,
-            border_color="#dddddd")
+        txt_cardiopatia= ft.Row(
+            [
+                ft.Icon(name=ft.icons.MEDICAL_SERVICES_OUTLINED, color=color_hint),
+                ft.Text("Cardiopatía", color=color)
+               # ft.Icon(name=ft.icons.AUDIOTRACK, color=ft.colors.GREEN_400, size=30),
+            ])
+
+        ip_cardiopatia = ft.RadioGroup(content=ft.Column([
+            ft.Radio(
+                value="0", 
+                label="No",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ft.Radio(
+                value="1", 
+                label="Sí",
+                label_style=ft.TextStyle(
+                color=color,
+                size=14,
+                )),
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+        
+        #texto para validacion de campo ip_cardiopatia
+        txt_valid_cardiopatia=ft.Text()
 
         #input para el nivel de glucosa promedio
         ip_glucosa=ft.TextField(
@@ -298,90 +381,52 @@ def objetive2_view(page, app_state):
             prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             hint_text="0",
             content_padding=0,
-            color="#333333",
+            color=color,
             hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color_hint,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
-            selection_color="#333333",
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            cursor_color="#333333",
             fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            border_color="#dddddd"
+            focused_border_color=color,
+            border_color="#cccccc",
             )
+        
+        #texto para validacion de campo ip_glucosa
+        txt_valid_glucosa=ft.Text()
 
         #input para el IMC
         ip_imc= ft.TextField(
-            label="ICM",
+            label="IMC",
             keyboard_type="number",
             prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
             hint_text="0",
             content_padding=0,
-            color="#333333",
+            color=color,
             hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color_hint,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
+                color=color,  # Color del texto de sugerencia
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
-            selection_color="#333333",
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            cursor_color="#333333",
             fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            border_color="#dddddd"
-            )
+            focused_border_color=color,
+            border_color="#cccccc",)
         
-                #input para el tipo de trabajo
-        ip_trabajo=ft.Dropdown(
-            label="Tipo de Trabajo",
-            hint_text="Seleccionar opción",
-            prefix_icon=ft.icons.WORK_OUTLINE,
-            options=[
-                ft.dropdown.Option("0", "Trabajador para el gobierno"),
-                ft.dropdown.Option("1", "Nunca trabajó"),
-                ft.dropdown.Option("2", "Trabajador privado"),
-                ft.dropdown.Option("3", "Trabajador por cuenta propia"),
-            ],
-            content_padding=0,
-            color="#333333",
-            hint_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color="#dddddd",  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            bgcolor=ft.colors.WHITE,
-            border_color="#dddddd")
+        #texto para validacion de campo ip_imc
+        txt_valid_imc=ft.Text()
 
         #botón -> Diagnosticar
         btn_diagnosticar= ft.FilledButton(
-            text="Segmentar",
+            text="Diagnosticar",
             width=300, 
             height=40,  
-            on_click=diagnosticar,
-            #on_click=ir_home,  #AQUI LLAMAMOS A LA FUNCIÓN QUE NOS PERMITIRÁ OBTENER LA PREDICCIÓN
+            on_click=lambda e: diagnosticar(e),
             style=ft.ButtonStyle(
                 shape=ft.StadiumBorder(),
                 color={
@@ -395,8 +440,6 @@ def objetive2_view(page, app_state):
                 },
             )
             )
-
-        
 
         #etiqueta -> Obtener resultado
         txt_sub_resultado= ft.Text("Resultado Obtenido por factores médicos:", style=ft.TextStyle(size=16, color="#333333"))
@@ -432,68 +475,121 @@ def objetive2_view(page, app_state):
             alignment=ft.alignment.center, 
             #border=ft.border.all()
             )
-
+        
         col_paciente=ft.Container(content=ft.Column([
                 ip_paciente
             ]
             ), width=300, 
-            margin=10, 
+            #margin=ft.margin.only(left=10, top=10, right=10), 
             #border=ft.border.all()
             )
-        
+               
         col_edad=ft.Container(content=ft.Column([
                 ip_edad
             ]
             ), width=300, 
-            margin=10, 
             #border=ft.border.all()
             )
 
         col_genero=ft.Container(content=ft.Column([
-                ip_genero
+                ip_genero,
             ]
             ), width=300, 
-            margin=10, 
             #border=ft.border.all()
             )
-
-        col_hipertension=ft.Container(content=ft.Column([
-                ip_hipertension
+        col_trabajo=ft.Container(content=ft.Column([
+                txt_trabajo,
+                ip_trabajo
             ]
+            ), width=300,
+            padding=15,
+            border=ft.border.all(color="#cccccc"),
+            border_radius=5 
+            #border=ft.border.all()
+            )
+        col_valid_trabajo=ft.Container(content=ft.Row([
+                icon_valid_trabajo,
+                txt_valid_trabajo    
+            ]
+            ), width=300,
+            height=10,
+            padding=5,
+            border_radius=5, 
+            #border=ft.border.all()
+            )
+        col_hipertension=ft.Container(content=ft.Column([
+                txt_hipertension,
+                ip_hipertension
+            ],horizontal_alignment = ft.CrossAxisAlignment.CENTER
             ), width=300, 
-            margin=10, 
+            padding=15,
+            border=ft.border.all(color="#cccccc"),
+            border_radius=5 
+            #border=ft.border.all(),
+            )
+        col_valid_hipertension=ft.Container(content=ft.Row([
+                icon_valid_hipertension,
+                txt_valid_hipertension    
+            ]
+            ), width=300,
+            height=10,
+            padding=5,
+            border_radius=5, 
             #border=ft.border.all()
             )
         col_cardiopatia=ft.Container(content=ft.Column([
+                txt_cardiopatia,
                 ip_cardiopatia
-            ]
-            ), width=300, 
-            margin=10, 
+            ],horizontal_alignment = ft.CrossAxisAlignment.CENTER
+            ), width=300,
+            padding=15,
+            border=ft.border.all(color="#cccccc"),
+            border_radius=5 
             #border=ft.border.all()
             )
+        col_valid_cardiopatia=ft.Container(content=ft.Row([
+                icon_valid_cardiopatia,
+                txt_valid_cardiopatia    
+            ]
+            ), width=300,
+            height=10,
+            padding=5,
+            border_radius=5, 
+            #border=ft.border.all()
+            )
+
         col_glucosa=ft.Container(content=ft.Column([
                 ip_glucosa
             ]
-            ), width=300, 
-            margin=10, 
+            ), width=300,
+            #border=ft.border.all()
+            )
+        col_valid_glucosa=ft.Container(content=ft.Row([
+                icon_valid_glucosa,
+                txt_valid_glucosa    
+            ]
+            ), width=300,
+            height=10,
+            padding=5,
+            border_radius=5, 
             #border=ft.border.all()
             )
         col_imc=ft.Container(content=ft.Column([
                 ip_imc
             ]
-            ), width=300, 
-            margin=10, 
+            ), width=300,
             #border=ft.border.all()
             )
-        
-        col_trabajo=ft.Container(content=ft.Column([
-                ip_trabajo
+        col_valid_imc=ft.Container(content=ft.Row([
+                icon_valid_imc,
+                txt_valid_imc    
             ]
-            ), width=300, 
-            margin=10, 
+            ), width=300,
+            height=10,
+            padding=5,
+            border_radius=5, 
             #border=ft.border.all()
             )
-        
         col_boton=ft.Container(content=ft.Column([
                 btn_diagnosticar
             ]
@@ -502,13 +598,19 @@ def objetive2_view(page, app_state):
             #border=ft.border.all()
             )
 
-        col_resultado=ft.Container(content=ft.Column([
+        col_t_resultado=ft.Container(content=ft.Column([
                 txt_sub_resultado,
+            ]
+            ), width=300,
+            height=40, 
+            margin=ft.margin.only(left=10,top=10,right=10),
+            )
+        col_resultado=ft.Container(content=ft.ListView([
                 prediccion_resultado
             ]
             ), width=300,
             height=150, 
-            margin=10,
+            margin=ft.margin.only(left=10,bottom=10,right=10),
             padding=20, 
             border_radius=10,
             border=ft.border.all(
@@ -516,24 +618,20 @@ def objetive2_view(page, app_state):
                 width=1  # Ancho del borde)
                 )
             )
-
-
         #----------------------------------------------------------------------------------------------------------------------------------------------  
         #CONTAINERS PARA SEPARAR FILAS DE ELEMENTOS
         row_volver_container=ft.Container(content=ft.Column([
                 col_volver
         ]
         ), 
-        bgcolor=ft.colors.BLUE_600,
         width=360,
         border=None,
         )
         row_titulo_container=ft.Container(content=ft.Row([
                 col_derecha,
                 col_izquierda
-        ]
+        ], spacing=0,
         ), 
-        bgcolor=ft.colors.BLUE_600,
         width=360,
         alignment=ft.alignment.center,
         border=None,
@@ -549,60 +647,75 @@ def objetive2_view(page, app_state):
         )
         row_paciente=ft.Container(content=ft.Column([
                 col_paciente
-        ]
+        ], spacing=0
         ),
+        padding=ft.padding.only(left=10, top=10, right=10),  
         alignment=ft.alignment.center, 
         #border=ft.border.all()
         )
-
-        row_edad=ft.Container(content=ft.Column([
-                col_edad
-        ]
-        ),
-        alignment=ft.alignment.center, 
-        #border=ft.border.all()
-        )
-
-        row_genero=ft.Container(content=ft.Column([
+        row_genero=ft.Container(content=ft.Column([       
                 col_genero
-        ]
+        ], spacing=0
         ),
-        alignment=ft.alignment.center, 
+        padding=ft.padding.only(left=10, top=10, right=10), 
+        alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
-        row_hipertension=ft.Container(content=ft.Column([
-                col_hipertension]
+        row_edad=ft.Container(content=ft.Column([         
+                col_edad
+        ], spacing=0
         ),
+        padding=ft.padding.only(left=10, top=10, right=10),  
+        alignment=ft.alignment.center,
+        #border=ft.border.all()
+        )
+        
+        row_trabajo=ft.Container(content=ft.Column([
+                col_trabajo,
+                col_valid_trabajo
+        ], spacing=0
+        ),
+        padding=ft.padding.only(left=10, top=10, right=10),  
+        alignment=ft.alignment.center,
+        #border=ft.border.all()
+        )
+        row_hipertension=ft.Container(content=ft.Column([
+                col_hipertension,
+                col_valid_hipertension
+        ], spacing=0
+        ),
+        padding=ft.padding.only(left=10, top=10, right=10), 
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_cardiopatia=ft.Container(content=ft.Column([
-                col_cardiopatia]
+                col_cardiopatia,
+                col_valid_cardiopatia
+        ], spacing=0
         ),
+        padding=ft.padding.only(left=10, top=10, right=10), 
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_glucosa=ft.Container(content=ft.Column([
-                col_glucosa]
+                col_glucosa,
+                col_valid_glucosa
+        ], spacing=0
         ),
+        padding=ft.padding.only(left=10, top=10, right=10),  
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
         row_imc=ft.Container(content=ft.Column([
-                col_imc]
+                col_imc,
+                col_valid_imc
+        ], spacing=0
         ),
-        alignment=ft.alignment.center,
-        #border=ft.border.all()
-        )
-
-        row_trabajo=ft.Container(content=ft.Column([
-                col_trabajo
-        ]
-        ), 
+        padding=ft.padding.only(left=10, top=10, right=10),  
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
@@ -616,7 +729,8 @@ def objetive2_view(page, app_state):
         #width=360,
         )
         row_resultado=ft.Container(content=ft.Column([
-                col_resultado
+                col_t_resultado,
+                col_resultado,
         ]
         ),
         alignment=ft.alignment.center,
@@ -624,31 +738,31 @@ def objetive2_view(page, app_state):
         width=300,
         )
 
-
-        
         #----------------------------------------------------------------------------------------------------------------------------------------------       
         #CONTAINER PRINCIPAL
 
         row_superior=ft.Container(content=ft.Column([
                 row_volver_container,
-                row_titulo_container,
+                row_titulo_container,              
         ],spacing=0,
-        ), bgcolor=ft.colors.BLUE_600, padding=20,
+        ), 
+        bgcolor=ft.colors.BLUE_600,
+        padding=20,
         )
 
         row_form=ft.Container(content=ft.Column([
                 row_titulo_form,
                 row_paciente,
                 row_edad,
+                #ft.Container(height=1, width=300, margin=20, bgcolor='#cccccc'),
                 row_genero,
+                row_trabajo,
                 row_hipertension,
                 row_cardiopatia,
                 row_glucosa,
                 row_imc,
-                row_trabajo,
                 row_boton,
-                row_resultado
-        ],
+                row_resultado],
                 spacing=0,
                 alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
@@ -659,8 +773,7 @@ def objetive2_view(page, app_state):
                 width=350,
                 alignment=ft.alignment.center,
                 border_radius=20
-
-        )
+                )
 
         principal_container=ft.Container(content=ft.Column([
                 row_superior,
@@ -672,12 +785,13 @@ def objetive2_view(page, app_state):
         ), 
         width=360,
         alignment=ft.alignment.center,
+        #border=ft.border.all(),
         )
-
+        
         objetive2_scrollable = ft.ListView(
         controls=[principal_container],
         expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
-    )
+        )
 
         page.controls.clear()
         page.controls.append(objetive2_scrollable)

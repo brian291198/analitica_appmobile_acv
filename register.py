@@ -207,7 +207,7 @@ def registration_view(page, app_state):
                         )
     celular_field = ft.TextField(label="Celular", prefix_icon=ft.icons.PHONE, width=300, content_padding=5, color="#333333",
                         #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300, border_color=border_textfield,
+                        focused_border_color=ft.colors.BLUE_300, border_color=border_textfield
                         )
 
     # Radio buttons for gender
