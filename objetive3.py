@@ -3,7 +3,7 @@ import requests
 from login import login_view
 from datetime import datetime
 from validation import validate_radiobutton, validate_intervalo
-
+import time
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 3
 def objetive3_view(page, app_state):
@@ -53,6 +53,18 @@ def objetive3_view(page, app_state):
             page.controls.clear()
             app_state.show_home()
             page.update()
+        
+        def seleccionado(e, col_control):
+            value=e.control.value
+            if value:
+                col_control.border=ft.border.all(color=ft.colors.BLUE_400, width=1)
+                page.update()
+                # Espera breve para volver al borde normal
+                time.sleep(0.4)
+                col_control.border = ft.border.all(color=color_hint, width=1)
+                page.update()
+            else:
+                return None
 
         def diagnosticar(e):
         
@@ -174,6 +186,7 @@ def objetive3_view(page, app_state):
 
         color="#404040"
         color_hint="#C3C7CF"
+        border_radius=10
 
         #boton en texto -> < VOLVER
         texto_volver = ft.TextButton(
@@ -224,6 +237,7 @@ def objetive3_view(page, app_state):
             border_color="#cccccc",
             read_only=True,
             value=nombre_completo,
+            border_radius=border_radius,
         )
 
         #input para la edad
@@ -253,6 +267,7 @@ def objetive3_view(page, app_state):
             border_color="#cccccc",
             read_only=True,
             value=str(edad),
+            border_radius=border_radius,
         )
 
         #input para la genero
@@ -281,7 +296,8 @@ def objetive3_view(page, app_state):
             disabled=True,
             border_color="#cccccc",
             read_only=True,
-            value=genero
+            value=genero,
+            border_radius=border_radius,
         )
 
         #input para el Estado de Fumador
@@ -307,6 +323,7 @@ def objetive3_view(page, app_state):
                 size=14,
                 )), 
             ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_fumador),
             )
         
         #texto para validacion de campo ip_fumador
@@ -336,6 +353,7 @@ def objetive3_view(page, app_state):
                 size=14,
                 )), 
             ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_bebedor),
             )
         
         #texto para validacion de campo ip_fumador
@@ -364,6 +382,7 @@ def objetive3_view(page, app_state):
                 size=14,
                 )), 
             ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_fisica),
             )
         
         #texto para validacion de campo ip_fumador
@@ -388,7 +407,9 @@ def objetive3_view(page, app_state):
                 ),
             fill_color=ft.colors.WHITE,
             focused_border_color=ft.colors.BLUE_300,
-            border_color="#dddddd"
+            focused_border_width=1,
+            border_color="#dddddd",
+            border_radius=border_radius,
         )
         
         txt_valid_horas=ft.Text()
@@ -445,6 +466,7 @@ def objetive3_view(page, app_state):
                 size=14,
                 )),
             ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_etnia),
             )
         #texto para validacion de campo ip_etnia
         txt_valid_etnia=ft.Text()
@@ -508,8 +530,20 @@ def objetive3_view(page, app_state):
         col_paciente=ft.Container(content=ft.Column([
                 ip_paciente
             ]
+            ), width=300,
+            #border=ft.border.all()
+            )
+        col_edad=ft.Container(content=ft.Column([
+                ip_edad
+            ]
             ), width=300, 
-            margin=10, 
+            #border=ft.border.all()
+            )
+
+        col_genero=ft.Container(content=ft.Column([
+                ip_genero
+            ]
+            ), width=300, 
             #border=ft.border.all()
             )     
         
@@ -521,7 +555,7 @@ def objetive3_view(page, app_state):
             #margin=ft.margin.only(left=10, top=10, right=10),
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5, 
+            border_radius=border_radius  
             #border=ft.border.all()
             )
         col_valid_fumador=ft.Container(content=ft.Row([
@@ -543,7 +577,7 @@ def objetive3_view(page, app_state):
             #margin=ft.margin.only(left=10, top=10, right=10),
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5, 
+            border_radius=border_radius  
             #border=ft.border.all()
             )
         col_valid_bebedor=ft.Container(content=ft.Row([
@@ -565,7 +599,7 @@ def objetive3_view(page, app_state):
             #margin=ft.margin.only(left=10, top=10, right=10),
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5, 
+            border_radius=border_radius  
             #border=ft.border.all()
             )
         col_valid_fisica=ft.Container(content=ft.Row([
@@ -593,22 +627,6 @@ def objetive3_view(page, app_state):
             padding=5,
             border_radius=5,
         )
-
-        col_edad=ft.Container(content=ft.Column([
-                ip_edad
-            ]
-            ), width=300, 
-            margin=10, 
-            #border=ft.border.all()
-            )
-
-        col_genero=ft.Container(content=ft.Column([
-                ip_genero
-            ]
-            ), width=300, 
-            margin=10, 
-            #border=ft.border.all()
-            )
         
         col_etnia=ft.Container(content=ft.Column([
                 txt_etnia,
@@ -618,7 +636,7 @@ def objetive3_view(page, app_state):
             #margin=ft.margin.only(left=10, top=10, right=10),
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5, 
+            border_radius=border_radius  
             #border=ft.border.all()
             )
         col_valid_etnia=ft.Container(content=ft.Row([
@@ -692,25 +710,32 @@ def objetive3_view(page, app_state):
         #border=ft.border.all()
         )
         row_paciente=ft.Container(content=ft.Column([
-              col_paciente,
-        ]
+                col_paciente
+        ], spacing=0
         ),
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10),
         alignment=ft.alignment.center, 
         #border=ft.border.all()
         )
-        row_edad=ft.Container(content=ft.Column([
-              col_edad,
-        ]
+        row_genero=ft.Container(content=ft.Column([       
+                col_genero
+        ], spacing=0
         ),
-        alignment=ft.alignment.center, 
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10, bottom=10), 
+        alignment=ft.alignment.center,
         #border=ft.border.all()
         )
 
-        row_genero=ft.Container(content=ft.Column([
-              col_genero,
-        ]
+        row_edad=ft.Container(content=ft.Column([         
+                col_edad
+        ], spacing=0
         ),
-        alignment=ft.alignment.center, 
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10),  
+        alignment=ft.alignment.center,
+        #border=ft.border.all()
         )
 
         row_fumador=ft.Container(content=ft.Column([

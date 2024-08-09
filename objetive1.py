@@ -5,6 +5,7 @@ from login import login_view
 from api_whatsapp import message_whatsapp
 from datetime import datetime
 from validation import validate_radiobutton, validate_intervalo
+import time
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
 def objetive1_view(page, app_state):
@@ -57,6 +58,18 @@ def objetive1_view(page, app_state):
             app_state.show_home()
             page.update()
         
+        def seleccionado(e, col_control):
+            value=e.control.value
+            if value:
+                col_control.border=ft.border.all(color=ft.colors.BLUE_400, width=1)
+                page.update()
+                # Espera breve para volver al borde normal
+                time.sleep(0.4)
+                col_control.border = ft.border.all(color=color_hint, width=1)
+                page.update()
+            else:
+                return None
+
         def diagnosticar(e):
 
             # Recoger los valores de los campos del formulario
@@ -216,6 +229,7 @@ def objetive1_view(page, app_state):
         #variables para colores
         color="#404040"
         color_hint="#C3C7CF"
+        border_radius=10
 
         #input pde prueba para ingresar el número de celular que recibirá el mensaje del resultado
         ip_telefono=ft.TextField(
@@ -239,8 +253,10 @@ def objetive1_view(page, app_state):
             cursor_color="#333333",
             fill_color=ft.colors.WHITE,
             focused_border_color=ft.colors.BLUE_300,
+            focused_border_width=1,
             border_color="#cccccc",
-            value=celular
+            value=celular,
+            border_radius=border_radius,
         )
 
 
@@ -294,6 +310,7 @@ def objetive1_view(page, app_state):
             border_color="#cccccc",
             read_only=True,
             value=nombre_completo,
+            border_radius=border_radius,
         )
 
         #input para la genero
@@ -317,7 +334,8 @@ def objetive1_view(page, app_state):
             disabled=True,
             border_color="#cccccc",
             read_only=True,
-            value=genero
+            value=genero,
+            border_radius=border_radius,
         )
 
         #input para la edad
@@ -347,6 +365,7 @@ def objetive1_view(page, app_state):
             border_color="#cccccc",
             read_only=True,
             value=str(edad),
+            border_radius=border_radius,
         )
 
         #input para el tipo de trabajo
@@ -386,7 +405,9 @@ def objetive1_view(page, app_state):
                 color=color,
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_trabajo),
+            )
         
         #texto para validacion de campo ip_trabajo
         txt_valid_trabajo=ft.Text()
@@ -414,7 +435,8 @@ def objetive1_view(page, app_state):
                 color=color,
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_hipertension),)
         
         #texto para validacion de campo ip_hipertension
         txt_valid_hipertension=ft.Text()
@@ -442,58 +464,12 @@ def objetive1_view(page, app_state):
                 color=color,
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_cardiopatia),)
         
         #texto para validacion de campo ip_cardiopatia
         txt_valid_cardiopatia=ft.Text()
 
-        #input para el nivel de glucosa promedio
-        ip_glucosa=ft.TextField(
-            label="Nivel de Glucosa Promedio",
-            keyboard_type="number",
-            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
-            hint_text="0",
-            content_padding=0,
-            color=color,
-            hint_style=ft.TextStyle(
-                color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color=color,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            focused_border_color=color,
-            border_color="#cccccc",
-            )
-        
-        #texto para validacion de campo ip_glucosa
-        txt_valid_glucosa=ft.Text()
-
-        #input para el IMC
-        ip_imc= ft.TextField(
-            label="IMC",
-            keyboard_type="number",
-            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
-            hint_text="0",
-            content_padding=0,
-            color=color,
-            hint_style=ft.TextStyle(
-                color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color=color,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            focused_border_color=color,
-            border_color="#cccccc",)
-        
-        #texto para validacion de campo ip_imc
-        txt_valid_imc=ft.Text()
-        
         #input para el Estado de Fumador
         txt_fumador=ft.Row(
             [
@@ -531,7 +507,59 @@ def objetive1_view(page, app_state):
                 color=color,
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_fumador),)
+
+        #input para el nivel de glucosa promedio
+        ip_glucosa=ft.TextField(
+            label="Nivel de Glucosa Promedio",
+            keyboard_type="number",
+            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
+            hint_text="0",
+            content_padding=0,
+            color=color,
+            hint_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color=color,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            focused_border_width=1,
+            border_color="#cccccc",
+            border_radius=border_radius,
+            )
+        
+        #texto para validacion de campo ip_glucosa
+        txt_valid_glucosa=ft.Text()
+
+        #input para el IMC
+        ip_imc= ft.TextField(
+            label="IMC",
+            keyboard_type="number",
+            prefix_icon=ft.icons.MEDICAL_SERVICES_OUTLINED,
+            hint_text="0",
+            content_padding=0,
+            color=color,
+            hint_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            label_style=ft.TextStyle(
+                color=color,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_border_color=ft.colors.BLUE_300,
+            focused_border_width=1,
+            border_color="#cccccc",
+            border_radius=border_radius,)
+        
+        #texto para validacion de campo ip_imc
+        txt_valid_imc=ft.Text()
         
         #texto para validacion de campo ip_fumador
         txt_valid_fumador=ft.Text()
@@ -593,6 +621,7 @@ def objetive1_view(page, app_state):
         
         col_paciente=ft.Container(content=ft.Column([
                 ip_telefono,
+                ft.Container(),
                 ip_paciente
             ]
             ), width=300, 
@@ -620,7 +649,7 @@ def objetive1_view(page, app_state):
             ), width=300,
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5 
+            border_radius=10 
             #border=ft.border.all()
             )
         col_valid_trabajo=ft.Container(content=ft.Row([
@@ -640,7 +669,7 @@ def objetive1_view(page, app_state):
             ), width=300, 
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5 
+            border_radius=10 
             #border=ft.border.all(),
             )
         col_valid_hipertension=ft.Container(content=ft.Row([
@@ -660,7 +689,7 @@ def objetive1_view(page, app_state):
             ), width=300,
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5 
+            border_radius=10, 
             #border=ft.border.all()
             )
         col_valid_cardiopatia=ft.Container(content=ft.Row([
@@ -680,7 +709,7 @@ def objetive1_view(page, app_state):
             ), width=300, 
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5
+            border_radius=10
             )
         col_valid_fumador=ft.Container(content=ft.Row([
                 icon_valid_fumador,
@@ -743,7 +772,7 @@ def objetive1_view(page, app_state):
                 prediccion_resultado
             ]
             ), width=300,
-            height=150, 
+            height=300, 
             margin=ft.margin.only(left=10,bottom=10,right=10),
             padding=20, 
             border_radius=10,
@@ -783,7 +812,8 @@ def objetive1_view(page, app_state):
                 col_paciente
         ], spacing=0
         ),
-        padding=ft.padding.only(left=10, top=10, right=10),  
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10),
         alignment=ft.alignment.center, 
         #border=ft.border.all()
         )
@@ -791,7 +821,8 @@ def objetive1_view(page, app_state):
                 col_genero
         ], spacing=0
         ),
-        padding=ft.padding.only(left=10, top=10, right=10), 
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10, bottom=10), 
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
@@ -800,7 +831,8 @@ def objetive1_view(page, app_state):
                 col_edad
         ], spacing=0
         ),
-        padding=ft.padding.only(left=10, top=10, right=10),  
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10),  
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )

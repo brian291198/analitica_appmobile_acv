@@ -98,7 +98,8 @@ def home_view(page, app_state):
                 ], spacing=0, alignment="center"), 
                 width=300,
                 padding=15,
-                border_radius=15,
+                border_radius=20,
+                border=ft.border.all(color=color_hint),
                 bgcolor=ft.colors.WHITE,
                 margin=ft.margin.only(bottom=20)
                 #border=ft.border.all()
@@ -113,7 +114,11 @@ def home_view(page, app_state):
             app_state.show_welcome()
             page.update()
 
-#ELEMENTOS DE VISTA HOME
+    #ELEMENTOS DE VISTA HOME
+
+    #variables para colores
+    color="#404040"
+    color_hint="#C3C7CF"
 
     #boton en texto -> < VOLVER
     texto_volver = ft.TextButton(

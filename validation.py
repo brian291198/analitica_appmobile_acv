@@ -78,8 +78,8 @@ def validate_password(page, value, tamano, col_control, text_control, control, i
                     error_textfield(page, col_control, text_control, control, icon, "La contraseña debe tener al menos 8 caracteres.")
                     return "La contraseña debe tener al menos 8 caracteres."
                 elif len(value) > tamano:
-                    error_textfield(page, col_control, text_control, control, icon, "La contraseña debe tener una cantidad de caracteres menor a 100.")
-                    return "La contraseña debe tener una cantidad de caracteres menor a 100."
+                    error_textfield(page, col_control, text_control, control, icon, "La contraseña debe tener menos de 100 caracteres.")
+                    return "La contraseña debe tener menos de 100 caracteres."
                 else:
                     valid_textfield(page, col_control, text_control, control, icon)
                     return None
@@ -99,13 +99,13 @@ def validate_email(page, value, tamano, col_control, text_control, control, icon
                 if len(value) < tamano:     
                     # Verifica que el email tenga exactamente un símbolo de arroba
                     if value.count('@') != 1:
-                        error_textfield(page, col_control, text_control, control, icon, "El correo electrónico debe contener un solo símbolo de arroba.")
-                        return "El correo electrónico debe contener un solo símbolo de arroba."
+                        error_textfield(page, col_control, text_control, control, icon, "El correo debe contener un solo símbolo de arroba.")
+                        return "El correo debe contener un solo símbolo de arroba."
                     else:
                         valid_textfield(page, col_control, text_control, control, icon)
                         return None
                 else:
-                    error_textfield(page, col_control, text_control, control, icon, "El correo electrónico debe contener un solo símbolo de arroba.")
+                    error_textfield(page, col_control, text_control, control, icon, "El campo no puede tener más de 100 caracteres.")
                     return "El campo no puede tener más de 100 caracteres."  
             else:
                 error_textfield(page, col_control, text_control, control, icon, "Formato de correo incorrecto")
@@ -172,6 +172,6 @@ def validate_intervalo(page, value, col_control, text_control, control, icon, mi
                     valid_textfield(page, col_control, text_control, control, icon)
                     return None 
             else:
-                error_textfield(page, col_control, text_control, control, icon, "El campo debe contener solo números enteros o decimales.")
-                return "El campo debe contener solo números enteros o decimales."
+                error_textfield(page, col_control, text_control, control, icon, "Ingrese solo números enteros o decimales.")
+                return "Ingrese solo números enteros o decimales."
 

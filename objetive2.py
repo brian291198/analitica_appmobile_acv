@@ -3,7 +3,7 @@ import requests
 from login import login_view
 from datetime import datetime
 from validation import validate_radiobutton, validate_intervalo
-
+import time
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 2
 def objetive2_view(page, app_state):
@@ -52,6 +52,18 @@ def objetive2_view(page, app_state):
             page.controls.clear()
             app_state.show_home()
             page.update()
+        
+        def seleccionado(e, col_control):
+            value=e.control.value
+            if value:
+                col_control.border=ft.border.all(color=ft.colors.BLUE_400, width=1)
+                page.update()
+                # Espera breve para volver al borde normal
+                time.sleep(0.4)
+                col_control.border = ft.border.all(color=color_hint, width=1)
+                page.update()
+            else:
+                return None
 
         def diagnosticar(e):
             # Recoger los valores de los campos del formulario
@@ -171,6 +183,7 @@ def objetive2_view(page, app_state):
         #variables para colores
         color="#404040"
         color_hint="#C3C7CF"
+        border_radius=10
 
         #boton en texto -> < VOLVER
         texto_volver = ft.TextButton(
@@ -221,6 +234,7 @@ def objetive2_view(page, app_state):
             border_color="#cccccc",
             read_only=True,
             value=nombre_completo,
+            border_radius=border_radius,
         )
 
         #input para la edad
@@ -250,6 +264,7 @@ def objetive2_view(page, app_state):
             border_color="#cccccc",
             read_only=True,
             value=str(edad),
+            border_radius=border_radius,
         )
 
         #input para la genero
@@ -273,7 +288,8 @@ def objetive2_view(page, app_state):
             disabled=True,
             border_color="#cccccc",
             read_only=True,
-            value=genero
+            value=genero,
+            border_radius=border_radius,
         )
 
         #input para el tipo de trabajo
@@ -307,13 +323,14 @@ def objetive2_view(page, app_state):
                 size=14,
                 )),
             ft.Radio(
-                value="3", 
+                value="3",
                 label="Trabajador por cuenta propia",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_trabajo),)
         
         #texto para validacion de campo ip_trabajo
         txt_valid_trabajo=ft.Text()
@@ -341,7 +358,8 @@ def objetive2_view(page, app_state):
                 color=color,
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_hipertension),)
         
         #texto para validacion de campo ip_hipertension
         txt_valid_hipertension=ft.Text()
@@ -369,7 +387,8 @@ def objetive2_view(page, app_state):
                 color=color,
                 size=14,
                 )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),)
+            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
+            on_change=lambda e: seleccionado(e, col_cardiopatia),)
         
         #texto para validacion de campo ip_cardiopatia
         txt_valid_cardiopatia=ft.Text()
@@ -391,8 +410,10 @@ def objetive2_view(page, app_state):
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             fill_color=ft.colors.WHITE,
-            focused_border_color=color,
+            focused_border_color=ft.colors.BLUE_300,
+            focused_border_width=1,
             border_color="#cccccc",
+            border_radius=border_radius,
             )
         
         #texto para validacion de campo ip_glucosa
@@ -415,8 +436,10 @@ def objetive2_view(page, app_state):
                 size=14,  # Tamaño de la fuente del texto de sugerencia
                 ),
             fill_color=ft.colors.WHITE,
-            focused_border_color=color,
-            border_color="#cccccc",)
+            focused_border_color=ft.colors.BLUE_300,
+            focused_border_width=1,
+            border_color="#cccccc",
+            border_radius=border_radius,)
         
         #texto para validacion de campo ip_imc
         txt_valid_imc=ft.Text()
@@ -504,7 +527,7 @@ def objetive2_view(page, app_state):
             ), width=300,
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5 
+            border_radius=border_radius 
             #border=ft.border.all()
             )
         col_valid_trabajo=ft.Container(content=ft.Row([
@@ -524,7 +547,7 @@ def objetive2_view(page, app_state):
             ), width=300, 
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5 
+            border_radius=border_radius 
             #border=ft.border.all(),
             )
         col_valid_hipertension=ft.Container(content=ft.Row([
@@ -544,7 +567,7 @@ def objetive2_view(page, app_state):
             ), width=300,
             padding=15,
             border=ft.border.all(color="#cccccc"),
-            border_radius=5 
+            border_radius=border_radius  
             #border=ft.border.all()
             )
         col_valid_cardiopatia=ft.Container(content=ft.Row([
@@ -612,7 +635,7 @@ def objetive2_view(page, app_state):
             height=150, 
             margin=ft.margin.only(left=10,bottom=10,right=10),
             padding=20, 
-            border_radius=10,
+            border_radius=border_radius,
             border=ft.border.all(
                 color=ft.colors.BLUE_200,  # Color del borde
                 width=1  # Ancho del borde)
@@ -649,7 +672,8 @@ def objetive2_view(page, app_state):
                 col_paciente
         ], spacing=0
         ),
-        padding=ft.padding.only(left=10, top=10, right=10),  
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10),
         alignment=ft.alignment.center, 
         #border=ft.border.all()
         )
@@ -657,7 +681,8 @@ def objetive2_view(page, app_state):
                 col_genero
         ], spacing=0
         ),
-        padding=ft.padding.only(left=10, top=10, right=10), 
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10, bottom=10), 
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
@@ -666,7 +691,8 @@ def objetive2_view(page, app_state):
                 col_edad
         ], spacing=0
         ),
-        padding=ft.padding.only(left=10, top=10, right=10),  
+        padding=ft.padding.only(left=10, top=10, right=10),
+        margin=ft.margin.only(top=10),  
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )

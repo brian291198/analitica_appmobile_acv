@@ -2,6 +2,7 @@ import flet as ft
 import requests
 
 def login_view(page, app_state):
+    page.bgcolor = ft.colors.WHITE
     API_URL = 'http://localhost:8080/login/'
 
     def ir_register(e):
@@ -91,32 +92,62 @@ def login_view(page, app_state):
             page.open(error_alert)
             page.update()
 
+    #variables para colores
+    color="#404040"
+    color_hint="#C3C7CF"
+
     # Elementos de la vista de inicio de sesión
 
-
-    username_field =ft.TextField(
+    username_field=ft.TextField(
             label="Nombre de Usuario",
             prefix_icon=ft.icons.PERSON,
-            width=300, 
-            color="#333333",
-            border=ft.InputBorder.UNDERLINE,
-            filled=True,
+            hint_text="Nombre de Usuario",
+            autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
             fill_color=ft.colors.WHITE,
-            content_padding=5,
+            focused_color=ft.colors.BLUE_500,
+            focused_border_color=ft.colors.BLUE_500,
+            focused_border_width=1,
+            border_color="#cccccc",
+            border_radius=10,
         )
-    password_field =ft.TextField(
+
+    password_field=ft.TextField(
             label="Contraseña",
             prefix_icon=ft.icons.LOCK,
+            hint_text="Contraseña",
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=ft.colors.BLUE_500,
+            focused_border_color=ft.colors.BLUE_500,
+            focused_border_width=1,
+            border_color="#cccccc",
+            border_radius=10,
             password=True,
             can_reveal_password=True,
-            width=300, 
-            color="#333333",
-            border=ft.InputBorder.UNDERLINE,
-            filled=True,
-            fill_color=ft.colors.WHITE,
-            content_padding=5,
         )
-    
 
     login_button = ft.FilledButton(
         text="Iniciar Sesión",
