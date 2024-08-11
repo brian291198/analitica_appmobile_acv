@@ -3,9 +3,12 @@ import flet as ft
 import requests
 import threading
 import re
+from styles import color, color_hint, color_primary, color_secondary, color_hovered
 from validation import validate_texto, validate_password, validate_email, validate_celular, validate_radiobutton, validate_fecha_nacimiento
 
 global paciente_data, user_data
+
+#(~!@#$%^&*()-_+=[]{}\:;'"<>,.?/)
 
 def registration_view(page, app_state):
     API_URL = 'http://localhost:8080/paciente/register/'
@@ -179,35 +182,155 @@ def registration_view(page, app_state):
     #borde de textfields:
     border_textfield="#777777"
 
+
     # Elementos del formulario de registro
-    username_field = ft.TextField(label="Nombre de Usuario", prefix_icon=ft.icons.PERSON, width=300, content_padding=5, color="#333333",
-                        #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300,border_color=border_textfield,
+    username_field = ft.TextField(label="Nombre de Usuario", prefix_icon=ft.icons.PERSON, width=300, 
+            autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10,
                         )
     app_state.username_fiel=username_field
-    password_field = ft.TextField(label="Contraseña", prefix_icon=ft.icons.LOCK, password=True, can_reveal_password=True, width=300, content_padding=5, color="#333333",
-                        #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300,border_color=border_textfield,
+    password_field = ft.TextField(label="Contraseña", prefix_icon=ft.icons.LOCK, password=True, can_reveal_password=True, width=300, autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10,
                         )
-    nombres_field = ft.TextField(label="Nombres", prefix_icon=ft.icons.PERSON, width=300, content_padding=5, color="#333333",
-                        #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300, border_color=border_textfield, capitalization=ft.TextCapitalization.WORDS,
+    nombres_field = ft.TextField(label="Nombres", prefix_icon=ft.icons.PERSON, width=300, autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10,
+            capitalization=ft.TextCapitalization.WORDS,
                         )
-    apPaterno_field = ft.TextField(label="Apellido Paterno", prefix_icon=ft.icons.PERSON, width=300, content_padding=5, color="#333333",
-                        #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300, border_color=border_textfield, capitalization=ft.TextCapitalization.WORDS,
+    apPaterno_field = ft.TextField(label="Apellido Paterno", prefix_icon=ft.icons.PERSON, width=300, autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10,
+            capitalization=ft.TextCapitalization.WORDS,
                         )
-    apMaterno_field = ft.TextField(label="Apellido Materno", prefix_icon=ft.icons.PERSON, width=300, content_padding=5, color="#333333",
-                        #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300,border_color=border_textfield, capitalization=ft.TextCapitalization.WORDS,
+    apMaterno_field = ft.TextField(label="Apellido Materno", prefix_icon=ft.icons.PERSON, width=300, 
+            autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10, 
+            capitalization=ft.TextCapitalization.WORDS,
                         )
-    email_field = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, width=300, content_padding=5, color="#333333",
-                        #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300, border_color=border_textfield,
+    email_field = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, width=300, 
+            autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10,
                         )
-    celular_field = ft.TextField(label="Celular", prefix_icon=ft.icons.PHONE, width=300, content_padding=5, color="#333333",
-                        #fill_color=ft.colors.WHITE,
-                        focused_border_color=ft.colors.BLUE_300, border_color=border_textfield
+    celular_field = ft.TextField(label="Celular", prefix_icon=ft.icons.PHONE, width=300, 
+            autofocus=True,
+            content_padding=0,
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10,
                         )
 
     # Radio buttons for gender
@@ -240,20 +363,39 @@ def registration_view(page, app_state):
             ), width=300,
             #margin=ft.margin.only(left=10, top=10, right=10),
             padding=15,
-            border=ft.border.all(color=border_textfield),
-            border_radius=5)
+            border=ft.border.all(color=color_hint),
+            border_radius=10)
     fecha_nacimiento_field = ft.TextField(
         label="Nacimiento",
         width=180,  # Ajusta el ancho del campo de texto según sea necesario
         read_only=True,
-        content_padding=5, color="#333333",
-        #fill_color=ft.colors.WHITE,
-        focused_border_color=ft.colors.BLUE_300,
-        border_color=border_textfield)
+        autofocus=True,
+            content_padding=ft.padding.only(left=10),
+            color=color,
+            #text_size=14,
+            hint_style=ft.TextStyle(
+                #color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                weight="normal"
+                ),
+            label_style=ft.TextStyle(
+                color=color_hint,  # Color del texto de sugerencia
+                size=14,  # Tamaño de la fuente del texto de sugerencia
+                ),
+            fill_color=ft.colors.WHITE,
+            focused_color=color_primary,
+            focused_border_color=color_primary,
+            focused_border_width=1,
+            border_color=color_hint,
+            border_radius=10,)
+    
+
+
+
     fecha_nacimiento_button = ft.FilledButton(
         "Fecha",
         icon=ft.icons.CALENDAR_MONTH,
-        icon_color="#dddddd",  # Cambia el color del ícono
+        icon_color=color_primary,  # Cambia el color del ícono
         on_click=lambda e: page.open(
             ft.DatePicker(
                 first_date=datetime(year=1920, month=1, day=1),
@@ -263,17 +405,18 @@ def registration_view(page, app_state):
         width=110,
         style=ft.ButtonStyle(
             color={
-                ft.ControlState.DEFAULT: "#dddddd", 
-                ft.ControlState.HOVERED: "#dddddd",  
+                ft.ControlState.DEFAULT: color_primary, 
+                ft.ControlState.HOVERED: color_primary,  
             },
             bgcolor={
-                ft.ControlState.DEFAULT: "#777777",  # Color de fondo por defecto
-                ft.ControlState.HOVERED: "#999999",  # Color de fondo al pasar el ratón
+                ft.ControlState.HOVERED: color_secondary,
+                ft.ControlState.DEFAULT: color_secondary,
             },))
     fecha_nacimiento_row = ft.Row(
         controls=[fecha_nacimiento_button,fecha_nacimiento_field],
         alignment=ft.MainAxisAlignment.CENTER,  # Alineación horizontal
         vertical_alignment=ft.CrossAxisAlignment.CENTER)# Alineación vertical
+    
     register_button = ft.FilledButton(
         text="Registrar",
         width=300,
@@ -287,8 +430,8 @@ def registration_view(page, app_state):
                 ft.ControlState.DEFAULT: ft.colors.WHITE,
             },
             bgcolor={
-                ft.ControlState.HOVERED: ft.colors.BLUE_300,
-                ft.ControlState.DEFAULT: ft.colors.BLUE_600,
+                ft.ControlState.HOVERED: color_hovered,
+                ft.ControlState.DEFAULT: color_primary,
             },))
     back_button = ft.TextButton(
         text="Regresar",
@@ -302,12 +445,8 @@ def registration_view(page, app_state):
                 ft.ControlState.DEFAULT: "#333333",
             },
             bgcolor={
-                ft.ControlState.HOVERED: ft.colors.TRANSPARENT,
-                ft.ControlState.DEFAULT: ft.colors.TRANSPARENT,
-            },
-            side={
-                    ft.ControlState.DEFAULT: ft.BorderSide(1, "#333333"),
-                    ft.ControlState.HOVERED: ft.BorderSide(2, "#0165BD"),
+                ft.ControlState.HOVERED: color_secondary,
+                ft.ControlState.DEFAULT: color_secondary,
             },))
     #textos para validacion de campos----------------------------------------------------------------------------------------------------------
     txt_valid_username=ft.Text()
@@ -484,7 +623,7 @@ def registration_view(page, app_state):
     
     botones = ft.Container(
         content=ft.Column(controls=[register_button, back_button], alignment=ft.MainAxisAlignment.CENTER),
-        width=300, margin=ft.margin.only(top=20))
+        width=300)
 
     # Container principal de la vista de registro
     contenedor_principal = ft.Container(
@@ -495,9 +634,9 @@ def registration_view(page, app_state):
                       botones],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        ),
+        ),margin=ft.margin.only(bottom=30),
         expand=True,
-        width=400)
+        width=360)
 
     content_scrollable = ft.ListView(
         controls=[contenedor_principal],

@@ -219,9 +219,6 @@ def chatbot(page, app_state):
         )
 
 
-
-    page.controls.clear()
     page.controls.append(principal_container)
-
     page.update()
 

@@ -6,9 +6,13 @@ from api_whatsapp import message_whatsapp
 from datetime import datetime
 from validation import validate_radiobutton, validate_intervalo
 import time
+from styles import color, color_hint, color_primary, color_secondary, color_hovered
+from menubar import menubar
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
 def objetive1_view(page, app_state):
+        page.padding=0
+
         if not app_state.token:
         # Si no hay token, redirigir al inicio de sesión
             page.controls.clear()
@@ -20,9 +24,6 @@ def objetive1_view(page, app_state):
 
         global prediccion_resultado  
         API_URL = 'http://127.0.0.1:8080/api/acv1/'
-
-        page.controls.clear()
-        page.padding=0
         
         #----------------------------------------------------------------------------------------------------------------------------------------------
        
@@ -53,8 +54,11 @@ def objetive1_view(page, app_state):
                 if error:
                     errores.append(f"Error en {key}: {error}")
 
-        def accion_volver_home(e):
+        def accion_volver_home(e, page, app_state):
             page.controls.clear()
+            menu_bar=menubar(page, app_state)
+            page.controls.append(menu_bar)
+            page.controls.append(ft.Container(height=1, bgcolor=color_hint, width=300))
             app_state.show_home()
             page.update()
         
@@ -185,6 +189,8 @@ def objetive1_view(page, app_state):
                     print(f"Ocurrió un error inesperado: {e}")
                     prediccion_resultado.value = f"Ocurrió un error inesperado: {e}"
 
+        
+
         #----------------------------------------------------------------------------------------------------------------------------------------------
          
              #OBTENER DATOS DEL PACIENTE
@@ -263,7 +269,7 @@ def objetive1_view(page, app_state):
 
         #boton en texto -> < VOLVER
         texto_volver = ft.TextButton(
-            on_click=accion_volver_home,
+            on_click=lambda e: accion_volver_home(e, page, app_state),
             content=ft.Row(
                 [
                     ft.Icon(name=ft.icons.ARROW_BACK_IOS_SHARP, color=ft.colors.WHITE, size=10),
@@ -578,9 +584,9 @@ def objetive1_view(page, app_state):
                     ft.ControlState.DEFAULT: ft.colors.WHITE,
                 },
                 bgcolor={
-                    ft.ControlState.HOVERED: ft.colors.BLUE_300,
-                    ft.ControlState.DEFAULT: ft.colors.BLUE_600,
-                },
+                ft.ControlState.HOVERED: color_hovered,
+                ft.ControlState.DEFAULT: color_primary,
+            },
             )
             )
 
@@ -588,7 +594,7 @@ def objetive1_view(page, app_state):
         txt_sub_resultado= ft.Text("Resultado Obtenido:", style=ft.TextStyle(size=16, color="#333333"))
 
         #text, para mostrar el resultado de predicción
-        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=15, color=ft.colors.BLUE_600))
+        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=15, color=color_primary))
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -597,8 +603,7 @@ def objetive1_view(page, app_state):
                 texto_volver
             ], alignment=ft.MainAxisAlignment.END
             ), width=360, 
-            margin=5, 
-            #border=ft.border.all()
+            margin=ft.margin.only(bottom=5, right=5), 
             )
         
         col_derecha=ft.Container(content=ft.Column([
@@ -922,8 +927,8 @@ def objetive1_view(page, app_state):
                 row_titulo_container,              
         ],spacing=0,
         ), 
-        bgcolor=ft.colors.BLUE_600,
-        padding=20,
+        bgcolor=color_primary,
+        padding=ft.padding.only(left=20, top=10, bottom=20, right=20),
         )
 
         row_form=ft.Container(content=ft.Column([
@@ -945,7 +950,7 @@ def objetive1_view(page, app_state):
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
                 ),
                 bgcolor=ft.colors.WHITE,
-                margin=15,
+                margin=10,
                 padding=10,
                 width=350,
                 alignment=ft.alignment.center,
@@ -969,7 +974,7 @@ def objetive1_view(page, app_state):
         expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
         )
 
-        page.controls.clear()
+        #page.controls.clear()
         page.controls.append(objetive1_scrollable)
         page.update()
 

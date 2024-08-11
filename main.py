@@ -9,6 +9,7 @@ from ia_chatbot import chatbot
 from login import login_view
 from register import registration_view
 
+
 #administrar rutas de la APP
 class AppState:
     def __init__(self):
@@ -50,12 +51,16 @@ class AppState:
 
 
 def main (page: ft.Page):
+   
 
     #Configuraciones de la interfaz en general
     page.title = "App de predicción de ACV"
     page.window.width = 360  # Ajusta esto según el dispositivo
     page.window.height = 720
     page.bgcolor = "#dddddd"
+    page.padding = 0
+    page.spacing = 0
+    
 
 
     page.fonts={

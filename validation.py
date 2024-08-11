@@ -175,3 +175,31 @@ def validate_intervalo(page, value, col_control, text_control, control, icon, mi
                 error_textfield(page, col_control, text_control, control, icon, "Ingrese solo números enteros o decimales.")
                 return "Ingrese solo números enteros o decimales."
 
+def validate_login(page, value, col_control, text_control, control, icon):
+            color="#404040"
+            color_hint="#C3C7CF"
+            if not value:
+                col_control.height=40
+                text_control.value= "El campo no puede estar vacío."
+                text_control.color=ft.colors.RED_300
+                text_control.size=12
+                control.border_color = ft.colors.RED_300
+                control.focused_border_color = ft.colors.RED_300
+                icon.name=ft.icons.ERROR_OUTLINE_ROUNDED
+                icon.color=ft.colors.RED_300
+                icon.size=15
+                page.update()
+                return "El campo no puede estar vacío."
+            else:
+                col_control.height=10
+                text_control.value= ""
+                text_control.color="#404040"
+                text_control.size=12
+                control.focused_color = "#0335be"
+                control.border_color = "#C3C7CF"
+                control.focused_border_color = "#0335be"
+                icon.name=""
+                icon.color="#C3C7CF"
+                icon.size=None
+                page.update()
+                return None

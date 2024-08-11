@@ -25,7 +25,7 @@ NeuroIA - ACV """
 def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, mensaje3, telefono, w_genero, w_edad, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, w_glucosa, w_imc):
 
             # Definir el token de acceso de Facebook y el identificador de número de teléfono
-            token = 'EAB0AiAJlz8MBO2P9g3t4y0rxkZAa1QGXnnaB9l4f3qAOFGHcPcZC2N5viIQ82PczuCzPeY88Iwwk8emM3ouDxYjnFuPeoa6F7GZAyUbeDZCh9I6Xw6ei8uSDJldEohLrZCcZA6xBdSZCEt0oaNSjbmCA12vTnbKkdVrpyOdXVrFayC6ANLVPrpEnW78oyUfzr9ZBcwILpMjxo8XtpXvkIEEZD'
+            token = 'EAB0AiAJlz8MBO0WnZBynl8LBgImKDbzgwZCDJ8CTeHma5ki8vJziNqp7dnKYdyyMLGAVPEvNnZBGVd3RwIVUZAd0Ku75ZBdEh1Pfe1v4HUZAtN9BBNwksnP897kwOHAY4n81gm7SecFFL1ZAIMIZCxVf55zCCjFrxO14Po64ypS6UIghE4DtANe8OM8mxS6puE6TQFM32G8lCWYti5lAxbMZD'
             
             id_numero_telefono = '369274782941272'
 

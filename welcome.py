@@ -1,6 +1,8 @@
 import flet as ft
 from flet import *
 from login import login_view
+from styles import color, color_hint, color_primary, color_secondary, color_hovered
+from menubar import menubar
 
 #VISTA PRINCIPAL
 def welcome_view (page, app_state):
@@ -11,17 +13,15 @@ def welcome_view (page, app_state):
         login_view(page, app_state)
         page.update()
         return
-        
+
     username = app_state.user_data.get('username', 'Usuario')
 
-    """ if isinstance(app_state.paciente_data, dict):
-            for key, value in app_state.paciente_data.items():
-                print(f"{key}: {value}")
-    else:
-            print("user_data no es un diccionario.") """
 
-    def ir_home(e):
+    def ir_home(e, page, app_state):
         page.controls.clear()
+        menu_bar=menubar(page, app_state)
+        page.controls.append(menu_bar)
+        page.controls.append(ft.Container(height=1, bgcolor=color_hint, width=300))
         app_state.show_home()
         page.update()
 
@@ -53,7 +53,7 @@ def welcome_view (page, app_state):
         text="Continuar",
         width=300, 
         height=40,  
-        on_click=ir_home,
+        on_click=lambda e: ir_home(e, page, app_state),
         style=ft.ButtonStyle(
             shape=ft.StadiumBorder(),
             color={
@@ -62,11 +62,12 @@ def welcome_view (page, app_state):
                 ft.ControlState.DEFAULT: ft.colors.WHITE,
             },
             bgcolor={
-                ft.ControlState.HOVERED: ft.colors.TRANSPARENT,
-                ft.ControlState.DEFAULT: "#0165BD",
+                ft.ControlState.HOVERED: color_hovered,
+                ft.ControlState.DEFAULT: color_primary,
             }
         )
         )
+    
     
     #CONTAINERS CON ELEMENTOS
     separador = ft.Container(
