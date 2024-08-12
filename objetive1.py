@@ -6,7 +6,7 @@ from api_whatsapp import message_whatsapp
 from datetime import datetime
 from validation import validate_radiobutton, validate_intervalo
 import time
-from styles import color, color_hint, color_primary, color_secondary, color_hovered
+from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error
 from menubar import menubar
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
@@ -93,6 +93,30 @@ def objetive1_view(page, app_state):
 
             # Lista para errores
             errores = []
+
+            #Aspecto de carga
+            loading = ft.AlertDialog(
+                    #title=ft.Text("Error", color=ft.colors.RED),
+                    #content=ft.Text(list_errores, color=ft.colors.RED),
+                    content=ft.Container(
+                                width=page.width,
+                                height=page.height,
+                                alignment=ft.alignment.center,  # Centrar el contenido (el indicador de carga)
+                                content=ft.CupertinoActivityIndicator(
+                                    radius=20,
+                                    color=ft.colors.WHITE,
+                                    animating=True,
+                                ),
+                                visible=True,  # Inicia oculto
+                            ),
+                    bgcolor=ft.colors.TRANSPARENT,
+                    shape=ft.RoundedRectangleBorder(10)
+                )
+            page.open(loading)
+            time.sleep(0.5)
+            page.close(loading)
+            page.update()
+            
             #Llamada al método para validaciones
             filtro_valid_objetive1(page, datos_values, datos_keys, errores)
 
@@ -100,20 +124,19 @@ def objetive1_view(page, app_state):
 
             list_errores="\n".join(errores)
 
-
             if errores:
-                error_alert_objetive1 = ft.AlertDialog(
+                alert_error = ft.AlertDialog(
                     title=ft.Text("Error", color=ft.colors.RED),
                     content=ft.Text(list_errores, color=ft.colors.RED),
                     bgcolor=ft.colors.WHITE,
                     shape=ft.RoundedRectangleBorder(10)
                 )
-                page.open(error_alert_objetive1)
-
+                page.open(alert_error)
                 # Imprimir los datos en la consola
                 print(datos)
 
-            else:   
+            else: 
+
                 headers = {
                         'Authorization': f'Token {token}',
                         'Content-Type': 'application/json'}
@@ -122,6 +145,18 @@ def objetive1_view(page, app_state):
     
                     response = requests.post(API_URL, json=datos, headers=headers)
                     if response.status_code == 201:
+                        aprobado=ft.Container(content=ft.Row([
+                            ft.Icon(name=ft.icons.CHECK_CIRCLE_ROUNDED,color=color_check, size=30),
+                            ft.Text("Predicción Realizada", color=color, size=14)
+                        ], alignment=ft.MainAxisAlignment.CENTER, vertical_alignment=ft.CrossAxisAlignment.CENTER))
+                        alert_aprobado = ft.AlertDialog(
+                            content=aprobado,
+                            bgcolor=ft.colors.WHITE,
+                            shape=ft.RoundedRectangleBorder(10), 
+                        )
+                        page.open(alert_aprobado)
+                        time.sleep(1.5)
+                        page.close(alert_aprobado)
                         response_json = response.json()
                         
                         prediction_value = response_json.get('prediction', [0])[0]

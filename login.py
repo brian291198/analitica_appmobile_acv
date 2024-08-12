@@ -1,7 +1,7 @@
 import flet as ft
 import requests
 from validation import validate_login
-from styles import color, color_hint, color_primary, color_secondary, color_hovered
+from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error
 import time
 
 def login_view(page, app_state):
@@ -56,43 +56,28 @@ def login_view(page, app_state):
                 page.open(error_alert)
                 page.update()
             else:
-                # Validar que los campos no estén vacíos
-                if not username.strip() or not password.strip():
-                    error_alert = ft.AlertDialog(
-                        title=ft.Text("Error", color=ft.colors.RED),
-                        content=ft.Text("Por favor, complete todos los campos.", color=ft.colors.RED),
-                        # actions=[ft.TextButton(text="Aceptar", on_click=lambda e: page.close(error_alert))],
-                        bgcolor=ft.colors.WHITE,
-                        shape=ft.RoundedRectangleBorder(10)
-                    )
-                    page.open(error_alert)
-                    page.update()
-                    return
 
                 headers = {'Content-Type': 'application/json'}
-
-                # Mostrar mensaje de carga
-                loading_dialog = ft.AlertDialog(
-                    title=ft.Text("Cargando...", color=ft.colors.BLACK),
-                    content=ft.Text("Por favor, espere mientras se procesa su solicitud.", color=ft.colors.BLACK),
-                    actions=[],
-                    bgcolor=ft.colors.WHITE,
-                    shape=ft.RoundedRectangleBorder(10)
-                )
-                """ page.open(loading_dialog)
-                page.update() """
   
                 contenedor_stack.controls.append(overlay)
                 overlay.visible=True
                 page.update()
-                time.sleep(1)
+                time.sleep(0.5)
 
                 try:
                     response = requests.post(API_URL, json=datos, headers=headers)
                     overlay.visible=False
                     page.update()
-                    #page.close(loading_dialog)
                     if response.status_code == 200:
+                        #icono de aprobado
+                        aprobado = ft.AlertDialog(
+                            content=ft.Icon(name=ft.icons.CHECK_CIRCLE_ROUNDED, color=color_check, size=40),
+                            bgcolor=ft.colors.TRANSPARENT,)
+                        page.open(aprobado)
+                        time.sleep(0.5)
+                        page.close(aprobado) 
+                        page.update() 
+                        #obtenere datos
                         response_json = response.json()
                         token = response_json.get('token')
                         user_data = response_json.get('user')
@@ -110,10 +95,6 @@ def login_view(page, app_state):
                     else:
                         # Mostrar un mensaje de error en la interfaz
                         error_message = response.json().get('message', 'Error desconocido')
-
-                        def close_error_dialog(e):
-                            page.close(error_alert)
-                            page.update()
 
                         error_alert = ft.AlertDialog(
                             title=ft.Text("Error de Inicio de Sesión", color=ft.colors.RED_300),

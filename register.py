@@ -442,9 +442,9 @@ def registration_view(page, app_state):
         style=ft.ButtonStyle(
             shape=ft.StadiumBorder(),
             color={
-                ft.ControlState.HOVERED: "#0165BD",
-                ft.ControlState.FOCUSED: "#0165BD",
-                ft.ControlState.DEFAULT: "#333333",
+                ft.ControlState.HOVERED: color_primary,
+                ft.ControlState.FOCUSED: color_primary,
+                ft.ControlState.DEFAULT: color,
             },
             bgcolor={
                 ft.ControlState.HOVERED: color_secondary,
