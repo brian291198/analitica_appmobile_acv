@@ -21,7 +21,7 @@ def welcome_view (page, app_state):
         page.controls.clear()
         menu_bar=menubar(page, app_state)
         page.controls.append(menu_bar)
-        page.controls.append(ft.Container(height=1, bgcolor=color_hint, width=300))
+        page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
         app_state.show_home()
         page.update()
 
@@ -30,21 +30,24 @@ def welcome_view (page, app_state):
     t_p=ft.Text(
         spans=[
                 ft.TextSpan(
-                    f"Bienvenido {username} a la mejor APP para predecir el riesgo \nde ",
-                    ft.TextStyle(size=30, color='#333333', font_family="RoundsNeue-1", height=1)),
+                    f"Bienvenido {username} a ",
+                    ft.TextStyle(size=30, color='#333333', font_family="LTSaeada-1", height=1)),
                 ft.TextSpan(
-                    "ACV",
+                    "NEURO IA-ACV, ",
                     ft.TextStyle(
                         font_family="RoundsNeue-4",
-                        size=40,
+                        size=30,
                         height=1,
                         weight=ft.FontWeight.BOLD,
                         foreground=ft.Paint(
                             gradient=ft.PaintLinearGradient(
-                                (0, 20), (150, 20), ["#002387", ft.colors.LIGHT_BLUE]
+                                (0, 20), (150, 20), [color_primary, ft.colors.LIGHT_BLUE]
                             )
                         ),
                     ),),
+                    ft.TextSpan(
+                    f"la mejor APP para predecir el riesgo de ACV.",
+                    ft.TextStyle(size=30, color='#333333', font_family="LTSaeada-1", height=1)),
                         
         ])
     t_s = ft.Text(value='"Cuida tu futuro hoy"',size=15, color='#333333', font_family="RoundsNeue-1")

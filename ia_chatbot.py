@@ -1,6 +1,7 @@
 import flet as ft
 import openai
 import time
+from styles import color, color_hint, color_primary, color_secondary, color_hovered
 
 
 
@@ -186,39 +187,38 @@ def chatbot(page, app_state):
                 )
 
     principal_container=ft.Container(content=ft.Column([
-                ft.Text(spans=[
-                ft.TextSpan(
-                    "ChatBOT",
-                    ft.TextStyle(
-                        font_family="LTSaeada-5",
-                        size=28,
-                        weight=ft.FontWeight.BOLD,
-                        foreground=ft.Paint(
-                            gradient=ft.PaintLinearGradient(
-                                (0, 0), (200, 0), [ft.colors.BLUE_700, ft.colors.LIGHT_BLUE_400]
-                            )
-                        ),
-                    ),),
-                        
-                ]),
-                ft.Container(height=1, width=300, margin=5, bgcolor='#cccccc'),
                 col_chat,
-                col_prompt
         ],
         spacing=0,
         alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
         ), 
+        margin=ft.margin.only(left=20, right=20, top=10),
         padding=ft.padding.only(top=10),
-        width=340,
-        height=580,
+        height=500,
         alignment=ft.alignment.center,
         border_radius=10,
         bgcolor=ft.colors.WHITE,
-        #border=ft.border.all(),
         )
+    
 
+    titulo_chart=ft.Text("ChatBOT", size=28,font_family="LTSaeada-5", weight=ft.FontWeight.BOLD, color=color_primary)
 
-    page.controls.append(principal_container)
+    row_titulo_chatbot=ft.Container(content=ft.Column([
+        titulo_chart,
+    ],horizontal_alignment=ft.CrossAxisAlignment.CENTER,),padding=ft.padding.only(top=20, bottom=10),)
+
+    chatbot_scrollable = ft.ListView(
+        controls=[principal_container],
+        expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
+        )
+    row_button_prompt=ft.Container(content=ft.Column([
+        col_prompt
+    ],horizontal_alignment=ft.CrossAxisAlignment.CENTER,),margin=ft.margin.only(left=10, top=10, right=10, bottom=30),)
+
+    #page.controls.clear()
+    page.controls.append(row_titulo_chatbot)
+    page.controls.append(chatbot_scrollable)
+    page.controls.append(row_button_prompt)
     page.update()
 

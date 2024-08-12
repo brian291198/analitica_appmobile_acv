@@ -8,7 +8,8 @@ from objetive3 import objetive3_view
 from ia_chatbot import chatbot
 from login import login_view
 from register import registration_view
-
+from view_data_diagnostico import view_data_diagnostico
+from chart_diagnostico import view_chart
 
 #administrar rutas de la APP
 class AppState:
@@ -33,21 +34,30 @@ class AppState:
     def show_welcome(self):
         if self.page:
             welcome_view(self.page, self)
-    
+
     def show_objetive1(self):
         if self.page:
-            objetive1_view(self.page, self)
-            
+            objetive1_view(self.page, self)  
+
     def show_objetive2(self):
         if self.page:
             objetive2_view(self.page, self)
-    
+
     def show_objetive3(self):
         if self.page:
             objetive3_view(self.page, self)
+
     def show_chatbot(self):
         if self.page:
             chatbot(self.page, self)
+            
+    def show_data_diagnostico(self):
+        if self.page:
+            view_data_diagnostico(self.page, self)
+            
+    def show_chart(self):
+        if self.page:
+            view_chart(self.page, self)
 
 
 def main (page: ft.Page):

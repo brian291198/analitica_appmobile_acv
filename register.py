@@ -367,7 +367,7 @@ def registration_view(page, app_state):
             border_radius=10)
     fecha_nacimiento_field = ft.TextField(
         label="Nacimiento",
-        width=180,  # Ajusta el ancho del campo de texto según sea necesario
+        width=150,  # Ajusta el ancho del campo de texto según sea necesario
         read_only=True,
         autofocus=True,
             content_padding=ft.padding.only(left=10),
@@ -412,10 +412,12 @@ def registration_view(page, app_state):
                 ft.ControlState.HOVERED: color_secondary,
                 ft.ControlState.DEFAULT: color_secondary,
             },))
-    fecha_nacimiento_row = ft.Row(
-        controls=[fecha_nacimiento_button,fecha_nacimiento_field],
-        alignment=ft.MainAxisAlignment.CENTER,  # Alineación horizontal
-        vertical_alignment=ft.CrossAxisAlignment.CENTER)# Alineación vertical
+
+
+    fecha_nacimiento_row = ft.Container(content=ft.Row(
+        [fecha_nacimiento_button,fecha_nacimiento_field],
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Alineación horizontal
+        vertical_alignment=ft.CrossAxisAlignment.CENTER),)# Alineación vertical
     
     register_button = ft.FilledButton(
         text="Registrar",
@@ -595,16 +597,15 @@ def registration_view(page, app_state):
         alignment=ft.alignment.center)    
 
     # Containers con elementos
-    separador = ft.Container(width=300, height=20)
-    titulo_principal = ft.Container(
-        content=ft.Text(
-            spans=[
-                ft.TextSpan(
-                    "Formulario de Registro",
-                    ft.TextStyle(size=20, color='#333333')),
-            ],),
-        margin=ft.margin.only(bottom=20)  # Margen inferior para separar del formulario
-    )
+
+    titulo_principal=ft.Container(content=ft.Column([       
+        ft.Text("Formulario de Registro",size=20, color=ft.colors.WHITE),
+        ft.Text("Ingrese los datos requeridos para crear una nueva cuenta.",size=10, color=ft.colors.WHITE)
+        ], spacing=0, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+        #padding=ft.padding.only(top=10), 
+        alignment=ft.alignment.center, margin=ft.margin.only(top=40))
+
+
     campos_formulario = ft.Container(
         content=ft.Column(controls=[
             row_nombres, 
@@ -619,28 +620,47 @@ def registration_view(page, app_state):
         ], alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
-        width=300)
+        width=300,
+        padding=ft.padding.only(top=30))
     
     botones = ft.Container(
         content=ft.Column(controls=[register_button, back_button], alignment=ft.MainAxisAlignment.CENTER),
         width=300)
 
+    contenedor_fondo=ft.Container(width=2000, height=300, bgcolor=color_primary)
+
     # Container principal de la vista de registro
     contenedor_principal = ft.Container(
         content=ft.Column(
-            controls=[separador, 
-                      titulo_principal, 
+            controls=[
                       campos_formulario, 
                       botones],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        ),margin=ft.margin.only(bottom=30),
+        ),margin=ft.margin.only(top=100, left=20, right=20, bottom=30),
+        padding=ft.padding.only( left=20, right=20, bottom=20),
         expand=True,
-        width=360)
+        width=400,
+        border_radius=10,
+        bgcolor=ft.colors.WHITE,
+        shadow=ft.BoxShadow(
+            spread_radius=1,
+            blur_radius=15,
+            color=ft.colors.with_opacity(0.5, ft.colors.GREY),
+            offset=ft.Offset(0, 0),
+            blur_style=ft.ShadowBlurStyle.OUTER,
+        ))
+
+    contenedor_stack=ft.Stack([
+        contenedor_fondo,
+        titulo_principal,
+        contenedor_principal
+    ],)
 
     content_scrollable = ft.ListView(
-        controls=[contenedor_principal],
-        expand=True,)
+        controls=[contenedor_stack],
+        expand=True,
+    )
 
     page.add(content_scrollable)
     page.update()

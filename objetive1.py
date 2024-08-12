@@ -26,7 +26,6 @@ def objetive1_view(page, app_state):
         API_URL = 'http://127.0.0.1:8080/api/acv1/'
         
         #----------------------------------------------------------------------------------------------------------------------------------------------
-       
         #MÉTODOS  
 
         #filtro para validaciones
@@ -58,7 +57,7 @@ def objetive1_view(page, app_state):
             page.controls.clear()
             menu_bar=menubar(page, app_state)
             page.controls.append(menu_bar)
-            page.controls.append(ft.Container(height=1, bgcolor=color_hint, width=300))
+            page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
             app_state.show_home()
             page.update()
         
@@ -114,7 +113,7 @@ def objetive1_view(page, app_state):
                 # Imprimir los datos en la consola
                 print(datos)
 
-            else:    
+            else:   
                 headers = {
                         'Authorization': f'Token {token}',
                         'Content-Type': 'application/json'}
@@ -122,7 +121,6 @@ def objetive1_view(page, app_state):
                 try:
     
                     response = requests.post(API_URL, json=datos, headers=headers)
-                    
                     if response.status_code == 201:
                         response_json = response.json()
                         
@@ -792,16 +790,13 @@ def objetive1_view(page, app_state):
                 col_volver
         ]
         ), 
-        width=360,
         border=None,
         )
         row_titulo_container=ft.Container(content=ft.Row([
                 col_derecha,
                 col_izquierda
-        ], spacing=0,
+        ], spacing=0, alignment=ft.MainAxisAlignment.CENTER
         ), 
-        width=360,
-        alignment=ft.alignment.center,
         border=None,
         )
 
@@ -841,7 +836,6 @@ def objetive1_view(page, app_state):
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
-        
         row_trabajo=ft.Container(content=ft.Column([
                 col_trabajo,
                 col_valid_trabajo
@@ -860,7 +854,6 @@ def objetive1_view(page, app_state):
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
-
         row_cardiopatia=ft.Container(content=ft.Column([
                 col_cardiopatia,
                 col_valid_cardiopatia
@@ -870,7 +863,6 @@ def objetive1_view(page, app_state):
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
-
         row_glucosa=ft.Container(content=ft.Column([
                 col_glucosa,
                 col_valid_glucosa
@@ -880,7 +872,6 @@ def objetive1_view(page, app_state):
         alignment=ft.alignment.center,
         #border=ft.border.all()
         )
-
         row_imc=ft.Container(content=ft.Column([
                 col_imc,
                 col_valid_imc
@@ -925,7 +916,7 @@ def objetive1_view(page, app_state):
         row_superior=ft.Container(content=ft.Column([
                 row_volver_container,
                 row_titulo_container,              
-        ],spacing=0,
+        ],spacing=0, horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ), 
         bgcolor=color_primary,
         padding=ft.padding.only(left=20, top=10, bottom=20, right=20),
@@ -969,6 +960,8 @@ def objetive1_view(page, app_state):
         alignment=ft.alignment.center,
         #border=ft.border.all(),
         )
+
+
         objetive1_scrollable = ft.ListView(
         controls=[principal_container],
         expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible

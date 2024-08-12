@@ -44,7 +44,6 @@ def logout (e, page, app_state, token):
      
             logout_user(e, page, token)
             page.navigation_bar.visible = not page.navigation_bar.visible
-            print(token_delete)
             if not token_delete:
                 # Si no hay token, redirigir al inicio de sesión
                 page.controls.clear()

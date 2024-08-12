@@ -19,19 +19,19 @@ def home_view(page, app_state):
                 page.controls.clear()
                 menu_bar=menubar(page, app_state)
                 page.controls.append(menu_bar)
-                page.controls.append(ft.Container(height=1, bgcolor=color_hint, width=300))
+                page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
                 app_state.show_objetive1()
             elif form_id == "form_2":
                 page.controls.clear()
                 menu_bar=menubar(page, app_state)
                 page.controls.append(menu_bar)
-                page.controls.append(ft.Container(height=1, bgcolor=color_hint, width=300))
+                page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
                 app_state.show_objetive2()
             elif form_id == "form_3":
                 page.controls.clear()
                 menu_bar=menubar(page, app_state)
                 page.controls.append(menu_bar)
-                page.controls.append(ft.Container(height=1, bgcolor=color_hint, width=300))
+                page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
                 app_state.show_objetive3()
             else:
                 print(f"Formulario con ID {form_id} no encontrado")
