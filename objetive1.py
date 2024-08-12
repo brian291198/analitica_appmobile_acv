@@ -23,7 +23,7 @@ def objetive1_view(page, app_state):
         token =app_state.token
 
         global prediccion_resultado  
-        API_URL = 'http://127.0.0.1:8080/api/acv1/'
+        API_URL = 'http://127.0.0.1:8080/api/acv1/create/'
         
         #----------------------------------------------------------------------------------------------------------------------------------------------
         #MÉTODOS  
