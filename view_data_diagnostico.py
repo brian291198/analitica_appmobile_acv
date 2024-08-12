@@ -22,6 +22,8 @@ def view_data_diagnostico(page, app_state):
 
     API_URL = 'http://127.0.0.1:8080/api/acv1/'
 
+    registros=[]
+
     try:
         response = requests.get(API_URL, headers={'Authorization': f'Token {token}'})
         response.raise_for_status()  
