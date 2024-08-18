@@ -5,7 +5,7 @@ from welcome import welcome_view
 from objetive1 import objetive1_view
 from objetive2 import objetive2_view
 from objetive3 import objetive3_view
-from ia_chatbot import chatbot
+from ia_chatbot2 import chatbot
 from login import login_view
 from register import registration_view
 from view_data_diagnostico import view_data_diagnostico
@@ -47,7 +47,7 @@ class AppState:
         if self.page:
             objetive3_view(self.page, self)
 
-    def show_chatbot(self):
+    def show_chatbot2(self):
         if self.page:
             chatbot(self.page, self)
             

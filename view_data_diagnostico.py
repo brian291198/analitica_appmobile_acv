@@ -137,22 +137,30 @@ def view_data_diagnostico(page, app_state):
         cardiopatia_text = "No presenta" if registro.get('Cardiopatia') == 0 else "Presenta"
         prediccion_text = "No presenta riesgo de ACV" if registro.get('prediccion') == 0 else "Presenta riesgo de ACV"
         tile = ft.ExpansionTile(
-            title=ft.Text(f"Diagnóstico N° {index+1}       {registro['fechaRegistro']}", color=color_primary, size=17),
+            title=ft.Text(f"Diagnóstico N° {index+1}       {registro['fechaRegistro']}", color=color_primary, size=17, font_family="LTSaeada-3"),
             affinity=ft.TileAffinity.PLATFORM,
             maintain_state=True,
-            bgcolor=desplegable_diagnostico,
-            text_color=ft.colors.RED,
+            #bgcolor=desplegable_diagnostico,
+            bgcolor=ft.colors.TRANSPARENT,
             controls=[
-                ft.ListTile(title=ft.Text(f"Hipertensión: {hipertension_text}", color=color, size=14), height=40),
-                ft.ListTile(title=ft.Text(f"Cardiopatía: {cardiopatia_text}", color=color, size=14), height=40),
-                ft.ListTile(title=ft.Text(f"Tipo de Trabajo: {registro['TipoTrabajo']}", color=color, size=14), height=40),
-                ft.ListTile(title=ft.Text(f"Nivel de Glucosa Promedio: {registro['Nivel_GlucosaPromedio']}", color=color, size=14), height=40),
-                ft.ListTile(title=ft.Text(f"ICM: {registro['ICM']}", color=color, size=14), height=40),
-                ft.ListTile(title=ft.Text(f"Estado Fumador: {registro['EstadoFumador']}", color=color, size=14), height=40),
-                ft.ListTile(title=ft.Text(f"Predicción: {prediccion_text}", color=color, size=14), height=40),
+                ft.ListTile(title=ft.Text(f"Hipertensión: {hipertension_text}", color=color, size=14), height=50),
+                ft.ListTile(title=ft.Text(f"Cardiopatía: {cardiopatia_text}", color=color, size=14), height=50),
+                ft.ListTile(title=ft.Text(f"Tipo de Trabajo: {registro['TipoTrabajo']}", color=color, size=14), height=50),
+                ft.ListTile(title=ft.Text(f"Nivel de Glucosa Promedio: {registro['Nivel_GlucosaPromedio']}", color=color, size=14), height=50),
+                ft.ListTile(title=ft.Text(f"ICM: {registro['ICM']}", color=color, size=14), height=50),
+                ft.ListTile(title=ft.Text(f"Estado Fumador: {registro['EstadoFumador']}", color=color, size=14), height=50),
+                ft.ListTile(title=ft.Text(f"Predicción: {prediccion_text}", color=color, size=14), height=50),
             ]
         )
-        tiles.append(tile)
+        contenedor=ft.Container(
+             content=tile,
+             border_radius=10,
+             border=ft.border.all(color=color_hint),
+             padding=10,
+             bgcolor=desplegable_diagnostico
+
+             )
+        tiles.append(contenedor)
 
     list_data = ft.Container(
         content=ft.Column(controls=tiles),

@@ -29,13 +29,13 @@ def navigator_component(page, app_state):
         page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
         app_state.show_data_diagnostico()
         page.update()
-
-    def ver_chatbot(e, page, app_state):
+    
+    def ver_chatbot2(e, page, app_state):
         page.controls.clear()
         menu_bar=menubar(page, app_state)
         page.controls.append(menu_bar)
         page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
-        app_state.show_chatbot()
+        app_state.show_chatbot2()
         page.update()
 
     def on_navigation_change(e, page, app_state):
@@ -44,7 +44,7 @@ def navigator_component(page, app_state):
         elif e.control.selected_index == 1:
             show_data_diagnostico(e, page, app_state)
         elif e.control.selected_index == 2:
-            ver_chatbot(e, page, app_state)
+            ver_chatbot2(e, page, app_state)
 
 
  
