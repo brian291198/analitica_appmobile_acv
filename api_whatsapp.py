@@ -61,7 +61,7 @@ def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono, w_gene
                             {'type': 'text', 'text': nombre_paciente},
                             {'type': 'text', 'text': mensaje1},
                             {'type': 'text', 'text': mensaje2},
-                            {'type': 'text', 'text': mensaje3},
+                            {'type': 'text', 'text': ' '},
                             {'type': 'text', 'text': w_genero},
                             {'type': 'text', 'text': w_edad},
                             {'type': 'text', 'text': w_hipertension},
