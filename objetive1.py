@@ -77,15 +77,15 @@ def objetive1_view(page, app_state):
 
             # Recoger los valores de los campos del formulario
             datos = {
-                "Nombre del paciente": ip_paciente.value,
-                "Genero": genero_option,  # Actualizado
-                "Edad": ip_edad.value,
-                "Hipertension": ip_hipertension.value,  # Actualizado
-                "Cardiopatia": ip_cardiopatia.value,  # Actualizado
-                "TipoTrabajo": ip_trabajo.value,  # Actualizado
-                "Nivel_GlucosaPromedio": ip_glucosa.value,  # Actualizado
-                "ICM": ip_imc.value,  # Actualizado
-                "EstadoFumador": ip_fumador.value,  # Actualizado
+                "Nombre del paciente": ip_paciente.value,  # Suponiendo que es texto
+                "Genero": genero_option,  # Convertir a entero si 'genero_option' es numérico
+                "Edad": ip_edad.value,  # Convertir a entero
+                "Hipertension": float(ip_hipertension.value),  # Convertir a entero
+                "Cardiopatia": float(ip_cardiopatia.value),  # Convertir a entero
+                "TipoTrabajo": ip_trabajo.value,  # Convertir a entero
+                "Nivel_GlucosaPromedio": ip_glucosa.value,  # Convertir a flotante
+                "ICM": ip_imc.value,  # Convertir a flotante
+                "EstadoFumador": ip_fumador.value,  # Convertir a entero
             }
             
             datos_values = [value for key, value in datos.items()]

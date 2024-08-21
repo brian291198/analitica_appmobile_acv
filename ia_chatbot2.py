@@ -189,6 +189,27 @@ class Prompt(ft.TextField):
         API_URL = 'http://localhost:8080/api/acv1/chatbot/'
         data = {'message': text}
 
+        # try:
+        #     # Usar una sesión para manejar cookies automáticamente
+        #      with requests.Session() as session:
+        #         session.headers.update({'Authorization': f'Token {self.token}'})
+        #         response = session.post(API_URL, json=data)
+        #         response.raise_for_status()  
+        #         print(f"Cookies después de la primera solicitud: {session.cookies.get_dict()}") 
+        #         mensaje_ia = response.json()
+        #         print(mensaje_ia)
+        #         self.chat.controls.append(CreateMessageGPT("Chat\nBOT:", mensaje_ia.get('response', 'No response')))
+        #         self.chat.update()
+        # except requests.exceptions.HTTPError as http_err:
+        #     print(f"Error HTTP al obtener datos de la API: {http_err}")
+        # except requests.exceptions.RequestException as req_err:
+        #     print(f"Error al hacer la solicitud a la API: {req_err}")
+        # except Exception as e:
+        #     print(f"Error inesperado: {e}")
+            
+        # API_URL = 'http://localhost:8080/api/acv1/chatbot/'
+        # data = {'message': text}
+
         try:
             response = requests.post(API_URL, json=data, headers={'Authorization': f'Token {self.token}'})
             response.raise_for_status()

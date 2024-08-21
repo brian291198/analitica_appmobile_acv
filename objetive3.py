@@ -350,14 +350,14 @@ def objetive3_view(page, app_state):
         )        
         ip_fumador = ft.RadioGroup(content=ft.Column([
             ft.Radio(
-                value="0", 
+                value=0, 
                 label="No",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
             ft.Radio(
-                value="1", 
+                value=1, 
                 label="Si",
                 label_style=ft.TextStyle(
                 color=color,
@@ -380,14 +380,14 @@ def objetive3_view(page, app_state):
         )        
         ip_bebedor = ft.RadioGroup(content=ft.Column([
             ft.Radio(
-                value="0", 
+                value=0, 
                 label="No",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
             ft.Radio(
-                value="1", 
+                value=1, 
                 label="Si",
                 label_style=ft.TextStyle(
                 color=color,
@@ -409,14 +409,14 @@ def objetive3_view(page, app_state):
         )        
         ip_fisica = ft.RadioGroup(content=ft.Column([
             ft.Radio(
-                value="0", 
+                value=0, 
                 label="No",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
             ft.Radio(
-                value="1", 
+                value=1, 
                 label="Si",
                 label_style=ft.TextStyle(
                 color=color,
