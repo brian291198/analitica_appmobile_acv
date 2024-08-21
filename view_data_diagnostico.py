@@ -135,7 +135,7 @@ def view_data_diagnostico(page, app_state):
     for index,registro in enumerate(registros):
         hipertension_text = "No presenta" if registro.get('Hipertension') == 0 else "Presenta"
         cardiopatia_text = "No presenta" if registro.get('Cardiopatia') == 0 else "Presenta"
-        prediccion_text = "No presenta riesgo de ACV" if registro.get('prediccion') == 0 else "Presenta riesgo de ACV"
+        prediccion_text = "Presenta BAJO nivel de riesgo de ACV" if registro.get('prediccion') == 0 else "Presenta ALTO nivel de riesgo de ACV"
         tile = ft.ExpansionTile(
             title=ft.Text(f"Diagnóstico N° {index+1}       {registro['fechaRegistro']}", color=color_primary, size=17, font_family="LTSaeada-3"),
             affinity=ft.TileAffinity.PLATFORM,

@@ -244,15 +244,15 @@ def view_chart(page, app_state):
             labels=[
                 ft.ChartAxisLabel(
                     value=1,
-                    label=ft.Text("10K", size=14,color=ft.colors.with_opacity(1, color_primary)),
+                    label=ft.Text("100", size=14,color=ft.colors.with_opacity(1, color_primary)),
                 ),
                 ft.ChartAxisLabel(
                     value=3,
-                    label=ft.Text("30K", size=14, color=ft.colors.with_opacity(1, color_primary)),
+                    label=ft.Text("200", size=14, color=ft.colors.with_opacity(1, color_primary)),
                 ),
                 ft.ChartAxisLabel(
                     value=5,
-                    label=ft.Text("50K", size=14, color=ft.colors.with_opacity(1, color_primary)),
+                    label=ft.Text("300", size=14, color=ft.colors.with_opacity(1, color_primary)),
                 ),
             ],
             labels_size=40,
@@ -310,13 +310,13 @@ def view_chart(page, app_state):
 
     # Determinar el comentario basado en los valores de glucosa
     if niveles_glucosa[-1] < niveles_glucosa[-2]:
-        comentario = "En la última fecha se visualiza un valor MENOR al anterior, lo que significa que ha reducido el nivel de hipertensión, lo cual implica una reducción del riesgo a padecer un accidente cerebrovascular, ánimo sigue cuidando de tu salud!"
+        comentario = "En la última fecha se visualiza un valor MENOR al anterior, lo que significa que ha reducido el nivel de glucosa, lo cual implica una reducción del riesgo a padecer un accidente cerebrovascular, ánimo sigue cuidando de tu salud!"
     else:
-        comentario = "En la última fecha se visualiza un valor MAYOR al anterior, lo que significa que ha incrementado el nivel de hipertensión, ¡CUIDADO! \nEso implica un aumento del riesgo a padecer un accidente cerebrovascular, cuida tu salud!."
+        comentario = "En la última fecha se visualiza un valor MAYOR al anterior, lo que significa que ha incrementado el nivel de glucosa, ¡CUIDADO! \nEso implica un aumento del riesgo a padecer un accidente cerebrovascular, cuida tu salud!."
     
-    subtitulo_chart=ft.Text('Tendencia de variable "HIPERTENSIÓN":', size=14,weight=ft.FontWeight.BOLD, color=color, text_align="center")
+    subtitulo_chart=ft.Text('Tendencia de variable "NIVEL DE GLUCOSA":', size=14,weight=ft.FontWeight.BOLD, color=color, text_align="center")
     
-    row_subtitulo_chart=ft.Container(content=Row([
+    row_subtitulo_chart=ft.Container(content=ft.Row([
           subtitulo_chart,
     ],),margin=ft.margin.only(top=20, bottom=20))
 

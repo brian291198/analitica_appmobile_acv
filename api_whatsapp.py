@@ -25,12 +25,12 @@ NeuroIA - ACV """
 
 
 
-def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, mensaje3, telefono, w_genero, w_edad, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, w_glucosa, w_imc):
+def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono, w_genero, w_edad, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, w_glucosa, w_imc):
 
            
             #OPCIÓN 1:
             # Definir el token de acceso de Facebook y el identificador de número de teléfono
-            token = 'EAB0AiAJlz8MBO5U3XrRKlVnCja8pNvZBLFvWkEzZC6NRptL4qzmFrZBG4r9OZBQZCRX7vzOrEJ1mCooetHOAWIQ5rhBHbEW1lxjUAqyaBY89ItFGVIoezZBYYQN7ZCExvM0YGXZBW2ZAXZAHYGrRzDDWoZCZBqBZClTUaefKJjZBrXg35Idnu6ZBn74RQELdO1ucY8Mf84hmFgxYjiKWzgkg5XrMrUZD'
+            token = 'EAB0AiAJlz8MBOZB8vplepCZBj5TMxwTSgtOzFz5ZA97OklZCumfoZCuQm1ZAVjUq8pVhw4ZCeljnWfHKSxMytaul9mGgXWJf8xkcaVEi3uMGZA8bPbRKLXE9iaSFrUh6oc31Nejamd8DQAHj97KDZAC7tleXu7EAngho1ZCQbdPEYSobCILwzjTdQmZBGOAY43FDClTKGxGIHac6rVmJlxddY0ZD'
             
             id_numero_telefono = '369274782941272'
 
@@ -61,7 +61,7 @@ def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, mensaje3, telefo
                             {'type': 'text', 'text': nombre_paciente},
                             {'type': 'text', 'text': mensaje1},
                             {'type': 'text', 'text': mensaje2},
-                            {'type': 'text', 'text': mensaje3},
+                            {'type': 'text', 'text': ' '},
                             {'type': 'text', 'text': w_genero},
                             {'type': 'text', 'text': w_edad},
                             {'type': 'text', 'text': w_hipertension},

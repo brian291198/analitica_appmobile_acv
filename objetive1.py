@@ -164,14 +164,14 @@ def objetive1_view(page, app_state):
 
                         if prediction_value == 0:
                             mensaje1 = "Nos complace informarle que"
-                            mensaje2 = "no se han detectado indicios de un accidente cerebrovascular (ACV) en su evaluación actual. Esto es una buena noticia para su salud."
-                            mensaje3 = "Sin embargo, es recomendable que continúe con hábitos saludables para mantener su bienestar general. Si experimenta algún síntoma nuevo o inusual, le recomendamos que consulte con su médico."
+                            mensaje2 = "presenta BAJA probabilidad de riesgo de un accidente cerebrovascular (ACV) en su evaluación actual."
+                            
                         else:
                             mensaje1 = "Le informamos que"
-                            mensaje2 = "hemos detectado algunos factores que indican un mayor riesgo de accidente cerebrovascular (ACV). Es importante que tome las siguientes medidas para su salud:"
-                            mensaje3 = "Consulta Médica: Programe una cita con su médico para una evaluación más detallada. Cambios en el Estilo de Vida: Considere adoptar un estilo de vida saludable, que incluya una dieta equilibrada y ejercicio regular. Monitoreo Regular: Es posible que necesite realizarse exámenes adicionales para monitorear su condición."
+                            mensaje2 = "presenta ALTA probabilidad de riesgo de un accidente cerebrovascular (ACV) en su evaluación actual."
+                            
 
-                        prediccion = f"Estimado/a {ip_paciente.value},\n\n{mensaje1} , tras revisar los resultados de sus pruebas,{mensaje2}\n\n{mensaje3}"
+                        prediccion = f"Estimado/a {ip_paciente.value},\n\n{mensaje1} , tras revisar los resultados de sus pruebas,{mensaje2}"
                         prediccion_resultado.value = prediccion
 
                         # número de prueba para enviar el mensaje, incluir el 51 por código del país
@@ -201,7 +201,7 @@ def objetive1_view(page, app_state):
                             w_fumador = "Fuma"
 
                         # Llamar a la función para enviar el mensaje de WhatsApp
-                        message_whatsapp(page, ip_paciente.value, mensaje1, mensaje2, mensaje3, telefono, w_genero, ip_edad.value, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, ip_glucosa.value, ip_imc.value)
+                        message_whatsapp(page, ip_paciente.value, mensaje1, mensaje2, telefono, w_genero, ip_edad.value, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, ip_glucosa.value, ip_imc.value)
                         print(prediccion)
                         page.update()
 
