@@ -77,15 +77,15 @@ def objetive1_view(page, app_state):
 
             # Recoger los valores de los campos del formulario
             datos = {
-                "Nombre del paciente": ip_paciente.value,  # Suponiendo que es texto
-                "Genero": genero_option,  # Convertir a entero si 'genero_option' es numérico
-                "Edad": ip_edad.value,  # Convertir a entero
-                "Hipertension": float(ip_hipertension.value),  # Convertir a entero
-                "Cardiopatia": float(ip_cardiopatia.value),  # Convertir a entero
-                "TipoTrabajo": ip_trabajo.value,  # Convertir a entero
-                "Nivel_GlucosaPromedio": ip_glucosa.value,  # Convertir a flotante
-                "ICM": ip_imc.value,  # Convertir a flotante
-                "EstadoFumador": ip_fumador.value,  # Convertir a entero
+                "Nombre del paciente": ip_paciente.value,  
+                "Genero": genero_option,  
+                "Edad": ip_edad.value,  
+                "Hipertension": ip_hipertension.value, 
+                "Cardiopatia": ip_cardiopatia.value, 
+                "TipoTrabajo": ip_trabajo.value,  
+                "Nivel_GlucosaPromedio": ip_glucosa.value,  
+                "ICM": ip_imc.value,  
+                "EstadoFumador": ip_fumador.value,  
             }
             
             datos_values = [value for key, value in datos.items()]
@@ -159,7 +159,7 @@ def objetive1_view(page, app_state):
                         page.close(alert_aprobado)
                         response_json = response.json()
                         
-                        prediction_value = response_json.get('prediction', [0])[0]
+                        prediction_value = response_json.get('prediccion', [0])
                         print(prediction_value)
 
                         if prediction_value == 0:
@@ -171,7 +171,7 @@ def objetive1_view(page, app_state):
                             mensaje2 = "presenta ALTA probabilidad de riesgo de un accidente cerebrovascular (ACV) en su evaluación actual."
                             
 
-                        prediccion = f"Estimado/a {ip_paciente.value},\n\n{mensaje1} , tras revisar los resultados de sus pruebas,{mensaje2}"
+                        prediccion = f"Estimado/a {ip_paciente.value},\n\n{mensaje1}, tras revisar los resultados de sus pruebas, {mensaje2}"
                         prediccion_resultado.value = prediccion
 
                         # número de prueba para enviar el mensaje, incluir el 51 por código del país
@@ -455,7 +455,7 @@ def objetive1_view(page, app_state):
         txt_hipertension=ft.Row(
             [
                 ft.Icon(name=ft.icons.MEDICAL_SERVICES_OUTLINED, color=color_hint),
-                ft.Text("Hipertensión", color=color)
+                ft.Text("Hipertension", color=color)
                # ft.Icon(name=ft.icons.AUDIOTRACK, color=ft.colors.GREEN_400, size=30),
             ]
         )        
@@ -484,7 +484,7 @@ def objetive1_view(page, app_state):
         txt_cardiopatia= ft.Row(
             [
                 ft.Icon(name=ft.icons.MEDICAL_SERVICES_OUTLINED, color=color_hint),
-                ft.Text("Cardiopatía", color=color)
+                ft.Text("Cardiopatia", color=color)
                # ft.Icon(name=ft.icons.AUDIOTRACK, color=ft.colors.GREEN_400, size=30),
             ])
 

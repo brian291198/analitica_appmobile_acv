@@ -19,7 +19,7 @@ def objetive3_view(page, app_state):
         token =app_state.token
 
         global prediccion_resultado        
-        API_URL = 'http://127.0.0.1:8080/api/acv3'
+        API_URL = 'http://127.0.0.1:8080/api/acv3/create/'
 
         page.padding=0
         #----------------------------------------------------------------------------------------------------------------------------------------------
@@ -81,7 +81,6 @@ def objetive3_view(page, app_state):
                 "bebedorFrecuente": ip_bebedor.value,
                 "actividadFisica": ip_fisica.value,
                 "horasDormidas": ip_horas.value,
-                
             }
 
             datos_values = [value for key, value in datos.items()]
@@ -135,17 +134,19 @@ def objetive3_view(page, app_state):
 
             else:
 
-                headers = {
-                        'Authorization': f'Token {token}',
-                        'Content-Type': 'application/json'}
+                # headers = {
+                #         'Authorization': f'Token {token}',
+                #         'Content-Type': 'application/json'}
                 # Enviar una solicitud POST a la API
 
                 # Enviar una solicitud POST a la API
                 try:
-                    headers = {'Content-Type': 'application/json'}
+                    headers = {
+                        'Authorization': f'Token {token}',
+                        'Content-Type': 'application/json'}
                     response = requests.post(API_URL, json=datos, headers=headers)
 
-                    if response.status_code == 200:
+                    if response.status_code == 201:
                         aprobado=ft.Container(content=ft.Row([
                             ft.Icon(name=ft.icons.CHECK_CIRCLE_ROUNDED,color=color_check, size=30),
                             ft.Text("Predicción Realizada", color=color, size=14)
@@ -160,7 +161,7 @@ def objetive3_view(page, app_state):
                         page.close(alert_aprobado)
                         # Manejar la respuesta exitosa
                         response_json = response.json()
-                        prediction_value = response_json.get('prediction', [0])[0]
+                        prediction_value = response_json.get('prediccion', [0])[0]
                         print(prediction_value)
 
                         if prediction_value == 0:
@@ -350,14 +351,14 @@ def objetive3_view(page, app_state):
         )        
         ip_fumador = ft.RadioGroup(content=ft.Column([
             ft.Radio(
-                value=0, 
+                value="0", 
                 label="No",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
             ft.Radio(
-                value=1, 
+                value="1", 
                 label="Si",
                 label_style=ft.TextStyle(
                 color=color,
@@ -380,14 +381,14 @@ def objetive3_view(page, app_state):
         )        
         ip_bebedor = ft.RadioGroup(content=ft.Column([
             ft.Radio(
-                value=0, 
+                value="0", 
                 label="No",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
             ft.Radio(
-                value=1, 
+                value="1", 
                 label="Si",
                 label_style=ft.TextStyle(
                 color=color,
@@ -409,14 +410,14 @@ def objetive3_view(page, app_state):
         )        
         ip_fisica = ft.RadioGroup(content=ft.Column([
             ft.Radio(
-                value=0, 
+                value="0", 
                 label="No",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
             ft.Radio(
-                value=1, 
+                value="1", 
                 label="Si",
                 label_style=ft.TextStyle(
                 color=color,
@@ -493,14 +494,14 @@ def objetive3_view(page, app_state):
                 size=14,
                 )),
             ft.Radio(
-                value="4", 
+                value="5", 
                 label="Blanco",
                 label_style=ft.TextStyle(
                 color=color,
                 size=14,
                 )),
             ft.Radio(
-                value="5", 
+                value="4", 
                 label="Otro",
                 label_style=ft.TextStyle(
                 color=color,

@@ -19,7 +19,7 @@ def objetive2_view(page, app_state):
         token =app_state.token
 
         global prediccion_resultado        
-        API_URL = 'http://127.0.0.1:8080/api/acv2'
+        API_URL = 'http://127.0.0.1:8080/api/acv2/create/'
 
         page.padding=0
         #----------------------------------------------------------------------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ def objetive2_view(page, app_state):
                 try:
     
                     response = requests.post(API_URL, json=datos, headers=headers)
-                    if response.status_code == 200:
+                    if response.status_code == 201:
                         aprobado=ft.Container(content=ft.Row([
                             ft.Icon(name=ft.icons.CHECK_CIRCLE_ROUNDED,color=color_check, size=30),
                             ft.Text("Predicción Realizada", color=color, size=14)
@@ -154,7 +154,8 @@ def objetive2_view(page, app_state):
                         page.close(alert_aprobado)
                         # Manejar la respuesta exitosa
                         response_json = response.json()
-                        prediction_value = response_json.get('prediction', [0])[0]
+                        print(response_json) 
+                        prediction_value = response_json.get('prediccion',[0])
                         print(prediction_value)
 
                         if prediction_value == 2:

@@ -128,7 +128,7 @@ def validate_celular(page, value, col_control, text_control, control, icon):
                 return "El campo debe contener solo números."
 
 def validate_radiobutton(page, value, col_control, text_control, control, icon):
-            if not value:
+            if value is None:
                 error_radiobutton(page, col_control, text_control, control, icon, "El campo no puede estar vacío.")
                 return "El campo no puede estar vacío."
             else:
