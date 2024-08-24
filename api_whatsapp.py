@@ -20,7 +20,10 @@ _*Nivel de Glucosa Promedio:*_ {{11}}
 _*ICM:*_ {{12}}
 
 Atentamente,
-NeuroIA - ACV """
+NeuroIA - ACV 
+
+http://localhost:3000/send-message
+"""
 
 
 
@@ -28,7 +31,7 @@ NeuroIA - ACV """
 def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono, w_genero, w_edad, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, w_glucosa, w_imc):
 
            
-            #OPCIÓN 1:
+            """ #OPCIÓN 1:
             # Definir el token de acceso de Facebook y el identificador de número de teléfono
             token = 'EAB0AiAJlz8MBOZB8vplepCZBj5TMxwTSgtOzFz5ZA97OklZCumfoZCuQm1ZAVjUq8pVhw4ZCeljnWfHKSxMytaul9mGgXWJf8xkcaVEi3uMGZA8bPbRKLXE9iaSFrUh6oc31Nejamd8DQAHj97KDZAC7tleXu7EAngho1ZCQbdPEYSobCILwzjTdQmZBGOAY43FDClTKGxGIHac6rVmJlxddY0ZD'
             
@@ -84,13 +87,13 @@ def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono, w_gene
                 page.dialog = ft.AlertDialog(title=ft.Text("⚠️ El resultado del diagnóstico no pudo ser enviado a su whatsapp debido a un problema inesperado.",color="#333333", text_align=ft.TextAlign.CENTER, size=15),
                                 bgcolor=ft.colors.WHITE,
                                 shape=ft.RoundedRectangleBorder(10))
-                print(f"Error: {response_mensaje.status_code} - {response_mensaje.text}")
+                print(f"Error: {response_mensaje.status_code} - {response_mensaje.text}") """
 
 
 
-            """ #OPCIÓN 2: Se necesita el servido en NODEJS
-            mensaje=f"*RESULTADO DE DIAGNÓSTICO:*\n\nEstimado/a {nombre_paciente},\n\n{mensaje1}, tras revisar los resultados de sus pruebas, {mensaje2}\n\n{mensaje3}_*Parámetros evaluados:*_\n\n_*Género:*_ {w_genero}\n_*Edad:*_ {w_edad}\n_*Hipertensión:*_ {w_hipertension}\n_*Cardiopatía:*_ {w_cardiopatia}\n_*Tipo de Trabajo:*_ {w_trabajo}\n_*Estado Fumador:*_ {w_fumador}\n_*Nivel de Glucosa Promedio:*_ {w_glucosa}\n_*ICM:*_ {w_imc}\n\nAtentamente,\nNeuroIA - ACV"
-            url = 'http://localhost:3000/send-message'
+            #OPCIÓN 2: Se necesita el servido en NODEJS
+            mensaje=f"*RESULTADO DE DIAGNÓSTICO:*\n\nEstimado/a {nombre_paciente},\n\n{mensaje1}, tras revisar los resultados de sus pruebas, {mensaje2}\n\n_*Parámetros evaluados:*_\n\n_*Género:*_ {w_genero}\n_*Edad:*_ {w_edad}\n_*Hipertensión:*_ {w_hipertension}\n_*Cardiopatía:*_ {w_cardiopatia}\n_*Tipo de Trabajo:*_ {w_trabajo}\n_*Estado Fumador:*_ {w_fumador}\n_*Nivel de Glucosa Promedio:*_ {w_glucosa}\n_*ICM:*_ {w_imc}\n\nAtentamente,\nNeuroIA - ACV"
+            url = 'http://34.135.120.63:3000/send-message'
             data = {'number': telefono, 'message': mensaje}
             response = requests.post(url, json=data)
             
@@ -102,7 +105,7 @@ def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono, w_gene
                 page.dialog = ft.AlertDialog(title=ft.Text("⚠️ El resultado del diagnóstico no pudo ser enviado a su whatsapp debido a un problema inesperado.",color="#333333", text_align=ft.TextAlign.CENTER, size=15),
                                 bgcolor=ft.colors.WHITE,
                                 shape=ft.RoundedRectangleBorder(10))
-                print(f"Error: {response.status_code} - {response.text}") """
+                print(f"Error: {response.status_code} - {response.text}")
             
             page.dialog.open = True
             page.update()
