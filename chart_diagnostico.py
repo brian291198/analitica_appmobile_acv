@@ -6,6 +6,7 @@ from datetime import datetime
 import time
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, desplegable_diagnostico
 from menubar import menubar
+from urlsapi import API_BACK
 
 def view_chart(page, app_state):
 

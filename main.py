@@ -10,6 +10,7 @@ from login import login_view
 from register import registration_view
 from view_data_diagnostico import view_data_diagnostico
 from chart_diagnostico import view_chart
+from urlsapi import API_BACK
 
 #administrar rutas de la APP
 class AppState:
@@ -95,8 +96,6 @@ def main (page: ft.Page):
     page.theme_mode = ft.ThemeMode.DARK
     page.horizontal_alignment="center"
     page.vertical_alignment="center"
-
-
 
     app_state = AppState()
     app_state.set_page(page)

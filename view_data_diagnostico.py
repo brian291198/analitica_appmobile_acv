@@ -6,6 +6,7 @@ from datetime import datetime
 import time
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, desplegable_diagnostico
 from menubar import menubar
+from urlsapi import API_BACK
 
 def view_data_diagnostico(page, app_state):
 
@@ -20,7 +21,7 @@ def view_data_diagnostico(page, app_state):
     #Obtener token
     token =app_state.token
 
-    API_URL = 'http://127.0.0.1:8080/api/acv1/'
+    API_URL = f'{API_BACK}/api/acv1/'
 
     registros=[]
 
@@ -40,7 +41,6 @@ def view_data_diagnostico(page, app_state):
     print(registros)
 
     global prediccion_resultado  
-    #API_URL = 'http://127.0.0.1:8080/api/acv1/'
 
     def view_chart(e, page, app_state):
             page.controls.clear()
@@ -49,76 +49,6 @@ def view_data_diagnostico(page, app_state):
             page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
             app_state.show_chart()
             page.update()
-
-    # # Crear registros ficticios (definidos arriba)
-    # registros = [
-    # {
-    #     "idDiagnostico": 101,
-    #     "fechaRegistro": "2024-08-01",
-    #     "Genero": "Masculino",
-    #     "Edad": "45",
-    #     "Hipertension": "Sí",
-    #     "Cardiopatia": "No",
-    #     "TipoTrabajo": "Oficina",
-    #     "Nivel_GlucosaPromedio": "120",
-    #     "ICM": "24.5",
-    #     "EstadoFumador": "No",
-    #     "Prediccion": "Bajo riesgo"
-    # },
-    # {
-    #     "idDiagnostico": 102,
-    #     "fechaRegistro": "2024-08-05",
-    #     "Genero": "Femenino",
-    #     "Edad": "50",
-    #     "Hipertension": "No",
-    #     "Cardiopatia": "Sí",
-    #     "TipoTrabajo": "Campo",
-    #     "Nivel_GlucosaPromedio": "110",
-    #     "ICM": "22.0",
-    #     "EstadoFumador": "Sí",
-    #     "Prediccion": "Alto riesgo"
-    # },
-    # {
-    #     "idDiagnostico": 103,
-    #     "fechaRegistro": "2024-08-10",
-    #     "Genero": "Masculino",
-    #     "Edad": "60",
-    #     "Hipertension": "Sí",
-    #     "Cardiopatia": "Sí",
-    #     "TipoTrabajo": "Oficina",
-    #     "Nivel_GlucosaPromedio": "130",
-    #     "ICM": "30.0",
-    #     "EstadoFumador": "Sí",
-    #     "Prediccion": "Moderado riesgo"
-    # },
-    # {
-    #     "idDiagnostico": 104,
-    #     "fechaRegistro": "2024-08-15",
-    #     "Genero": "Femenino",
-    #     "Edad": "55",
-    #     "Hipertension": "No",
-    #     "Cardiopatia": "No",
-    #     "TipoTrabajo": "Hogar",
-    #     "Nivel_GlucosaPromedio": "115",
-    #     "ICM": "25.0",
-    #     "EstadoFumador": "No",
-    #     "Prediccion": "Bajo riesgo"
-    # },
-    # {
-    #     "idDiagnostico": 105,
-    #     "fechaRegistro": "2024-08-20",
-    #     "Genero": "Masculino",
-    #     "Edad": "65",
-    #     "Hipertension": "Sí",
-    #     "Cardiopatia": "Sí",
-    #     "TipoTrabajo": "Campo",
-    #     "Nivel_GlucosaPromedio": "140",
-    #     "ICM": "32.5",
-    #     "EstadoFumador": "Sí",
-    #     "Prediccion": "Alto riesgo"
-    # }
-    # ]
-
 
     col_titulo = ft.Container(
         content=ft.Column(

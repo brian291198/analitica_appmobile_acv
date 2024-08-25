@@ -3,6 +3,7 @@ import requests
 from login import login_view
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error, desplegable_diagnostico
 import time
+from urlsapi import API_BACK
 
 def main_style():
     return {
@@ -184,9 +185,9 @@ class Prompt(ft.TextField):
         if not hasattr(self, 'token') or not self.token:
             print("Token no disponible")
             return
-        
+          
         # Enviar la solicitud a la API
-        API_URL = 'http://localhost:8080/api/acv1/chatbot/'
+        API_URL = f'{API_BACK}/api/acv1/chatbot/'
         data = {'message': text}
 
         # try:

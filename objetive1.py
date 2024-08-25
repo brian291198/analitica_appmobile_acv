@@ -8,6 +8,7 @@ from validation import validate_radiobutton, validate_intervalo
 import time
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error
 from menubar import menubar
+from urlsapi import API_BACK
 
 #VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 1
 def objetive1_view(page, app_state):
@@ -23,7 +24,7 @@ def objetive1_view(page, app_state):
         token =app_state.token
 
         global prediccion_resultado  
-        API_URL = 'http://127.0.0.1:8080/api/acv1/create/'
+        API_URL = f'{API_BACK}/api/acv1/create/'
         
         #----------------------------------------------------------------------------------------------------------------------------------------------
         #MÉTODOS  

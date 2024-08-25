@@ -3,13 +3,14 @@ from flet import *
 from login import login_view
 import requests
 from styles import color, color_hint, color_primary, color_secondary, color_hovered
+from urlsapi import API_BACK
 
 #APLICANDO EL LOGOUT Y OTRAS OPCIONES DEL MENÚ SUPERIOR
 
 def logout_user(e, page, token):
             global token_delete
             # Define la URL de la API de logout
-            url = "http://127.0.0.1:8080/logout/"  # Cambia a la URL de tu API
+            url = f"{API_BACK}/logout/"  # Cambia a la URL de tu API
 
             # Configura los headers de la solicitud
 
