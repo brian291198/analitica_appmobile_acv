@@ -178,8 +178,7 @@ def objetive1_view(page, app_state):
                         # número de prueba para enviar el mensaje, incluir el 51 por código del país
                         telefono = f"51{ip_telefono.value}"
 
-                        # Condicionar valores para mensaje de WhatsApp
-                        w_genero = "Femenino" if ip_genero.value == 0 else "Masculino"
+                       
                         print(ip_genero.value)
                         w_hipertension = "No" if int(ip_hipertension.value) == 0 else "Sí"
                         w_cardiopatia = "No" if int(ip_cardiopatia.value) == 0 else "Sí"
@@ -203,7 +202,7 @@ def objetive1_view(page, app_state):
                             w_fumador = "Fuma"
 
                         # Llamar a la función para enviar el mensaje de WhatsApp
-                        message_whatsapp(page, ip_paciente.value, mensaje1, mensaje2, telefono, w_genero, ip_edad.value, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, ip_glucosa.value, ip_imc.value)
+                        message_whatsapp(page, ip_paciente.value, mensaje1, mensaje2, telefono, genero, ip_edad.value, w_hipertension, w_cardiopatia, w_trabajo, w_fumador, ip_glucosa.value, ip_imc.value)
                         print(prediccion)
                         page.update()
 

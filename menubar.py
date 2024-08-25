@@ -83,7 +83,7 @@ def menubar(page, app_state):
             ), expand=True,
             height=50,
             bgcolor=ft.colors.WHITE,
-            margin=ft.margin.only(bottom=-2),
+            margin=ft.margin.only(bottom=-2, top=30),
             )
 
     return ft.Row([menubar])
