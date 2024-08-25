@@ -180,23 +180,24 @@ def objetive1_view(page, app_state):
 
                         # Condicionar valores para mensaje de WhatsApp
                         w_genero = "Femenino" if ip_genero.value == 0 else "Masculino"
-                        w_hipertension = "No" if ip_hipertension.value == 0 else "Sí"
-                        w_cardiopatia = "No" if ip_cardiopatia.value == 0 else "Sí"
+                        print(ip_genero.value)
+                        w_hipertension = "No" if int(ip_hipertension.value) == 0 else "Sí"
+                        w_cardiopatia = "No" if int(ip_cardiopatia.value) == 0 else "Sí"
                         
-                        if ip_trabajo.value == 0:
+                        if int(ip_trabajo.value) == 0:
                             w_trabajo = "Trabajador para el gobierno"
-                        elif ip_trabajo.value == 1:
+                        elif int(ip_trabajo.value) == 1:
                             w_trabajo = "Nunca trabajó"
-                        elif ip_trabajo.value == 2:
+                        elif int(ip_trabajo.value) == 2:
                             w_trabajo = "Trabajador privado"
                         else:
                             w_trabajo = "Trabajador por cuenta propia"
 
-                        if ip_fumador.value == 0:
+                        if int(ip_fumador.value) == 0:
                             w_fumador = "No opina"
-                        elif ip_fumador.value == 1:
+                        elif int(ip_fumador.value) == 1:
                             w_fumador = "Anteriormente fumó"
-                        elif ip_fumador.value == 2:
+                        elif int(ip_fumador.value) == 2:
                             w_fumador = "Nunca fumó"
                         else:
                             w_fumador = "Fuma"
