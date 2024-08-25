@@ -3,11 +3,11 @@ import requests
 from validation import validate_login
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error
 import time
-from urlsapi import API_BACK
+from urlsapi import HTTP_LOGIN
 
 def login_view(page, app_state):
     page.bgcolor = ft.colors.WHITE
-    API_URL = f'{API_BACK}/login/'
+    API_URL = HTTP_LOGIN
 
     overlay = ft.Container(
         width=page.width,

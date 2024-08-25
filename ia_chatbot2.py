@@ -3,7 +3,7 @@ import requests
 from login import login_view
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error, desplegable_diagnostico
 import time
-from urlsapi import API_BACK
+from urlsapi import SEND_CHATBOT
 
 def main_style():
     return {
@@ -187,7 +187,7 @@ class Prompt(ft.TextField):
             return
           
         # Enviar la solicitud a la API
-        API_URL = f'{API_BACK}/api/acv1/chatbot/'
+        API_URL = SEND_CHATBOT
         data = {'message': text}
 
         # try:
@@ -231,7 +231,7 @@ class Prompt(ft.TextField):
 def chatbot(page, app_state):
     page.padding = 0
     token = app_state.token
-    print(token)
+    #print(token)
 
     if not token:
         # If no token, redirect to login

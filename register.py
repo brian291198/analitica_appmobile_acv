@@ -5,14 +5,14 @@ import threading
 import re
 from styles import color, color_hint, color_primary, color_secondary, color_hovered
 from validation import validate_texto, validate_password, validate_email, validate_celular, validate_radiobutton, validate_fecha_nacimiento
-from urlsapi import API_BACK
+from urlsapi import HTTP_REGISTER
 
 global paciente_data, user_data
 
 #(~!@#$%^&*()-_+=[]{}\:;'"<>,.?/)
 
 def registration_view(page, app_state):
-    API_URL = f'{API_BACK}/paciente/register/'
+    API_URL = HTTP_REGISTER
 
     def back(e):
         page.controls.clear()

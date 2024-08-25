@@ -6,7 +6,7 @@ from datetime import datetime
 import time
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, desplegable_diagnostico
 from menubar import menubar
-from urlsapi import API_BACK
+from urlsapi import DATA_OBJ_1
 
 def view_data_diagnostico(page, app_state):
 
@@ -21,7 +21,7 @@ def view_data_diagnostico(page, app_state):
     #Obtener token
     token =app_state.token
 
-    API_URL = f'{API_BACK}/api/acv1/'
+    API_URL = DATA_OBJ_1
 
     registros=[]
 
