@@ -2,12 +2,12 @@
 #VARIABLES DE ENTORNO para URLs de API
 
 #Si deseas probar en tu entorno local solo cambia estas dos URLs! ;)
-API_BACK = 'http://35.188.119.0:8080'
-API_WSP = 'http://35.188.119.0:3000'
+API_BACK = 'http://127.0.0.1:8080'
+#API_WSP = 'http://127.0.0.1:3000'
 
 
 #Solicitud para enviar mensaje WHATSAPP
-SEND_WSP = f'{API_WSP}/send-message'
+#SEND_WSP = f'{API_WSP}/send-message'
 
 #Solicitud a chatBOT
 SEND_CHATBOT = f'{API_BACK}/api/acv1/chatbot/'
@@ -17,6 +17,9 @@ HTTP_LOGIN = f'{API_BACK}/login/'
 
 #Registrarse como nuevo usuario
 HTTP_REGISTER = f'{API_BACK}/paciente/register/'
+
+#Actualizar datos del paciente
+HTTP_UPDATE_PACIENTE = f'{API_BACK}/paciente/edit/'
 
 #Cerrar sesión
 HTTP_LOGOUT = f"{API_BACK}/logout/"

@@ -38,7 +38,7 @@ def view_data_diagnostico(page, app_state):
     else:
         registros = registros if registros else []
 
-    print(registros)
+    #print(registros)
 
     global prediccion_resultado  
 
@@ -185,7 +185,7 @@ def view_data_diagnostico(page, app_state):
 
     row_estadistica = ft.Container(
         content=ft.Row([btn_estadistica], alignment=ft.MainAxisAlignment.CENTER),
-        padding=ft.padding.only(bottom=20),
+        padding=ft.padding.only(bottom=10),
         width=300
     )
 
@@ -204,7 +204,24 @@ def view_data_diagnostico(page, app_state):
         expand=True
     )
 
-    page.controls.append(col_titulo)
+
+    contenedor_fondo=ft.Container(width=2000, height=100, bgcolor=color_primary, margin=ft.margin.only(bottom=10))
+
+    titulo_principal=ft.Container(content=ft.Column([       
+            ft.Text("Registro de diagnósticos",size=20, color=ft.colors.WHITE),
+            ft.Text("Visualice o Evalúe sus diagnósticos.",size=10, color=ft.colors.WHITE)
+            ], spacing=0, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            #padding=ft.padding.only(top=10), 
+            alignment=ft.alignment.center, margin=ft.margin.only(top=40))
+    
+    contenedor_stack=ft.Stack([
+        contenedor_fondo,
+        titulo_principal,
+    ],)
+
+    page.add(contenedor_stack)
+
+    #page.controls.append(col_titulo)
     page.controls.append(list_buttons)
     page.controls.append(list_data_scrollable)
     page.update()

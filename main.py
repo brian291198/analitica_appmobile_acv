@@ -11,6 +11,7 @@ from register import registration_view
 from view_data_diagnostico import view_data_diagnostico
 from chart_diagnostico import view_chart
 from urlsapi import API_BACK
+from setting_profile import view_setting
 
 #administrar rutas de la APP
 class AppState:
@@ -60,6 +61,9 @@ class AppState:
         if self.page:
             view_chart(self.page, self)
 
+    def show_setting(self):
+        if self.page:
+            view_setting(self.page, self)
 
 def main (page: ft.Page):
    

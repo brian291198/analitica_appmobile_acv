@@ -1,6 +1,6 @@
 import flet as ft
 import requests
-from urlsapi import SEND_WSP
+#from urlsapi import SEND_WSP
 
 """ 
 Estimado/a {{1}},
@@ -93,7 +93,7 @@ def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono, w_gene
 
 
             #OPCIÓN 2: Se necesita el servido en NODEJS
-            mensaje=f"*RESULTADO DE DIAGNÓSTICO:*\n\nEstimado/a {nombre_paciente},\n\n{mensaje1}, tras revisar los resultados de sus pruebas, {mensaje2}\n\n_*Parámetros evaluados:*_\n\n_*Género:*_ {w_genero}\n_*Edad:*_ {w_edad}\n_*Hipertensión:*_ {w_hipertension}\n_*Cardiopatía:*_ {w_cardiopatia}\n_*Tipo de Trabajo:*_ {w_trabajo}\n_*Estado Fumador:*_ {w_fumador}\n_*Nivel de Glucosa Promedio:*_ {w_glucosa}\n_*ICM:*_ {w_imc}\n\nAtentamente,\nNeuroIA - ACV"
+            """ mensaje=f"*RESULTADO DE DIAGNÓSTICO:*\n\nEstimado/a {nombre_paciente},\n\n{mensaje1}, tras revisar los resultados de sus pruebas, {mensaje2}\n\n_*Parámetros evaluados:*_\n\n_*Género:*_ {w_genero}\n_*Edad:*_ {w_edad}\n_*Hipertensión:*_ {w_hipertension}\n_*Cardiopatía:*_ {w_cardiopatia}\n_*Tipo de Trabajo:*_ {w_trabajo}\n_*Estado Fumador:*_ {w_fumador}\n_*Nivel de Glucosa Promedio:*_ {w_glucosa}\n_*ICM:*_ {w_imc}\n\nAtentamente,\nNeuroIA - ACV"
             url = SEND_WSP
             data = {'number': telefono, 'message': mensaje}
             response = requests.post(url, json=data)
@@ -109,7 +109,7 @@ def message_whatsapp(page, nombre_paciente, mensaje1, mensaje2, telefono, w_gene
                 print(f"Error: {response.status_code} - {response.text}")
             
             page.dialog.open = True
-            page.update()
+            page.update() """
 
 
 

@@ -1,176 +1,42 @@
-from datetime import datetime
 import flet as ft
+from flet import *
 import requests
-import threading
-import re
-from styles import color, color_hint, color_primary, color_secondary, color_hovered
-from validation import validate_texto, validate_password, validate_email, validate_celular, validate_radiobutton, validate_fecha_nacimiento
-from urlsapi import HTTP_REGISTER
+from login import login_view
+from datetime import datetime
+import time
+from styles import color, color_hint, color_primary, color_secondary, color_hovered, desplegable_diagnostico
+from menubar import menubar
+from urlsapi import HTTP_UPDATE_PACIENTE
 
-global paciente_data, user_data
+def view_setting(page, app_state):
 
-#(~!@#$%^&*()-_+=[]{}\:;'"<>,.?/)
+    page.padding=0
 
-def registration_view(page, app_state):
-    API_URL = HTTP_REGISTER
-
-    def back(e):
-        page.controls.clear()
-        app_state.show_login()
-        page.update()
-    
-    #filtro para validaciones
-    def filtro_validaciones(page, data_values, data_keys, errores):
-        # Validaciones
-        for i in range(len(data_values)):
-            value = data_values[i]
-            key = data_keys[i]
+    if not app_state.token:
+        # Si no hay token, redirigir al inicio de sesión
+            page.controls.clear()
+            login_view(page, app_state)
+            page.update()
+            return
             
-            if key == "nombres":
-                error = validate_texto(page, value, 100,col_valid_nombres,txt_valid_nombres,nombres_field,icon_valid_nombres)
-            elif key == "apPaterno":
-                error = validate_texto(page, value, 100,col_valid_apPaterno,txt_valid_apPaterno,apPaterno_field,icon_valid_apPaterno)
-            elif key == "apMaterno":
-                error = validate_texto(page, value, 100,col_valid_apMaterno,txt_valid_apMaterno,apMaterno_field,icon_valid_apMaterno)
-            elif key == "genero":
-                error = validate_radiobutton(page, value, col_valid_genero, txt_valid_genero, col_genero, icon_valid_genero)
-            elif key == "fecha_nacimiento":
-                error = validate_fecha_nacimiento(page, value, col_valid_fecha, txt_valid_fecha, fecha_nacimiento_field, icon_valid_fecha)
-            elif key == "email":
-                error = validate_email(page, value, 100, col_valid_email,txt_valid_email,email_field,icon_valid_email)
-            elif key == "celular":
-                error = validate_celular(page, value, col_valid_celular,txt_valid_celular,celular_field,icon_valid_celular)
-            elif key == "username":
-                error = validate_texto(page, value, 100,col_valid_username,txt_valid_username,username_field,icon_valid_username)
-            elif key == "password":
-                error = validate_password(page, value, 100,col_valid_password,txt_valid_password,password_field,icon_valid_password)
-            else:
-                error = None
+    #Obtener token
+    token =app_state.token
 
-            if error:
-                errores.append(f"Error en {key}: {error}")
     
-    def handle_registration(e):
-        user = {
-            "username": username_field.value,
-            "password": password_field.value
-        }
-
-        data = {
-            "user": user,
-            "nombres": nombres_field.value,
-            "apPaterno": apPaterno_field.value,
-            "apMaterno": apMaterno_field.value,
-            "genero": genero_field.value,  # Valor seleccionado en RadioGroup
-            "fecha_nacimiento": fecha_nacimiento_field.value,
-            "email": email_field.value,
-            "celular": celular_field.value,
-        }
-
-        data_values = [value for key, value in data.items() if key != "user"]+list(user.values())
-        data_keys = [key for key in data.keys() if key != "user"]+list(user.keys())
-
-        # Lista para errores
-        errores = []
-        #Llamada al método para validaciones
-        filtro_validaciones(page, data_values, data_keys, errores)
-
-        # Imprimir errores
-
-        list_errores="\n".join(errores)
-
-        if errores:
-            error_alert = ft.AlertDialog(
-                title=ft.Text("Error", color=ft.colors.RED),
-                content=ft.Text(list_errores, color=ft.colors.RED),
-                bgcolor=ft.colors.WHITE,
-                shape=ft.RoundedRectangleBorder(10)
-            )
-            page.open(error_alert)
-
-        else:
-            headers = {'Content-Type': 'application/json'}
-
-            loading_dialog = ft.AlertDialog(
-                title=ft.Text("Cargando...", color=ft.colors.BLACK),
-                content=ft.Text("Por favor, espere mientras se procesa su solicitud.", color=ft.colors.BLACK),
-                actions=[],
-                bgcolor=ft.colors.WHITE,
-                shape=ft.RoundedRectangleBorder(10)
-            )
-            page.show_dialog(loading_dialog)
-
-            try:
-                response = requests.post(API_URL, json=data, headers=headers)
-
-                if response.status_code == 201:  # Código de estado HTTP para creación exitosa
-                    response_data = response.json()
-                    token = response_data.get('token')
-                    user_data = response_data.get('user')
-                    paciente_data = response_data.get('paciente')  
-
-                    app_state.token = token
-                    app_state.user_data = user_data
-                    app_state.paciente_data = paciente_data  
-
-                    page.update()
-
-                    success_message = response_data.get("message", "Registro exitoso. Redirigiendo...")
-
-                    def redirect_after_delay():
-                        page.controls.clear()
-                        app_state.show_welcome()
-                        page.update()
-
-                    success_alert = ft.AlertDialog(
-                        title=ft.Text("Éxito", color=ft.colors.GREEN),
-                        content=ft.Text(success_message, color=ft.colors.GREEN),
-                        actions=[],
-                        bgcolor=ft.colors.WHITE,
-                        shape=ft.RoundedRectangleBorder(10)
-                    )
-                    page.show_dialog(success_alert)
-
-                    threading.Timer(2.0, redirect_after_delay).start() 
-
-                else:
-                    print(data)
-                    error_message = response.json().get('message', 'Error desconocido')
-
-                    def close_error_dialog(e):
-                        page.update()
-
-                    error_alert = ft.AlertDialog(
-                        title=ft.Text("Error de Registro", color=ft.colors.RED),
-                        content=ft.Text(error_message, color=ft.colors.RED),
-                        # actions=[ft.TextButton(text="Aceptar", on_click=close_error_dialog)],
-                        bgcolor=ft.colors.WHITE,
-                        shape=ft.RoundedRectangleBorder(10)
-                    )
-                    page.show_dialog(error_alert)
-
-            except Exception as e:
-                error_alert = ft.AlertDialog(
-                    title=ft.Text("Error", color=ft.colors.RED),
-                    content=ft.Text(f"Ocurrió un error: {e}", color=ft.colors.RED),
-                    # actions=[ft.TextButton(text="Aceptar")],
-                    bgcolor=ft.colors.WHITE,
-                    shape=ft.RoundedRectangleBorder(10)
-                )
-                page.show_dialog(error_alert)
+    #consumir API aquí!
 
 
-    def handle_change(e):
-        fecha_nacimiento_field.value = e.control.value.strftime('%Y-%m-%d')
+    def ir_home(e, page, app_state):
+        page.controls.clear()
+        menu_bar=menubar(page, app_state)
+        page.controls.append(menu_bar)
+        page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
+        app_state.show_home()
         page.update()
-
-    def handle_dismissal(e):
-        pass
 
     #----------------------------------------------------------------------------------------------------------------------------------------------    
     #ÍCONO PARA VALIDACIONES
     icon_valid_username=ft.Icon()            
-    icon_valid_password=ft.Icon()
     icon_valid_nombres=ft.Icon()
     icon_valid_apPaterno=ft.Icon()
     icon_valid_apMaterno=ft.Icon()
@@ -178,12 +44,29 @@ def registration_view(page, app_state):
     icon_valid_celular=ft.Icon()
     icon_valid_genero=ft.Icon()
     icon_valid_fecha=ft.Icon()
-    #----------------------------------------------------------------------------------------------------------------------------------------------
+
     
-    #borde de textfields:
-    border_textfield="#777777"
+    #variables de usuario y paciente:
 
+    user = app_state.user_data.get('username', 'Usuario')
+    nombres = app_state.paciente_data.get('nombres', 'Nombres')
+    apPaterno = app_state.paciente_data.get('apPaterno', 'Apellido Paterno')
+    apMaterno = app_state.paciente_data.get('apMaterno', 'Apellido Materno')
+    email = app_state.paciente_data.get('email', 'Email')
+    celular = app_state.paciente_data.get('celular', 'Celular')
+    genero = app_state.paciente_data.get('genero', 'Género')
+    fecha_nacimiento = app_state.paciente_data.get('fecha_nacimiento', 'Fecha de nacimiento')
 
+    """ username_field.value
+    nombres_field
+    apPaterno_field
+    apMaterno_field
+    email_field
+    celular_field
+    genero_field
+    fecha_nacimiento_field """
+    #----------------------------------------------------------------------------------------------------------------------------------------------
+     
     # Elementos del formulario de registro
     username_field = ft.TextField(label="Nombre de Usuario", prefix_icon=ft.icons.PERSON, width=300, 
             autofocus=True,
@@ -205,28 +88,10 @@ def registration_view(page, app_state):
             focused_border_width=1,
             border_color=color_hint,
             border_radius=10,
+            value=user,
                         )
-    app_state.username_fiel=username_field
-    password_field = ft.TextField(label="Contraseña", prefix_icon=ft.icons.LOCK, password=True, can_reveal_password=True, width=300, autofocus=True,
-            content_padding=0,
-            color=color,
-            #text_size=14,
-            hint_style=ft.TextStyle(
-                #color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                weight="normal"
-                ),
-            label_style=ft.TextStyle(
-                color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            focused_color=color_primary,
-            focused_border_color=color_primary,
-            focused_border_width=1,
-            border_color=color_hint,
-            border_radius=10,
-                        )
+
+    
     nombres_field = ft.TextField(label="Nombres", prefix_icon=ft.icons.PERSON, width=300, autofocus=True,
             content_padding=0,
             color=color,
@@ -247,7 +112,9 @@ def registration_view(page, app_state):
             border_color=color_hint,
             border_radius=10,
             capitalization=ft.TextCapitalization.WORDS,
+            value=nombres,
                         )
+    
     apPaterno_field = ft.TextField(label="Apellido Paterno", prefix_icon=ft.icons.PERSON, width=300, autofocus=True,
             content_padding=0,
             color=color,
@@ -268,8 +135,11 @@ def registration_view(page, app_state):
             border_color=color_hint,
             border_radius=10,
             capitalization=ft.TextCapitalization.WORDS,
+            value=apPaterno,
                         )
+
     apMaterno_field = ft.TextField(label="Apellido Materno", prefix_icon=ft.icons.PERSON, width=300, 
+            value=apMaterno,
             autofocus=True,
             content_padding=0,
             color=color,
@@ -291,7 +161,9 @@ def registration_view(page, app_state):
             border_radius=10, 
             capitalization=ft.TextCapitalization.WORDS,
                         )
+
     email_field = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, width=300, 
+            value=email,
             autofocus=True,
             content_padding=0,
             color=color,
@@ -312,7 +184,9 @@ def registration_view(page, app_state):
             border_color=color_hint,
             border_radius=10,
                         )
-    celular_field = ft.TextField(label="Celular", prefix_icon=ft.icons.PHONE, width=300, 
+
+    celular_field = ft.TextField(label="Celular", prefix_icon=ft.icons.PHONE, width=300,
+            value=celular, 
             autofocus=True,
             content_padding=0,
             color=color,
@@ -356,7 +230,7 @@ def registration_view(page, app_state):
                     size=14,)),
         ],
         alignment=ft.MainAxisAlignment.CENTER, 
-        spacing=0))
+        spacing=0), value=genero)
     col_genero=ft.Container(content=ft.Column([
                 generoLabel,
                 genero_field,
@@ -366,6 +240,7 @@ def registration_view(page, app_state):
             padding=15,
             border=ft.border.all(color=color_hint),
             border_radius=10)
+
     fecha_nacimiento_field = ft.TextField(
         label="Nacimiento",
         width=150,  # Ajusta el ancho del campo de texto según sea necesario
@@ -388,9 +263,12 @@ def registration_view(page, app_state):
             focused_border_color=color_primary,
             focused_border_width=1,
             border_color=color_hint,
-            border_radius=10,)
+            border_radius=10,
+            value=fecha_nacimiento)
     
-
+    def handle_change(e):
+        fecha_nacimiento_field.value = e.control.value.strftime('%Y-%m-%d')
+        page.update()
 
 
     fecha_nacimiento_button = ft.FilledButton(
@@ -401,8 +279,7 @@ def registration_view(page, app_state):
             ft.DatePicker(
                 first_date=datetime(year=1920, month=1, day=1),
                 last_date=datetime(year=2024, month=12, day=31),
-                on_change=handle_change,
-                on_dismiss=handle_dismissal)),
+                on_change=handle_change,)),
         width=110,
         style=ft.ButtonStyle(
             color={
@@ -420,11 +297,11 @@ def registration_view(page, app_state):
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Alineación horizontal
         vertical_alignment=ft.CrossAxisAlignment.CENTER),)# Alineación vertical
     
-    register_button = ft.FilledButton(
-        text="Registrar",
+    update_button = ft.FilledButton(
+        text="Actualizar",
         width=300,
         height=40,
-        on_click=handle_registration,
+        #on_click=actualizar_datos,
         style=ft.ButtonStyle(
             shape=ft.StadiumBorder(),
             color={
@@ -439,7 +316,7 @@ def registration_view(page, app_state):
     back_button = ft.TextButton(
         text="Regresar",
         width=300,
-        on_click=back,
+        on_click=lambda e: ir_home(e, page, app_state),
         style=ft.ButtonStyle(
             shape=ft.StadiumBorder(),
             color={
@@ -453,7 +330,7 @@ def registration_view(page, app_state):
             },))
     #textos para validacion de campos----------------------------------------------------------------------------------------------------------
     txt_valid_username=ft.Text()
-    txt_valid_password=ft.Text()
+    #txt_valid_password=ft.Text()
     txt_valid_nombres=ft.Text()
     txt_valid_apPaterno=ft.Text()
     txt_valid_apMaterno=ft.Text()
@@ -461,6 +338,7 @@ def registration_view(page, app_state):
     txt_valid_celular=ft.Text()
     txt_valid_genero=ft.Text()
     txt_valid_fecha=ft.Text()
+
     #----------------------------------------------------------------------------------------------------------------------------------------------#
     #CONTAINERS PARA TEXTOS DE VALIDACIÓN
     
@@ -472,14 +350,14 @@ def registration_view(page, app_state):
             height=10,
             padding=5,
             border_radius=5,) 
-    col_valid_password=ft.Container(content=ft.Row([
+    """ col_valid_password=ft.Container(content=ft.Row([
                 icon_valid_password,
                 txt_valid_password    
             ]
             ), width=300,
             height=10,
             padding=5,
-            border_radius=5,) 
+            border_radius=5,)  """
     col_valid_nombres=ft.Container(content=ft.Row([
                 icon_valid_nombres,
                 txt_valid_nombres    
@@ -546,13 +424,13 @@ def registration_view(page, app_state):
         ], spacing=0),
         #padding=ft.padding.only(top=10), 
         alignment=ft.alignment.center)
-    row_password=ft.Container(content=ft.Column([       
-                password_field,
+    """ row_password=ft.Container(content=ft.Column([       
+                #password_field,
                 col_valid_password
 
         ], spacing=0),
         #padding=ft.padding.only(top=10), 
-        alignment=ft.alignment.center)
+        alignment=ft.alignment.center) """
     row_nombres=ft.Container(content=ft.Column([       
                 nombres_field,
                 col_valid_nombres
@@ -600,8 +478,8 @@ def registration_view(page, app_state):
     # Containers con elementos
 
     titulo_principal=ft.Container(content=ft.Column([       
-        ft.Text("Formulario de Registro",size=20, color=ft.colors.WHITE),
-        ft.Text("Ingrese los datos requeridos para crear una nueva cuenta.",size=10, color=ft.colors.WHITE)
+        ft.Text("Actualizar Perfil",size=20, color=ft.colors.WHITE),
+        ft.Text("Modifique los campos que desea actualizar.",size=10, color=ft.colors.WHITE)
         ], spacing=0, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
         #padding=ft.padding.only(top=10), 
         alignment=ft.alignment.center, margin=ft.margin.only(top=40))
@@ -617,7 +495,7 @@ def registration_view(page, app_state):
             row_email,
             row_celular,
             row_username,
-            row_password,
+            #row_password,
         ], alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
@@ -625,10 +503,10 @@ def registration_view(page, app_state):
         padding=ft.padding.only(top=30))
     
     botones = ft.Container(
-        content=ft.Column(controls=[register_button, back_button], alignment=ft.MainAxisAlignment.CENTER),
+        content=ft.Column(controls=[update_button, back_button], alignment=ft.MainAxisAlignment.CENTER),
         width=300)
 
-    contenedor_fondo=ft.Container(width=2000, height=300, bgcolor=color_primary)
+    contenedor_fondo=ft.Container(width=2000, height=100, bgcolor=color_primary)
 
     # Container principal de la vista de registro
     contenedor_principal = ft.Container(
@@ -638,30 +516,30 @@ def registration_view(page, app_state):
                       botones],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        ),margin=ft.margin.only(top=100, left=20, right=20, bottom=30),
+        ),margin=ft.margin.only(top=20, left=20, right=20, bottom=30),
         padding=ft.padding.only( left=20, right=20, bottom=20),
         expand=True,
         width=400,
         border_radius=10,
         bgcolor=ft.colors.WHITE,
-        shadow=ft.BoxShadow(
-            spread_radius=1,
-            blur_radius=15,
-            color=ft.colors.with_opacity(0.5, ft.colors.GREY),
-            offset=ft.Offset(0, 0),
-            blur_style=ft.ShadowBlurStyle.OUTER,
-        ))
+        #shadow=ft.BoxShadow(
+        #    spread_radius=1,
+        #    blur_radius=15,
+        #    color=ft.colors.with_opacity(0.5, ft.colors.GREY),
+        #    offset=ft.Offset(0, 0),
+        #    blur_style=ft.ShadowBlurStyle.OUTER,
+        #)
+        )
 
     contenedor_stack=ft.Stack([
         contenedor_fondo,
         titulo_principal,
-        contenedor_principal
     ],)
 
     content_scrollable = ft.ListView(
-        controls=[contenedor_stack],
+        controls=[contenedor_principal],
         expand=True,
     )
-
+    page.add(contenedor_stack)
     page.add(content_scrollable)
     page.update()

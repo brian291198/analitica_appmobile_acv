@@ -51,14 +51,21 @@ def logout (e, page, app_state, token):
                 login_view(page, app_state)
                 page.update()
             return
-        
+def go_setting(e, page, app_state):
+        page.controls.clear()
+        menu_bar=menubar(page, app_state)
+        page.controls.append(menu_bar)
+        page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
+        app_state.show_setting()
+        page.update()
 
 def menubar(page, app_state):
 
     #Obtener token
     token =app_state.token
 
-    icon_boton = ft.TextButton(
+    icon_logout = ft.TextButton(
+            width=40,
             on_click=lambda e: logout(e, page, app_state, token),
             content=ft.Row(
                 [
@@ -68,13 +75,29 @@ def menubar(page, app_state):
             ),       
             )
     
+    icon_setting = ft.TextButton(
+            width=40,
+            on_click=lambda e: go_setting(e, page, app_state),
+            content=ft.Row(
+                [
+                    ft.Icon(name=ft.icons.SETTINGS_ROUNDED, color=color_primary, size=20),
+                ],
+                #alignment=ft.MainAxisAlignment.CENTER,   
+            ),       
+            )
+    
+    
     col_icon=ft.Container(content=ft.Row([
-                icon_boton
-            ], alignment=ft.MainAxisAlignment.END,
+            icon_setting,
+            icon_logout,
+                
+            ],spacing=0, 
+            alignment=ft.MainAxisAlignment.END,
             ), expand=True, 
             height=50,
             #padding=10, 
             bgcolor=ft.colors.WHITE,
+            margin=ft.margin.only(right=10),
             )
 
     menubar = ft.Container(content=ft.Row([
