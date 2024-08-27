@@ -238,13 +238,33 @@ def view_chart(page, app_state):
         return chart
     
     def comment_text(valor, ident):
-        comentario = "En la última fecha se visualiza un valor {} al anterior, lo que significa que se ha {} el nivel de {}, {}."
-        if len(valor) > 1 and valor[-1] < valor[-2]:
-            comentario = comentario.format("MENOR", "reducido", ident, "¡sigue cuidando de tu salud!")
-            
+        if len(valor) >= 1:
+            if(ident == "GLUCOSA"):
+                if valor[-1] < 53:
+                    comentario = "Este nivel de glucosa, denominado Hipoglucemia Nivel 2, es extremadamente bajo y puede causar síntomas severos. Es fundamental actuar rápidamente para elevar los niveles de glucosa, ya que un nivel tan bajo puede aumentar significativamente el riesgo de un accidente cerebrovascular."
+                elif valor[-1] >= 53 and valor[-1] < 70:
+                    comentario = "La Hipoglucemia Nivel 1 indica un nivel bajo de glucosa en sangre. Aunque menos crítico que el Nivel 2, sigue siendo importante tratar de elevar los niveles de glucosa para evitar complicaciones, como un mayor riesgo de accidente cerebrovascular."
+                elif valor[-1] >= 70 and valor[-1] < 100:
+                    comentario = "Este rango de glucosa, típico en pacientes sanos, se considera óptimo para mantener una buena salud general y reducir el riesgo de eventos cerebrovasculares. Mantenerse dentro de este rango es clave para prevenir complicaciones."
+                else:
+                    comentario = "Para pacientes diabéticos, mantener la glucosa en sangre entre 70 y 130 mg/dL ayuda a gestionar su condición de manera efectiva y minimiza el riesgo de complicaciones como el accidente cerebrovascular. Es importante seguir las recomendaciones médicas para mantener los niveles dentro de este rango."
+            else:
+                if valor[-1] < 17:
+                    comentario = "Un IMC por debajo de 16.9, denominado Muy Bajo Peso, indica una posible desnutrición o problemas de salud graves. Es crucial consultar con un profesional médico para abordar posibles deficiencias nutricionales y prevenir riesgos de salud, como problemas cardiovasculares o metabólicos."
+                elif valor[-1] >= 17 and valor[-1] < 18.5:
+                    comentario = "Un IMC en el rango de 17 a 18.4, clasificado como Bajo Peso, puede indicar una falta de masa corporal adecuada. Aunque no tan crítico como el Muy Bajo Peso, es importante considerar ajustes en la dieta y el estilo de vida para alcanzar un peso más saludable y reducir el riesgo de problemas metabólicos."
+                elif valor[-1] >= 18.5 and valor[-1] < 25:
+                    comentario = "El rango de IMC de 18.5 a 24.9 es considerado Normal y refleja un peso saludable. Mantenerse dentro de este rango ayuda a reducir el riesgo de enfermedades crónicas, incluidos problemas cardiovasculares y diabetes, promoviendo una buena salud general."
+                elif valor[-1] >= 25 and valor[-1] < 30:
+                    comentario = "Un IMC de 25 a 29.9, denominado Sobrepeso, sugiere un exceso de peso que podría incrementar el riesgo de condiciones como enfermedades cardíacas y diabetes tipo 2. Es recomendable adoptar un estilo de vida saludable, con una dieta equilibrada y actividad física regular, para reducir el riesgo asociado."
+                elif valor[-1] >= 30 and valor[-1] < 35:
+                    comentario = "Un IMC de 30 a 34.9 indica Obesidad, una condición que aumenta significativamente el riesgo de enfermedades crónicas, como hipertensión y diabetes. Es crucial consultar con un profesional de la salud para desarrollar un plan de manejo del peso y minimizar riesgos asociados."
+                elif valor[-1] >= 35 and valor[-1] < 40:
+                    comentario = "El rango de IMC de 35 a 39.9, conocido como Obesidad Marcada, representa un riesgo elevado de complicaciones de salud graves, incluyendo problemas cardiovasculares y respiratorios. Se recomienda una intervención médica intensiva para gestionar el peso y reducir riesgos."
+                else:
+                    comentario = "Un IMC superior a 40 se clasifica como Obesidad Mórbida y está asociado con un alto riesgo de problemas de salud graves, como enfermedades cardiovasculares y metabólicas. Es vital buscar asesoramiento médico para un plan de tratamiento y manejo integral del peso para mejorar la salud y calidad de vida."
         else:
-            comentario = comentario.format("MAYOR", "incrementado", ident,  "¡CUIDADO!")
-            
+            comentario = "No hay datos"
         return comentario
 
      
@@ -426,39 +446,6 @@ def view_chart(page, app_state):
                 border_radius=10,
                 )
         return state_variable
-    
-    def valor_actual_g_imc(valor, ident):
-
-        if ident == "GLUCOSA":
-            if valor[-1] < 50:
-                comentario = ft.Text("Este nivel de glucosa, denominado Hipoglucemia Nivel 2, es extremadamente bajo y puede causar síntomas severos. Es fundamental actuar rápidamente para elevar los niveles de glucosa, ya que un nivel tan bajo puede aumentar significativamente el riesgo de un accidente cerebrovascular.", size=14, color=color),
-
-            elif valor[-1] >= 50 and valor[-1] < 70:
-                comentario = ft.Text("La Hipoglucemia Nivel 1 indica un nivel bajo de glucosa en sangre. Aunque menos crítico que el Nivel 2, sigue siendo importante tratar de elevar los niveles de glucosa para evitar complicaciones, como un mayor riesgo de accidente cerebrovascular.", size=14, color=color),
-
-            elif valor[-1] >= 70 and valor[-1] <= 100:
-                comentario = ft.Text("Este rango de glucosa, típico en pacientes sanos, se considera óptimo para mantener una buena salud general y reducir el riesgo de eventos cerebrovasculares. Mantenerse dentro de este rango es clave para prevenir complicaciones.", size=14, color=color),
-            else:
-                comentario = ft.Text("Para pacientes diabéticos, mantener la glucosa en sangre entre 70 y 130 mg/dL ayuda a gestionar su condición de manera efectiva y minimiza el riesgo de complicaciones como el accidente cerebrovascular. Es importante seguir las recomendaciones médicas para mantener los niveles dentro de este rango.", size=14, color=color),
-
-
-        else:
-            if valor[-1] < 17:
-                comentario = ft.Text("Un IMC por debajo de 16.9, denominado Muy Bajo Peso, indica una posible desnutrición o problemas de salud graves. Es crucial consultar con un profesional médico para abordar posibles deficiencias nutricionales y prevenir riesgos de salud, como problemas cardiovasculares o metabólicos.", size=14, color=color),
-
-            elif valor[-1] >= 17 and valor[-1] < 18.5:
-                comentario = ft.Text("Un IMC en el rango de 17 a 18.4, clasificado como Bajo Peso, puede indicar una falta de masa corporal adecuada. Aunque no tan crítico como el Muy Bajo Peso, es importante considerar ajustes en la dieta y el estilo de vida para alcanzar un peso más saludable y reducir el riesgo de problemas metabólicos.", size=14, color=color),
-            elif valor[-1] >= 18.5 and valor[-1] < 25:
-                comentario = ft.Text("El rango de IMC de 18.5 a 24.9 es considerado Normal y refleja un peso saludable. Mantenerse dentro de este rango ayuda a reducir el riesgo de enfermedades crónicas, incluidos problemas cardiovasculares y diabetes, promoviendo una buena salud general.", size=14, color=color),
-            elif valor[-1] >= 25 and valor[-1] < 30:
-                comentario = ft.Text("Un IMC de 25 a 29.9, denominado Sobrepeso, sugiere un exceso de peso que podría incrementar el riesgo de condiciones como enfermedades cardíacas y diabetes tipo 2. Es recomendable adoptar un estilo de vida saludable, con una dieta equilibrada y actividad física regular, para reducir el riesgo asociado.", size=14, color=color),
-            elif valor[-1] >= 30 and valor[-1] < 35:
-                comentario = ft.Text("Un IMC de 30 a 34.9 indica Obesidad, una condición que aumenta significativamente el riesgo de enfermedades crónicas, como hipertensión y diabetes. Es crucial consultar con un profesional de la salud para desarrollar un plan de manejo del peso y minimizar riesgos asociados.", size=14, color=color),
-            elif valor[-1] >= 35 and valor[-1] < 40:
-                comentario = ft.Text("El rango de IMC de 35 a 39.9, conocido como Obesidad Marcada, representa un riesgo elevado de complicaciones de salud graves, incluyendo problemas cardiovasculares y respiratorios. Se recomienda una intervención médica intensiva para gestionar el peso y reducir riesgos.", size=14, color=color),
-            else:
-                comentario = ft.Text("Un IMC superior a 40 se clasifica como Obesidad Mórbida y está asociado con un alto riesgo de problemas de salud graves, como enfermedades cardiovasculares y metabólicas. Es vital buscar asesoramiento médico para un plan de tratamiento y manejo integral del peso para mejorar la salud y calidad de vida.", size=14, color=color),
-        return comentario
     
     
     

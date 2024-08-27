@@ -3,9 +3,10 @@ import flet as ft
 import requests
 import threading
 import re
-from styles import color, color_hint, color_primary, color_secondary, color_hovered
+from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check
 from validation import validate_texto, validate_password, validate_email, validate_celular, validate_radiobutton, validate_fecha_nacimiento, validate_apellidos
 from urlsapi import HTTP_REGISTER
+import time
 
 global paciente_data, user_data
 
@@ -13,6 +14,19 @@ global paciente_data, user_data
 
 def registration_view(page, app_state):
     API_URL = HTTP_REGISTER
+
+    overlay = ft.Container(
+        width=page.width,
+        height=2000,
+        bgcolor=ft.colors.with_opacity(0.5, ft.colors.BLACK),  # Fondo oscuro transparente
+        alignment=ft.alignment.center,  # Centrar el contenido (el indicador de carga)
+        content=ft.CupertinoActivityIndicator(
+            radius=20,
+            color=ft.colors.WHITE,
+            animating=True,
+        ),
+        visible=False,  # Inicia oculto
+    )
 
     def back(e):
         page.controls.clear()
@@ -91,19 +105,25 @@ def registration_view(page, app_state):
         else:
             headers = {'Content-Type': 'application/json'}
 
-            loading_dialog = ft.AlertDialog(
-                title=ft.Text("Cargando...", color=ft.colors.BLACK),
-                content=ft.Text("Por favor, espere mientras se procesa su solicitud.", color=ft.colors.BLACK),
-                actions=[],
-                bgcolor=ft.colors.WHITE,
-                shape=ft.RoundedRectangleBorder(10)
-            )
-            page.show_dialog(loading_dialog)
+            contenedor_stack.controls.append(overlay)
+            overlay.visible=True
+            page.update()
+            time.sleep(0.5)
 
             try:
                 response = requests.post(API_URL, json=data, headers=headers)
+                overlay.visible=False
+                page.update()
 
                 if response.status_code == 201:  # Código de estado HTTP para creación exitosa
+                    #icono de aprobado
+                    aprobado = ft.AlertDialog(
+                        content=ft.Icon(name=ft.icons.CHECK_CIRCLE_ROUNDED, color=color_check, size=40),
+                        bgcolor=ft.colors.TRANSPARENT)
+                    page.open(aprobado)
+                    time.sleep(0.5)
+                    page.close(aprobado) 
+                    page.update() 
                     response_data = response.json()
                     token = response_data.get('token')
                     user_data = response_data.get('user')
@@ -122,14 +142,14 @@ def registration_view(page, app_state):
                         app_state.show_welcome()
                         page.update()
 
-                    success_alert = ft.AlertDialog(
+                    """ success_alert = ft.AlertDialog(
                         title=ft.Text("Éxito", color=ft.colors.GREEN),
                         content=ft.Text(success_message, color=ft.colors.GREEN),
                         actions=[],
                         bgcolor=ft.colors.WHITE,
                         shape=ft.RoundedRectangleBorder(10)
                     )
-                    page.show_dialog(success_alert)
+                    page.show_dialog(success_alert) """
 
                     threading.Timer(2.0, redirect_after_delay).start() 
 
