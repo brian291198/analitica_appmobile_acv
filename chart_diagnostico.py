@@ -692,11 +692,8 @@ def view_chart(page, app_state):
         controls=[row_buttons]
     )
 
-    titulo_chart = ft.Text("Seguimiento y Monitoreo de \nVariables de Predicción", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE, text_align="center")
+    titulo_chart = ft.Text("Seguimiento y Monitoreo de \nVariables de Predicción", size=18, color=ft.colors.WHITE, text_align="center")
     row_titulo_chart = ft.Container(content=ft.Row([titulo_chart], alignment=ft.MainAxisAlignment.CENTER), bgcolor=color_primary, padding=ft.padding.only(top=5, bottom=20), margin=ft.margin.only(top=-1))
-
-   
-
    
     page.controls.append(principal_container)
     page.controls.append(row_titulo_chart)

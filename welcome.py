@@ -31,7 +31,7 @@ def welcome_view (page, app_state):
         spans=[
                 ft.TextSpan(
                     f"Bienvenido {username} a ",
-                    ft.TextStyle(size=30, color='#333333', font_family="LTSaeada-1", height=1)),
+                    ft.TextStyle(size=30, color=color, height=1)),
                 ft.TextSpan(
                     "NEURO IA-ACV, ",
                     ft.TextStyle(
@@ -47,10 +47,10 @@ def welcome_view (page, app_state):
                     ),),
                     ft.TextSpan(
                     f"la mejor APP para predecir el riesgo de ACV.",
-                    ft.TextStyle(size=30, color='#333333', font_family="LTSaeada-1", height=1)),
+                    ft.TextStyle(size=30, color=color, height=1)),
                         
         ])
-    t_s = ft.Text(value='"Cuida tu futuro hoy"',size=15, color='#333333', font_family="RoundsNeue-1")
+    t_s = ft.Text(value='"Cuida tu futuro hoy"',size=18, color=color, font_family="RoundsNeue-1")
     i_p= ft.Image(src=f"/principal3.png", width=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
     b_p = ft.FilledButton(
         text="Continuar",

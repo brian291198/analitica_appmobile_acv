@@ -221,7 +221,7 @@ def view_data_diagnostico(page, app_state):
     )
 
 
-    contenedor_fondo=ft.Container(width=2000, height=100, bgcolor=color_primary, margin=ft.margin.only(bottom=10))
+ 
 
     titulo_principal=ft.Container(content=ft.Column([       
             ft.Text("Registro de diagnósticos",size=20, color=ft.colors.WHITE),
@@ -230,12 +230,11 @@ def view_data_diagnostico(page, app_state):
             #padding=ft.padding.only(top=10), 
             alignment=ft.alignment.center, margin=ft.margin.only(top=40))
     
-    contenedor_stack=ft.Stack([
-        contenedor_fondo,
-        titulo_principal,
-    ],)
 
-    page.add(contenedor_stack)
+    row_titulo_chart = ft.Container(content=ft.Column([titulo_principal], alignment=ft.MainAxisAlignment.CENTER), bgcolor=color_primary, padding=ft.padding.only(top=5, bottom=20), margin=ft.margin.only(top=-1, bottom=10))
+
+
+    page.controls.append(row_titulo_chart)
 
     #page.controls.append(col_titulo)
     page.controls.append(list_buttons)
