@@ -200,7 +200,7 @@ def view_data_diagnostico(page, app_state):
     cant_registros=len(registros)
 
     row_estadistica = ft.Container(
-        content=ft.Row([ft.Text(f"Cantidad de registros: {cant_registros}", size=14, color=color_primary), btn_estadistica], alignment=ft.MainAxisAlignment.CENTER),
+        content=ft.Row([ft.Text(f"Cantidad de registros: {cant_registros}", size=14, color=color_primary), btn_estadistica], alignment=ft.MainAxisAlignment.CENTER, scroll=ft.ScrollMode.HIDDEN),
         padding=ft.padding.only(bottom=10),
         width=300
     )

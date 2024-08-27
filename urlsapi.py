@@ -3,11 +3,11 @@
 
 #Si deseas probar en tu entorno local solo cambia estas dos URLs! ;)
 API_BACK = 'http://127.0.0.1:8080'
-#API_WSP = 'http://127.0.0.1:3000'
+API_WSP = 'http://127.0.0.1:3000'
 
 
 #Solicitud para enviar mensaje WHATSAPP
-#SEND_WSP = f'{API_WSP}/send-message'
+SEND_WSP = f'{API_WSP}/send-message'
 
 #Solicitud a chatBOT
 SEND_CHATBOT = f'{API_BACK}/api/acv1/chatbot/'

@@ -75,7 +75,7 @@ def menubar(page, app_state):
             ),       
             )
     
-    icon_setting = ft.TextButton(
+    """ icon_setting = ft.TextButton(
             width=40,
             on_click=lambda e: go_setting(e, page, app_state),
             content=ft.Row(
@@ -84,11 +84,11 @@ def menubar(page, app_state):
                 ],
                 #alignment=ft.MainAxisAlignment.CENTER,   
             ),       
-            )
+            ) """
     
     
     col_icon=ft.Container(content=ft.Row([
-            icon_setting,
+            #icon_setting,
             icon_logout,
                 
             ],spacing=0, 

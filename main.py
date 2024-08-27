@@ -75,6 +75,7 @@ def main (page: ft.Page):
     page.bgcolor = "#dddddd"
     page.padding = 0
     page.spacing = 0
+    page.adaptive = True
     
 
 

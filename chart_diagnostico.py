@@ -99,12 +99,15 @@ def view_chart(page, app_state):
     niveles_trabajo = sorted(set(str(r["TipoTrabajo"]) for r in registros_unicos))
     niveles_fumador = sorted(set(str(r["EstadoFumador"]) for r in registros_unicos))
 
+
     # Extraer todos los datos hasta repetidos
     fechas_2 = [r["fechaRegistro"] for r in registros]
     niveles_glucosa_2 = [float(r["Nivel_GlucosaPromedio"]) for r in registros]
     niveles_imc_2 = [float(r["ICM"]) for r in registros]
     niveles_trabajo_2 = [str(r["TipoTrabajo"]) for r in registros]
     niveles_fumador_2 = [str(r["EstadoFumador"]) for r in registros]
+
+    print(niveles_trabajo_2[-1])
 
     # Convertir fechas en valores numéricos (índices)
     def fecha_a_numero(fecha):
@@ -148,7 +151,7 @@ def view_chart(page, app_state):
         fecha = fecha_a_numero(r["fechaRegistro"])
         trabajo = trabajo_a_numero(r["TipoTrabajo"])
         trabajo_tooltip = str(r["TipoTrabajo"])
-        data_points_trabajo.append(ft.LineChartDataPoint(fecha, trabajo, tooltip=f"Tipo Trabajo:\n{trabajo_tooltip}"))
+        data_points_trabajo.append(ft.LineChartDataPoint(fecha, trabajo, tooltip=f"Tipo:\n{trabajo_tooltip}"))
 
      # Crear los puntos de datos para el gráfico de fumador VS FECHA
     data_points_fumador = []
@@ -156,7 +159,7 @@ def view_chart(page, app_state):
         fecha = fecha_a_numero(r["fechaRegistro"])
         fumador = fumador_a_numero(r["EstadoFumador"])
         fumador_tooltip = str(r["EstadoFumador"])
-        data_points_fumador.append(ft.LineChartDataPoint(fecha, fumador, tooltip=f"Estado Fumador:\n{fumador_tooltip}"))
+        data_points_fumador.append(ft.LineChartDataPoint(fecha, fumador, tooltip=f"Estado:\n{fumador_tooltip}"))
 
     # Crear las etiquetas del eje Y GLUCOSA
     data_left = [
@@ -243,70 +246,220 @@ def view_chart(page, app_state):
             comentario = comentario.format("MAYOR", "incrementado", ident,  "¡CUIDADO!")
             
         return comentario
-    def comment_inferior(valor, ident):
-        
-        if len(valor) > 1 and valor[-1] < valor[-2]:
 
-            state_variable = ft.Container(
-            content=ft.Row(
-                controls=[
-                    ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
-                    ft.Text(valor[-1], size=14, color=color),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                scroll=ft.ScrollMode.ALWAYS
-            ),
-            padding=15,
-            margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
-            border=ft.border.all(color=ft.colors.GREEN),
-            bgcolor=ft.colors.GREEN_100,
-            border_radius=10,
-            )
+     
+    def comment_valor_actual(valor, ident):
+
+        if ident=="ESTADO FUMADOR":
+            if valor[-1] == "No opina":
+                comentario = ft.Text("Es crucial tener claridad sobre los hábitos de fumar, ya que la incertidumbre podría dificultar la evaluación del riesgo de ACV.", color=color)
+            elif valor[-1] == "Anteriormente fumó":
+                comentario = ft.Text("Aunque dejó de fumar, es importante considerar los años en los que se fumó, ya que pueden influir en el riesgo de ACV.", color=color)
+            elif valor[-1] == "Nunca fumó":
+                comentario = ft.Text("El no haber fumado es un factor positivo en la reducción del riesgo de ACV.", color=color)
+            else:
+                comentario = ft.Text("El hábito de fumar aumenta significativamente el riesgo de ACV. Considera estrategias para dejar de fumar.", color=color)
         else:
+            if str(valor[-1])== "Trabajador para el gobierno":
+                comentario = ft.Text("Como trabajador para el gobierno, es posible que enfrentes un nivel de estrés más bajo en comparación con otros sectores, lo cual puede influir positivamente en la salud cardiovascular. Mantén un equilibrio saludable entre el trabajo y el tiempo personal para minimizar el riesgo de ACV.", color=color)
+            elif str(valor[-1])== "Nunca trabajó":
+                comentario = ft.Text("No haber trabajado puede estar asociado a factores socioeconómicos que podrían influir en tu salud. Asegúrate de mantener una rutina saludable y realizar chequeos médicos regulares para monitorear tu riesgo de ACV.", color=color)
+            elif str(valor[-1])== "Trabajador privado":
+                comentario = ft.Text("Trabajar en el sector privado a menudo implica una mayor carga de estrés y horarios más largos, lo cual puede aumentar el riesgo de ACV. Considera técnicas de manejo del estrés y busca oportunidades para equilibrar tu carga laboral con actividades relajantes.", color=color)
+            else:
+                comentario = ft.Text("Como trabajador por cuenta propia, podrías experimentar altos niveles de estrés y responsabilidades que podrían afectar tu salud cardiovascular. Es importante gestionar el estrés de manera efectiva y llevar un estilo de vida saludable para reducir el riesgo de ACV.", color=color)
+        return comentario
+    
+    def valor_actual(valor, ident):
+        
 
-            state_variable = ft.Container(
-            content=ft.Row(
+        state_variable = ft.Container(
+            content=ft.Column(
                 controls=[
-                    ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                    ft.Text(f"{ident} Actual: ", size=14, color=color_hint),
                     ft.Text(valor[-1], size=14, color=color),
                 ],
-                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.MainAxisAlignment.CENTER,
                 scroll=ft.ScrollMode.ALWAYS
             ),
             padding=15,
             margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
-            border=ft.border.all(color=ft.colors.RED_500),
-            bgcolor=ft.colors.RED_100,
+            border=ft.border.all(color=color_hint),
+            #bgcolor=ft.colors.GREEN_100,
             border_radius=10,
             )
+      
         return state_variable
+    
+    def valor_actual_g_imc(valor, ident):
+
+        if ident == "GLUCOSA":
+            if valor[-1] >= 70 and valor[-1] <= 100:
+
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.GREEN),
+                bgcolor=ft.colors.GREEN_100,
+                border_radius=10,
+                )
+            else:
+
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.RED_500),
+                bgcolor=ft.colors.RED_100,
+                border_radius=10,
+                )
+        else:
+            if valor[-1] < 17:
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.RED_500),
+                bgcolor=ft.colors.RED_100,
+                border_radius=10,
+                )  
+            elif valor[-1] >= 17 and valor[-1] < 18.5:
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.YELLOW_500),
+                bgcolor=ft.colors.YELLOW_100,
+                border_radius=10,
+                )
+            elif valor[-1] >= 18.5 and valor[-1] < 25:
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.GREEN),
+                bgcolor=ft.colors.GREEN_100,
+                border_radius=10,
+                )
+            elif valor[-1] >= 25 and valor[-1] < 30:
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.YELLOW_500),
+                bgcolor=ft.colors.YELLOW_100,
+                border_radius=10,
+                )
+            else:
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.RED_500),
+                bgcolor=ft.colors.RED_100,
+                border_radius=10,
+                )
+        return state_variable
+    
+    
+    
     
     def report_stadistic(e, ident, page, chart_scrollable_container, data_points, data_left, data_bottom, variable_1, variable_2, fechas, message):
         global chart_scrollable 
         if ident == "GLUCOSA":
             btn_glucosa.disabled=True
+            btn_glucosa.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_primary},
+            )
             btn_imc.disabled=False
-            btn_imc.disabled=False
+            btn_imc.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
             btn_fumador.disabled=False
+            btn_fumador.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
             btn_trabajo.disabled=False
-        elif ident == "IMC":
-            btn_glucosa.disabled=False
-            btn_imc.disabled=True
-            btn_imc.disabled=False
-            btn_fumador.disabled=False
-            btn_trabajo.disabled=False
-        elif ident == "FUMADOR":
-            btn_glucosa.disabled=False
-            btn_imc.disabled=False
-            btn_imc.disabled=False
-            btn_fumador.disabled=True
-            btn_trabajo.disabled=False
+            btn_trabajo.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
         else:
             btn_glucosa.disabled=False
-            btn_imc.disabled=False
-            btn_imc.disabled=False
+            btn_glucosa.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
+            btn_imc.disabled=True
+            btn_imc.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_primary},
+            )
             btn_fumador.disabled=False
-            btn_trabajo.disabled=True
+            btn_fumador.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
+            btn_trabajo.disabled=False
+            btn_trabajo.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
+        
+
         
         subtitulo_chart = ft.Text(f'Tendencia de variable "NIVEL DE {ident}":', size=14, weight=ft.FontWeight.BOLD, color=color, text_align="center")
         row_subtitulo_chart = ft.Container(content=ft.Row([subtitulo_chart]), margin=ft.margin.only(top=20, bottom=20))
@@ -320,7 +473,7 @@ def view_chart(page, app_state):
                     create_chart(data_points, data_left, data_bottom, variable_1, fechas),
                     ft.Container(height=20),
                     ft.Text(comment_text(variable_2, ident), size=14, color=color),
-                    comment_inferior(variable_2, ident),
+                    valor_actual_g_imc(variable_2, ident),
                     ft.Text(message, size=14, color=color),
                 ],
                 alignment=ft.MainAxisAlignment.START,
@@ -342,32 +495,51 @@ def view_chart(page, app_state):
     
     def report_stadistic_2(e, ident, page, chart_scrollable_container, data_points, data_left, data_bottom, variable_1, variable_2, fechas, message):
         global chart_scrollable 
-        if ident == "GLUCOSA":
-            btn_glucosa.disabled=True
-            btn_imc.disabled=False
-            btn_imc.disabled=False
-            btn_fumador.disabled=False
-            btn_trabajo.disabled=False
-        elif ident == "IMC":
+
+        if ident == "ESTADO FUMADOR":
             btn_glucosa.disabled=False
-            btn_imc.disabled=True
+            btn_glucosa.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
             btn_imc.disabled=False
-            btn_fumador.disabled=False
-            btn_trabajo.disabled=False
-        elif ident == "FUMADOR":
-            btn_glucosa.disabled=False
-            btn_imc.disabled=False
-            btn_imc.disabled=False
+            btn_imc.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
             btn_fumador.disabled=True
+            btn_fumador.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_primary},
+            )
             btn_trabajo.disabled=False
+            btn_trabajo.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
         else:
-            btn_glucosa.disabled=False
+            btn_glucosa.disabled=True
+            btn_glucosa.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
             btn_imc.disabled=False
-            btn_imc.disabled=False
+            btn_imc.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
             btn_fumador.disabled=False
+            btn_fumador.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_hint},
+            )
             btn_trabajo.disabled=True
+            btn_trabajo.style = ft.ButtonStyle(
+            color={"": ft.colors.WHITE},
+            bgcolor={"": color_primary},
+            )
         
-        subtitulo_chart = ft.Text(f'Tendencia de variable "NIVEL DE {ident}":', size=14, weight=ft.FontWeight.BOLD, color=color, text_align="center")
+        subtitulo_chart = ft.Text(f'Tendencia de variable "{ident}":', size=14, weight=ft.FontWeight.BOLD, color=color, text_align="center")
         row_subtitulo_chart = ft.Container(content=ft.Row([subtitulo_chart]), margin=ft.margin.only(top=20, bottom=20))
 
         
@@ -378,8 +550,9 @@ def view_chart(page, app_state):
                     row_subtitulo_chart,
                     create_chart(data_points, data_left, data_bottom, variable_1, fechas),
                     ft.Container(height=20),
-                    #comment_inferior(variable_2, ident),
-                    ft.Text(message, size=14, color=color),
+                    comment_valor_actual(variable_2, ident),
+                    valor_actual(variable_2, ident)
+                    #ft.Text(message, size=14, color=color),
                 ],
                 alignment=ft.MainAxisAlignment.START,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -430,7 +603,6 @@ def view_chart(page, app_state):
 
     #BOTONES PARA CADA GRÁFICO
 
-
     btn_trabajo = ft.TextButton(
         content=ft.Row(
             [
@@ -440,10 +612,10 @@ def view_chart(page, app_state):
         ),
         style=ft.ButtonStyle(
             color=ft.colors.WHITE,
-            bgcolor=color_primary,
+            bgcolor=color_hint,
             overlay_color=color_hovered,
         ),
-        on_click=lambda e: report_stadistic_2(e, "TRABAJO", page, chart_scrollable, data_points_trabajo, data_left_trabajo, data_bottom, niveles_trabajo, niveles_trabajo_2, fechas, " ")
+        on_click=lambda e: report_stadistic_2(e, "TIPO DE TRABAJO", page, chart_scrollable, data_points_trabajo, data_left_trabajo, data_bottom, niveles_trabajo, niveles_trabajo_2, fechas, " ")
     )
 
     btn_fumador = ft.TextButton(
@@ -455,10 +627,10 @@ def view_chart(page, app_state):
         ),
         style=ft.ButtonStyle(
             color=ft.colors.WHITE,
-            bgcolor=color_primary,
+            bgcolor=color_hint,
             overlay_color=color_hovered,
         ),
-        on_click=lambda e: report_stadistic_2(e, "FUMADOR", page, chart_scrollable, data_points_fumador, data_left_fumador, data_bottom, niveles_fumador, niveles_fumador_2, fechas, " ")
+        on_click=lambda e: report_stadistic_2(e, "ESTADO FUMADOR", page, chart_scrollable, data_points_fumador, data_left_fumador, data_bottom, niveles_fumador, niveles_fumador_2, fechas, " ")
     )
 
 
@@ -471,7 +643,7 @@ def view_chart(page, app_state):
         ),
         style=ft.ButtonStyle(
             color=ft.colors.WHITE,
-            bgcolor=color_primary,
+            bgcolor=color_hint,
             overlay_color=color_hovered,
         ),
         on_click=lambda e: report_stadistic(e, "GLUCOSA", page, chart_scrollable, data_points, data_left, data_bottom, niveles_glucosa, niveles_glucosa_2, fechas, "• Pacientes sanos: rango de 70-100 mg/dL.\n• Pacientes diabéticos: rango de 70-130 mg/dL.")
@@ -488,14 +660,14 @@ def view_chart(page, app_state):
         ),
         style=ft.ButtonStyle(
             color=ft.colors.WHITE,
-            bgcolor=color_primary,
+            bgcolor=color_hint,
             overlay_color=color_hovered,
         ),
         on_click=lambda e: report_stadistic(e, "IMC", page, chart_scrollable, data_points_imc, data_left_imc, data_bottom, niveles_imc, niveles_imc_2, fechas, "• Muy Bajo Peso: IMC menor a 16.9\n• Bajo Peso: IMC de 17 a 18.4\n• Normal: IMC de 18.5 a 24.9\n• Sobrepeso: IMC de 25 a 29.9\n• Obesidad: IMC de 30 a 34.9\n• Obesidad Marcada: IMC de 35 a 39.9\n• Obesidad Mórbida: IMC mayor a 40")
     )
 
     row_buttons = ft.Container(
-        content=ft.Row([btn_glucosa, btn_imc, btn_trabajo, btn_fumador, ], alignment=ft.MainAxisAlignment.CENTER, scroll=ft.ScrollMode.ALWAYS),
+        content=ft.Row([btn_glucosa, btn_imc, btn_trabajo, btn_fumador, ], alignment=ft.MainAxisAlignment.CENTER, scroll=ft.ScrollMode.ALWAYS), #cambiar a HIDDEN
         padding=ft.padding.only(top=20, bottom=20,right=15, left=15),
         width=2000
     )
@@ -517,6 +689,7 @@ def view_chart(page, app_state):
     page.update()
 
 def view_data(e, page, app_state):
+
     page.controls.clear()
     menu_bar = menubar(page, app_state)
     page.controls.append(menu_bar)

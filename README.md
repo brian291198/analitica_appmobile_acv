@@ -19,9 +19,13 @@ python3 -m venv venv
 ```
 
 ### 3. Activar entorno virtual
-* En Windows o Linux:
+* En Windows:
 ```bash
 venv/Scripts/activate
+```
+* En Linux:
+```bash
+source venv/Scripts/activate
 ```
 ### 4. Instalar dependencias mediante requirements.txt
 * En Windows o Linux:
