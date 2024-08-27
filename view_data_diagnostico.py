@@ -8,6 +8,20 @@ from styles import color, color_hint, color_primary, color_secondary, color_hove
 from menubar import menubar
 from urlsapi import DATA_OBJ_1
 
+""" 
+
+GRÁFICOS PARA:
+
+-nivel glucosa
+-imc
+-Tipo de trabajo
+-estado de fumador
+
+*cantidad de diagnósticos
+*valores para glucosa e imc coloreado segun niveles
+
+ """
+
 def view_data_diagnostico(page, app_state):
 
     page.padding=0
@@ -183,8 +197,10 @@ def view_data_diagnostico(page, app_state):
         )
     )
 
+    cant_registros=len(registros)
+
     row_estadistica = ft.Container(
-        content=ft.Row([btn_estadistica], alignment=ft.MainAxisAlignment.CENTER),
+        content=ft.Row([ft.Text(f"Cantidad de registros: {cant_registros}", size=14, color=color_primary), btn_estadistica], alignment=ft.MainAxisAlignment.CENTER),
         padding=ft.padding.only(bottom=10),
         width=300
     )
