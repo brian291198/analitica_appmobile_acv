@@ -2,8 +2,8 @@
 #VARIABLES DE ENTORNO para URLs de API
 
 #Si deseas probar en tu entorno local solo cambia estas dos URLs! ;)
-API_BACK = 'http://127.0.0.1:8080'
-API_WSP = 'http://127.0.0.1:3000'
+API_BACK = 'http://35.188.119.0:8080'
+API_WSP = 'http://35.188.119.0:3000'
 
 
 #Solicitud para enviar mensaje WHATSAPP
