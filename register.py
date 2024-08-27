@@ -4,7 +4,7 @@ import requests
 import threading
 import re
 from styles import color, color_hint, color_primary, color_secondary, color_hovered
-from validation import validate_texto, validate_password, validate_email, validate_celular, validate_radiobutton, validate_fecha_nacimiento
+from validation import validate_texto, validate_password, validate_email, validate_celular, validate_radiobutton, validate_fecha_nacimiento, validate_apellidos
 from urlsapi import HTTP_REGISTER
 
 global paciente_data, user_data
@@ -29,9 +29,9 @@ def registration_view(page, app_state):
             if key == "nombres":
                 error = validate_texto(page, value, 100,col_valid_nombres,txt_valid_nombres,nombres_field,icon_valid_nombres)
             elif key == "apPaterno":
-                error = validate_texto(page, value, 100,col_valid_apPaterno,txt_valid_apPaterno,apPaterno_field,icon_valid_apPaterno)
+                error = validate_apellidos(page, value, 100,col_valid_apPaterno,txt_valid_apPaterno,apPaterno_field,icon_valid_apPaterno)
             elif key == "apMaterno":
-                error = validate_texto(page, value, 100,col_valid_apMaterno,txt_valid_apMaterno,apMaterno_field,icon_valid_apMaterno)
+                error = validate_apellidos(page, value, 100,col_valid_apMaterno,txt_valid_apMaterno,apMaterno_field,icon_valid_apMaterno)
             elif key == "genero":
                 error = validate_radiobutton(page, value, col_valid_genero, txt_valid_genero, col_genero, icon_valid_genero)
             elif key == "fecha_nacimiento":

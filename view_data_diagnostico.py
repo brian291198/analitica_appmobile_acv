@@ -201,7 +201,7 @@ def view_data_diagnostico(page, app_state):
 
     row_estadistica = ft.Container(
         content=ft.Row([ft.Text(f"Cantidad de registros: {cant_registros}", size=14, color=color_primary), btn_estadistica], alignment=ft.MainAxisAlignment.CENTER, scroll=ft.ScrollMode.HIDDEN),
-        padding=ft.padding.only(bottom=10),
+        padding=ft.padding.only(bottom=10, left=15),
         width=300
     )
 

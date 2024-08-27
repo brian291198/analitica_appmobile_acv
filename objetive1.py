@@ -43,9 +43,9 @@ def objetive1_view(page, app_state):
                 elif key == "TipoTrabajo":
                     error = validate_radiobutton(page, value, col_valid_trabajo, txt_valid_trabajo, col_trabajo, icon_valid_trabajo)
                 elif key == "Nivel_GlucosaPromedio":
-                    error = validate_intervalo(page, value, col_valid_glucosa, txt_valid_glucosa, ip_glucosa, icon_valid_glucosa, 30, 300)
+                    error = validate_intervalo(page, value, col_valid_glucosa, txt_valid_glucosa, ip_glucosa, icon_valid_glucosa, 50, 280)
                 elif key == "ICM":
-                    error = validate_intervalo(page, value, col_valid_imc, txt_valid_imc, ip_imc, icon_valid_imc, 10, 100)
+                    error = validate_intervalo(page, value, col_valid_imc, txt_valid_imc, ip_imc, icon_valid_imc, 13, 50)
                 elif key == "EstadoFumador":
                     error = validate_radiobutton(page, value, col_valid_fumador, txt_valid_fumador, col_fumador, icon_valid_fumador)
                 else:

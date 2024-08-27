@@ -294,7 +294,23 @@ def view_chart(page, app_state):
     def valor_actual_g_imc(valor, ident):
 
         if ident == "GLUCOSA":
-            if valor[-1] >= 70 and valor[-1] <= 100:
+            if valor[-1] >= 50 and valor[-1] < 70:
+                state_variable = ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Text(f"Nivel de {ident} Actual: ", size=14, color=color),
+                        ft.Text(valor[-1], size=14, color=color),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.HIDDEN
+                ),
+                padding=15,
+                margin=ft.margin.only(left=15, right=15, top=20, bottom=15),
+                border=ft.border.all(color=ft.colors.RED_500),
+                bgcolor=ft.colors.RED_100,
+                border_radius=10,
+                )
+            elif valor[-1] >= 70 and valor[-1] <= 100:
 
                 state_variable = ft.Container(
                 content=ft.Row(
@@ -518,7 +534,7 @@ def view_chart(page, app_state):
             bgcolor={"": color_hint},
             )
         else:
-            btn_glucosa.disabled=True
+            btn_glucosa.disabled=False
             btn_glucosa.style = ft.ButtonStyle(
             color={"": ft.colors.WHITE},
             bgcolor={"": color_hint},
@@ -646,7 +662,7 @@ def view_chart(page, app_state):
             bgcolor=color_hint,
             overlay_color=color_hovered,
         ),
-        on_click=lambda e: report_stadistic(e, "GLUCOSA", page, chart_scrollable, data_points, data_left, data_bottom, niveles_glucosa, niveles_glucosa_2, fechas, "• Pacientes sanos: rango de 70-100 mg/dL.\n• Pacientes diabéticos: rango de 70-130 mg/dL.")
+        on_click=lambda e: report_stadistic(e, "GLUCOSA", page, chart_scrollable, data_points, data_left, data_bottom, niveles_glucosa, niveles_glucosa_2, fechas, "• Hipoglucemia Nivel 2: glucosa en sangre inferior a 53 mg/dL.\n• Hipoglucemia Nivel 1: glucosa en sangre inferior a 70 mg/dL.\n• Pacientes sanos: rango de 70-100 mg/dL.\n• Pacientes diabéticos: rango de 70-130 mg/dL.")
         #on_click = lambda e: prueba(e, page, chart_scrollable)
     )
 
@@ -667,7 +683,7 @@ def view_chart(page, app_state):
     )
 
     row_buttons = ft.Container(
-        content=ft.Row([btn_glucosa, btn_imc, btn_trabajo, btn_fumador, ], alignment=ft.MainAxisAlignment.CENTER, scroll=ft.ScrollMode.ALWAYS), #cambiar a HIDDEN
+        content=ft.Row([btn_glucosa, btn_imc, btn_trabajo, btn_fumador, ], alignment=ft.MainAxisAlignment.CENTER, scroll=ft.ScrollMode.HIDDEN), #cambiar a HIDDEN
         padding=ft.padding.only(top=20, bottom=20,right=15, left=15),
         width=2000
     )

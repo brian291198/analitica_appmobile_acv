@@ -67,6 +67,24 @@ def validate_texto(page, value, tamano, col_control, text_control, control, icon
             else:
                 error_textfield(page, col_control, text_control, control, icon, "El campo puede contener solo letras, tildes o espacios.")
                 return "El campo puede contener solo letras, tildes o espacios."
+
+def validate_apellidos(page, value, tamano, col_control, text_control, control, icon):
+            if not value:
+                error_textfield(page, col_control, text_control, control, icon, "El campo no puede estar vacío.")
+                return "El campo no puede estar vacío."
+            # Verificar si contiene solo letras y tildes
+            elif re.match(r'^[A-Za-zÀ-ÿ]+$', value):
+                # Verificar la longitud
+                if len(value) >= tamano:
+                    error_textfield(page, col_control, text_control, control, icon, f"El campo no puede tener más de {tamano} caracteres.")
+                    return f"El campo no puede tener más de {tamano} caracteres."
+                else:
+                    # Si no se encontró ningún error_textfield
+                    valid_textfield(page, col_control, text_control, control, icon)
+                    return None
+            else:
+                error_textfield(page, col_control, text_control, control, icon, "El campo puede contener solo letras y tildes.")
+                return "El campo puede contener solo letras y tildes"
         
 
 def validate_password(page, value, tamano, col_control, text_control, control, icon):
