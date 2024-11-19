@@ -10,14 +10,12 @@ from urlsapi import HTTP_LOGOUT
 def logout_user(e, page, token):
             global token_delete
             # Define la URL de la API de logout
-            url = HTTP_LOGOUT  # Cambia a la URL de tu API
+            url = HTTP_LOGOUT  
 
             # Configura los headers de la solicitud
-
             headers = {
                         'Authorization': f'Token {token}',
                         'Content-Type': 'application/json'}
-
             try:
                 # Realiza la solicitud POST a la API de logout
                 response = requests.post(url, headers=headers)
@@ -26,23 +24,28 @@ def logout_user(e, page, token):
                 if response.status_code == 200:
                     response_json = response.json()
                     token_delete = response_json.get('token')
-                    page.snack_bar = ft.SnackBar(ft.Text("Cierre de sesión exitoso!", color=ft.colors.WHITE))
-                    page.snack_bar.bgcolor = color_primary
-                    page.snack_bar.open = True
+                    # Mostrar mensaje de éxito
+                    snack_bar = ft.SnackBar(ft.Text("Cierre de sesión exitoso!", color=ft.colors.WHITE))
+                    snack_bar.bgcolor = color_primary
+                    page.overlay.append(snack_bar)  # Usar overlay para agregar el SnackBar
+                    snack_bar.open = True  # Abrir el SnackBar
                     page.update()
                 else:
-                    page.snack_bar = ft.SnackBar(ft.Text("Error al cerrar sesión.", color=ft.colors.WHITE))
-                    page.snack_bar.bgcolor = ft.colors.RED_300
-                    page.snack_bar.open = True
+                    # Mostrar mensaje de error
+                    snack_bar = ft.SnackBar(ft.Text("Error al cerrar sesión.", color=ft.colors.WHITE))
+                    snack_bar.bgcolor = ft.colors.RED_300
+                    page.overlay.append(snack_bar)  # Usar overlay para agregar el SnackBar
+                    snack_bar.open = True  # Abrir el SnackBar
                     page.update()
             except Exception as ex:
-                page.snack_bar = ft.SnackBar(ft.Text(f"Error: {str(ex)}", color=ft.colors.WHITE))
-                page.snack_bar.bgcolor = ft.colors.RED_300
-                page.snack_bar.open = True
+                # Mostrar mensaje de excepción
+                snack_bar = ft.SnackBar(ft.Text(f"Error: {str(ex)}", color=ft.colors.WHITE))
+                snack_bar.bgcolor = ft.colors.RED_300
+                page.overlay.append(snack_bar)  # Usar overlay para agregar el SnackBar
+                snack_bar.open = True  # Abrir el SnackBar
                 page.update()
 
 def logout (e, page, app_state, token):
-     
             logout_user(e, page, token)
             page.navigation_bar.visible = not page.navigation_bar.visible
             if not token_delete:
@@ -51,6 +54,7 @@ def logout (e, page, app_state, token):
                 login_view(page, app_state)
                 page.update()
             return
+
 def go_setting(e, page, app_state):
         page.controls.clear()
         menu_bar=menubar(page, app_state)
@@ -60,53 +64,52 @@ def go_setting(e, page, app_state):
         page.update()
 
 def menubar(page, app_state):
-
     #Obtener token
     token =app_state.token
+    username = app_state.user_data.get('username', 'Usuario').upper()
 
+
+    # Crear botón de cierre de sesión
     icon_logout = ft.TextButton(
-            width=40,
-            on_click=lambda e: logout(e, page, app_state, token),
-            content=ft.Row(
-                [
-                    ft.Icon(name=ft.icons.EXIT_TO_APP, color=color_primary, size=20),
-                ],
-                #alignment=ft.MainAxisAlignment.CENTER,   
-            ),       
-            )
+        width=40,
+        on_click=lambda e: logout(e, page, app_state, token),
+        content=ft.Row(
+            [
+                ft.Icon(name=ft.icons.EXIT_TO_APP, color=ft.colors.WHITE, size=24),  # Icono de salida en blanco
+            ],
+        ),       
+    )
     
-    """ icon_setting = ft.TextButton(
-            width=40,
-            on_click=lambda e: go_setting(e, page, app_state),
-            content=ft.Row(
-                [
-                    ft.Icon(name=ft.icons.SETTINGS_ROUNDED, color=color_primary, size=20),
-                ],
-                #alignment=ft.MainAxisAlignment.CENTER,   
-            ),       
-            ) """
-    
-    
-    col_icon=ft.Container(content=ft.Row([
-            #icon_setting,
-            icon_logout,
-                
-            ],spacing=0, 
-            alignment=ft.MainAxisAlignment.END,
-            ), expand=True, 
-            height=50,
-            #padding=10, 
-            bgcolor=ft.colors.WHITE,
-            margin=ft.margin.only(right=10),
-            )
+   # Crear fila con el ícono de usuario, nombre y el icono de logout alineados correctamente
+    col_icon = ft.Container(
+        content=ft.Row(
+            [
+                ft.Container(
+                    content=ft.Icon(name=ft.icons.PERSON, color=ft.colors.WHITE, size=20),  # Ícono de usuario
+                    margin=ft.margin.only(left=15, right=5),  # Margen alrededor del ícono de usuario
+                ),
+                ft.Container(
+                    content=ft.Text(username, color=ft.colors.WHITE, size=16, text_align=ft.TextAlign.LEFT),  # Nombre en mayúsculas
+                    margin=ft.margin.only(left=3, right=10),  # Margen alrededor del nombre de usuario
+                ),
+                ft.Container(expand=True),  # Espacio flexible para empujar el icono de salida hacia la derecha
+                icon_logout,
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Alineación con espacio entre los elementos
+        ),
+        expand=True,
+        height=50,
+        margin=ft.margin.only(right=10),  # Margen derecho para el conjunto completo
+        bgcolor="#6dbadc",  # Fondo de color especificado
+    )
 
-    menubar = ft.Container(content=ft.Row([
-           col_icon
-            ]
-            ), expand=True,
-            height=50,
-            bgcolor=ft.colors.WHITE,
-            margin=ft.margin.only(bottom=-2, top=30),
-            )
+    # Crear barra de menú
+    menubar = ft.Container(
+        content=ft.Row([col_icon]),
+        expand=True,
+        height=50,
+        bgcolor="#6dbadc",  # Fondo de color para la barra completa
+        margin=ft.margin.only(bottom=-2),  # Sin espacio arriba
+    )
 
     return ft.Row([menubar])

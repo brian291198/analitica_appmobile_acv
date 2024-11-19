@@ -4,898 +4,478 @@ from login import login_view
 from datetime import datetime
 from validation import validate_radiobutton, validate_intervalo
 import time
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import pandas as pd
 from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error
 from menubar import menubar
-from urlsapi import HTTP_OBJ_3
+from urlsapi import HTTP_OBJ_2
+from sklearn.preprocessing import StandardScaler
+from io import BytesIO
+import base64
+from mlxtend.frequent_patterns import apriori, association_rules
+import joblib
+import seaborn as sns
 
-#VISTA DE PREDICCIÓN DE DIAGNÓSTICO - OBJETIVO 3
+
+# Crear la vista en Flet
 def objetive3_view(page, app_state):
-        if not app_state.token:
+    if not app_state.token:
         # Si no hay token, redirigir al inicio de sesión
             page.controls.clear()
             login_view(page, app_state)
             page.update()
             return
-        #Obtener token
-        token =app_state.token
+    #Obtener token
+    token =app_state.token
+    page.padding=0
 
-        global prediccion_resultado        
-        API_URL = HTTP_OBJ_3
-
-        page.padding=0
-        #----------------------------------------------------------------------------------------------------------------------------------------------
-        #MÉTODOS  
-
-        #filtro para validaciones
-        def filtro_valid_objetive3(page, data_values, data_keys, errores):
-            # Validaciones
-            for i in range(len(data_values)):
-                value = data_values[i]
-                key = data_keys[i]
-                
-
-                if key == "etnia":
-                    error = validate_radiobutton(page, value, col_valid_etnia, txt_valid_etnia, col_etnia, icon_valid_etnia)
-                elif key == "horasDormidas":
-                    error = validate_intervalo(page, value, col_valid_horas, txt_valid_horas, ip_horas, icon_valid_horas, 0, 24)
-                elif key == "fumador":
-                    error = validate_radiobutton(page, value, col_valid_fumador, txt_valid_fumador, col_fumador, icon_valid_fumador)
-                elif key == "bebedorFrecuente":
-                    error = validate_radiobutton(page, value, col_valid_bebedor, txt_valid_bebedor, col_bebedor, icon_valid_bebedor)
-                elif key == "actividadFisica":
-                    error = validate_radiobutton(page, value, col_valid_fisica, txt_valid_fisica, col_fisica, icon_valid_fisica)
-                else:
-                    error = None
-
-                if error:
-                    errores.append(f"Error en {key}: {error}")
-
-        def accion_volver_home(e, page, app_state):
-            page.controls.clear()
-            menu_bar=menubar(page, app_state)
-            page.controls.append(menu_bar)
-            page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
-            app_state.show_home()
-            page.update()
-        
-        def seleccionado(e, col_control):
-            value=e.control.value
-            if value:
-                col_control.border=ft.border.all(color=ft.colors.BLUE_400, width=1)
-                page.update()
-                # Espera breve para volver al borde normal
-                time.sleep(0.4)
-                col_control.border = ft.border.all(color=color_hint, width=1)
-                page.update()
-            else:
-                return None
-
-        def diagnosticar(e):
-        
-            # Recoger los valores de los campos del formulario
-            datos = {
-                "Nombre del paciente": ip_paciente.value,
-                "edadRango": ip_edad.value,
-                "genero": genero_option,
-                "etnia": ip_etnia.value,
-                "fumador": ip_fumador.value,
-                "bebedorFrecuente": ip_bebedor.value,
-                "actividadFisica": ip_fisica.value,
-                "horasDormidas": ip_horas.value,
-            }
-
-            datos_values = [value for key, value in datos.items()]
-            datos_keys = [key for key in datos.keys()]
-
-            # Lista para errores
-            errores = []
-
-            #Aspecto de carga
-            loading = ft.AlertDialog(
-                    #title=ft.Text("Error", color=ft.colors.RED),
-                    #content=ft.Text(list_errores, color=ft.colors.RED),
-                    content=ft.Container(
-                                width=page.width,
-                                height=page.height,
-                                alignment=ft.alignment.center,  # Centrar el contenido (el indicador de carga)
-                                content=ft.CupertinoActivityIndicator(
-                                    radius=20,
-                                    color=ft.colors.WHITE,
-                                    animating=True,
-                                ),
-                                visible=True,  # Inicia oculto
-                            ),
-                    bgcolor=ft.colors.TRANSPARENT,
-                    shape=ft.RoundedRectangleBorder(10)
-                )
-            page.open(loading)
-            time.sleep(0.5)
-            page.close(loading)
-            page.update()
-
-            #Llamada al método para validaciones
-            filtro_valid_objetive3(page, datos_values, datos_keys, errores)
-
-            # Imprimir errores
-
-            list_errores="\n".join(errores)
-
-
-            if errores:
-                error_alert_objetive1 = ft.AlertDialog(
-                    title=ft.Text("Error", color=ft.colors.RED),
-                    content=ft.Text(list_errores, color=ft.colors.RED),
-                    bgcolor=ft.colors.WHITE,
-                    shape=ft.RoundedRectangleBorder(10)
-                )
-                page.open(error_alert_objetive1)
+    def accion_volver_home(e, page, app_state):
+        page.controls.clear()
+        menu_bar=menubar(page, app_state)
+        page.controls.append(menu_bar)
+        page.controls.append(ft.Container(height=1, bgcolor=color_hint, margin=ft.margin.only(left=20, right=20)))
+        app_state.show_home()
+        page.update()
             
-                # Imprimir los datos en la consola
-                print(datos)
+    #variables para colores
+    color="#404040"
+    color_hint="#C3C7CF"
 
-            else:
 
-                # headers = {
-                #         'Authorization': f'Token {token}',
-                #         'Content-Type': 'application/json'}
-                # Enviar una solicitud POST a la API
+    #boton en texto -> < VOLVER
+    texto_volver = ft.TextButton(
+        on_click=lambda e: accion_volver_home(e, page, app_state),
+        content=ft.Row(
+            [
+                ft.Icon(name=ft.icons.ARROW_BACK_IOS_SHARP, color=ft.colors.WHITE, size=10),
+                ft.Container(width=5),
+                ft.Text("Volver", color=ft.colors.WHITE)
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_AROUND,
+        ),     
+        )
+    
+    #titulo del objetivo 1
+    txt_objetivo = ft.Text("MARKET BASKET ANALYSIS", style=ft.TextStyle(size=16, weight="bold", color=ft.colors.WHITE))
+            
+    # Breve descripcion del tema
+    txt_descripcion = ft.Text("Algoritmo de minería de datos que identifica conjuntos de ítems frecuentes", style=ft.TextStyle(size=14, color=ft.colors.WHITE))
+    imagen_principal = ft.Container(
+                        content=ft.Column(controls=[
+                            ft.Image(src=f"/objetivo3.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,)
+                    ]),width=100)
+            
+    # Titulo de formulario
+    txt_formulario = ft.Text("REGLAS ASOCIADAS", size=14, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK)
 
-                # Enviar una solicitud POST a la API
-                try:
-                    headers = {
-                        'Authorization': f'Token {token}',
-                        'Content-Type': 'application/json'}
-                    response = requests.post(API_URL, json=datos, headers=headers)
+    #----------------- Modelo Apriori ---------------------
 
-                    if response.status_code == 201:
-                        aprobado=ft.Container(content=ft.Row([
-                            ft.Icon(name=ft.icons.CHECK_CIRCLE_ROUNDED,color=color_check, size=30),
-                            ft.Text("Predicción Realizada", color=color, size=14)
-                        ], alignment=ft.MainAxisAlignment.CENTER, vertical_alignment=ft.CrossAxisAlignment.CENTER))
-                        alert_aprobado = ft.AlertDialog(
-                            content=aprobado,
-                            bgcolor=ft.colors.WHITE,
-                            shape=ft.RoundedRectangleBorder(10), 
-                        )
-                        page.open(alert_aprobado)
-                        time.sleep(1.5)
-                        page.close(alert_aprobado)
-                        # Manejar la respuesta exitosa
-                        response_json = response.json()
-                        prediction_value = response_json.get('prediccion', [0])[0]
-                        print(prediction_value)
+    df = joblib.load('assets/df_sinfiltrar.joblib')
+    print(df)
+    # Función para actualizar la tabla con todas las reglas
 
-                        if prediction_value == 0:
-                            mensaje = "Predicción: Pertenece al grupo de precaución mayor"
-                        elif prediction_value == 1:
-                            mensaje = "Predicción: Pertenece al grupo de precaución menor"
-                        else:
-                            mensaje = "Predicción: Pertenece al grupo de precaución intermedia"
-                        
-                        prediccion_resultado.value = mensaje
-                        print(mensaje)                        
-                        page.update()
+    # Función para cerrar el diálogo
+    def close_dialog(page):
+        page.dialog.open = False
+        page.update()
 
-                    else:
-                        # Imprimir mensaje de error detallado
-                        print(f"Error: {response.status_code} - {response.text}")
-                        prediccion_resultado.value = f"Error: {response.status_code}"
-                except Exception as e:
-                    print(f"Ocurrió un error: {e}")
-                    prediccion_resultado.value = f"Ocurrió un error: {e}"
 
-        #----------------------------------------------------------------------------------------------------------------------------------------------
-         
-        #OBTENER DATOS DEL PACIENTE
+        
+    def update_table(rules):
+        rows = []
 
-        #Nombre completo
-        nombres = app_state.paciente_data.get('nombres', 'Nombres')
-        apPaterno = app_state.paciente_data.get('apPaterno', 'Apellido Paterno')
-        apMaterno = app_state.paciente_data.get('apMaterno', 'Apellido Materno')
-        nombre_completo = f"{nombres} {apPaterno} {apMaterno}"
-        #Género
-        genero = app_state.paciente_data.get('genero', 'Género')
-        #Transformando valor de género
-        if genero == "Femenino":
-            genero_option=0
+        # Verificar si rules está vacío
+        if rules.empty:
+            rows.append(
+                ft.DataRow(cells=[
+                    ft.DataCell(ft.Container(
+                        ft.Text("Sin datos", color=ft.colors.BLACK, weight=ft.FontWeight.BOLD, size=12),  # Cambiar a un tamaño adecuado como un número
+                        height=100, expand=True
+                    )),
+                    ft.DataCell(ft.Container()),
+                    ft.DataCell(ft.Container()),  # Celda vacía para coincidir con el número de columnas
+                    #ft.DataCell(ft.Container()),  # Celda vacía para coincidir con el número de columnas
+                ])
+            )
         else:
-            genero_option=1
-        #Edad
-        fecha_nacimiento = app_state.paciente_data.get('fecha_nacimiento', 'Fecha Nacimiento')
-        fecha_nacimiento_str = datetime.strptime(fecha_nacimiento, '%Y-%m-%d') #cambiar de string a date
-        hoy = datetime.today() #obtener fecha actual
-        edad = hoy.year - fecha_nacimiento_str.year
-        #Verificar si la persona no ha cumplido años este año
-        if (hoy.month, hoy.day) < (fecha_nacimiento_str.month, fecha_nacimiento_str.day):
-            edad -= 1
-        
+            for _, row in rules.iterrows():
+                antecedents = ', '.join(list(row['antecedents']))
+                consequents = ', '.join(list(row['consequents']))
+                
+                # Crear el botón con el ícono de información
+                #eye_icon = ft.IconButton(
+                #    icon=ft.icons.INFO,  # Cambia EYE por INFO
+                #    tooltip="Ver detalles",
+                #    on_click=lambda e, antecedents=antecedents, consequents=consequents, df=df: show_details(antecedents, consequents,df)
+                #)
 
-        #----------------------------------------------------------------------------------------------------------------------------------------------
-        
-        #ÍCONO PARA VALIDACIONES
- 
-        icon_valid_paciente=ft.Icon()            
-        icon_valid_edad=ft.Icon()
-        icon_valid_genero=ft.Icon()
-        icon_valid_etnia=ft.Icon()
-        icon_valid_fumador=ft.Icon()
-        icon_valid_bebedor=ft.Icon()
-        icon_valid_fisica=ft.Icon()
-        icon_valid_horas=ft.Icon() 
-
-        #----------------------------------------------------------------------------------------------------------------------------------------------
-
-        #ELEMENTOS DE INTERFAZ
-
-        color="#404040"
-        color_hint="#C3C7CF"
-        border_radius=10
-
-        #boton en texto -> < VOLVER
-        texto_volver = ft.TextButton(
-            on_click=lambda e: accion_volver_home(e, page, app_state),
-            content=ft.Row(
-                [
-                    ft.Icon(name=ft.icons.ARROW_BACK_IOS_SHARP, color=ft.colors.WHITE, size=10),
-                    ft.Container(width=5),
-                    ft.Text("Volver", color=ft.colors.WHITE)
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_AROUND,
-            ),
-            )
-
-        #titulo del objetivo 3
-        txt_objetivo = ft.Text("Segmentación de pacientes", style=ft.TextStyle(size=20, weight="bold", color=ft.colors.WHITE))
-        
-        #breve descripcion del tema
-        txt_descripcion = ft.Text("Clasificación de nivel de riesgo bajo estilo de vida", style=ft.TextStyle(size=14, color=ft.colors.WHITE))
-        imagen_principal = ft.Container(
-                    content=ft.Column(controls=[
-                        ft.Image(src=f"/obj3.png", width=100, height=100, repeat=ft.ImageRepeat.NO_REPEAT,)
-                ]),width=100)
-        
-        #titulo de formulario
-        txt_formulario = ft.Text("Formulario para Segmentación", style=ft.TextStyle(size=16, color='#333333'))
-
-        #input para el nombre del paciente
-        ip_paciente=ft.TextField(
-            label="Nombre del paciente",
-            prefix_icon=ft.icons.PERSON,
-            hint_text="Nombre del paciente",
-            autofocus=True,
-            content_padding=0,
-            color=color_hint,
-            text_size=14,
-            hint_style=ft.TextStyle(
-                color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                weight="normal"
-                ),
-            label_style=ft.TextStyle(
-                color=color,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            disabled=True,
-            border_color="#cccccc",
-            read_only=True,
-            value=nombre_completo,
-            border_radius=border_radius,
-        )
-
-        #input para la edad
-        ip_edad=ft.TextField(
-            label="Edad",
-            keyboard_type="number",
-            prefix_icon=ft.icons.CALENDAR_MONTH,
-            hint_text="0",
-            content_padding=0,
-            color=color_hint,
-            text_size=14,
-            hint_style=ft.TextStyle(
-                color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color=color,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            selection_color="#333333",
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            disabled=True,
-            border_color="#cccccc",
-            read_only=True,
-            value=str(edad),
-            border_radius=border_radius,
-        )
-
-        #input para la genero
-        ip_genero=ft.TextField(
-            label="Género",
-            keyboard_type="number",
-            prefix_icon=ft.icons.MALE,
-            hint_text="0",
-            content_padding=0,
-            color=color_hint,
-            text_size=14,
-            hint_style=ft.TextStyle(
-                color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color=color,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            selection_color="#333333",
-            prefix_style=ft.TextStyle(
-                bgcolor=ft.colors.BLACK,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            disabled=True,
-            border_color="#cccccc",
-            read_only=True,
-            value=genero,
-            border_radius=border_radius,
-        )
-
-        #input para el Estado de Fumador
-        txt_fumador=ft.Row(
-            [
-                ft.Icon(name=ft.icons.SMOKING_ROOMS, color=color_hint),
-                ft.Text("Fumador", color=color)
-            ]
-        )        
-        ip_fumador = ft.RadioGroup(content=ft.Column([
-            ft.Radio(
-                value="0", 
-                label="No",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="1", 
-                label="Si",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )), 
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=lambda e: seleccionado(e, col_fumador),
-            )
-        
-        #texto para validacion de campo ip_fumador
-        txt_valid_fumador=ft.Text()
-        
-        #input para bebedor frecuente
-               
-        txt_bebedor=ft.Row(
-            [
-                ft.Icon(name=ft.icons.LIQUOR, color=color_hint),
-                ft.Text("¿Bebedor frecuente?", color=color)
-            ]
-        )        
-        ip_bebedor = ft.RadioGroup(content=ft.Column([
-            ft.Radio(
-                value="0", 
-                label="No",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="1", 
-                label="Si",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )), 
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=lambda e: seleccionado(e, col_bebedor),
-            )
-        
-        #texto para validacion de campo ip_fumador
-        txt_valid_bebedor=ft.Text()
-         
-        
-        txt_fisica=ft.Row(
-            [
-                ft.Icon(name=ft.icons.DIRECTIONS_RUN, color=color_hint),
-                ft.Text("¿Actividad física frecuente?", color=color)
-            ]
-        )        
-        ip_fisica = ft.RadioGroup(content=ft.Column([
-            ft.Radio(
-                value="0", 
-                label="No",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="1", 
-                label="Si",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )), 
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=lambda e: seleccionado(e, col_fisica),
-            )
-        
-        #texto para validacion de campo ip_fumador
-        txt_valid_fisica=ft.Text()
-
-        #input para horas dormidas
-        ip_horas=ft.TextField(
-            label="Horas dormidas",
-            keyboard_type="number",
-            prefix_icon=ft.icons.HOTEL,
-            hint_text="0",
-            content_padding=0,
-            color=color,
-            text_size=14,
-            hint_style=ft.TextStyle(
-                color=color_hint,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            label_style=ft.TextStyle(
-                color=color,  # Color del texto de sugerencia
-                size=14,  # Tamaño de la fuente del texto de sugerencia
-                ),
-            fill_color=ft.colors.WHITE,
-            focused_border_color=ft.colors.BLUE_300,
-            focused_border_width=1,
-            border_color="#dddddd",
-            border_radius=border_radius,
-        )
-        
-        txt_valid_horas=ft.Text()
-
-        #input para la etnia
-        txt_etnia=ft.Row(
-            [
-                ft.Icon(name=ft.icons.DIVERSITY_3, color=color_hint),
-                ft.Text("Etnia", color=color)
-               # ft.Icon(name=ft.icons.AUDIOTRACK, color=ft.colors.GREEN_400, size=30),
-            ])
-
-        ip_etnia = ft.RadioGroup(content=ft.Column([
-            ft.Radio(
-                value="0", 
-                label="Indígena",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="1", 
-                label="Asiático",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="2", 
-                label="Negro",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="3", 
-                label="Hispano",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="5", 
-                label="Blanco",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ft.Radio(
-                value="4", 
-                label="Otro",
-                label_style=ft.TextStyle(
-                color=color,
-                size=14,
-                )),
-            ],alignment=ft.MainAxisAlignment.CENTER, spacing=0),
-            on_change=lambda e: seleccionado(e, col_etnia),
-            )
-        #texto para validacion de campo ip_etnia
-        txt_valid_etnia=ft.Text()
-
-        #botón -> Diagnosticar
-        btn_diagnosticar= ft.FilledButton(
-            text="Segmentar",
-            width=300, 
-            height=40,  
-            on_click=diagnosticar,
-            #on_click=ir_home,  #AQUI LLAMAMOS A LA FUNCIÓN QUE NOS PERMITIRÁ OBTENER LA PREDICCIÓN
-            style=ft.ButtonStyle(
-                shape=ft.StadiumBorder(),
-                color={
-                    ft.ControlState.HOVERED: ft.colors.WHITE,
-                    ft.ControlState.FOCUSED: ft.colors.WHITE,
-                    ft.ControlState.DEFAULT: ft.colors.WHITE,
-                },
-                bgcolor={
-                ft.ControlState.HOVERED: color_hovered,
-                ft.ControlState.DEFAULT: color_primary,
-            },
-            )
-            )
-
-        #etiqueta -> Obtener resultado
-        txt_sub_resultado= ft.Text("Resultado Obtenido por factores de calidad de vida:", style=ft.TextStyle(size=16, color=color))
-
-        #text, para mostrar el resultado de predicción
-        prediccion_resultado=ft.Text("Resultado...", style=ft.TextStyle(size=15, color=color_primary))
-
-        #----------------------------------------------------------------------------------------------------------------------------------------------
-
-        #CONTAINERS PARA SEPARAR COLUMNAS DE ELEMENTOS
-        col_volver=ft.Container(content=ft.Row([
-                texto_volver
-            ], alignment=ft.MainAxisAlignment.END
-            ), width=360, 
-            margin=5, 
-            #border=ft.border.all()
-            )
-        
-        col_derecha=ft.Container(content=ft.Column([
-                  txt_objetivo,
-                  txt_descripcion
-
-            ]), width=200)
-        col_izquierda=ft.Container(content=ft.Column([
-                 imagen_principal
-            ]), width=100)
-        
-        col_titulo_form=ft.Container(content=ft.Column([
-                txt_formulario
-            ]
-            ), width=300, 
-            margin=20,
-            alignment=ft.alignment.center, 
-            #border=ft.border.all()
-            )
-
-        col_paciente=ft.Container(content=ft.Column([
-                ip_paciente
-            ]
-            ), width=300,
-            #border=ft.border.all()
-            )
-        col_edad=ft.Container(content=ft.Column([
-                ip_edad
-            ]
-            ), width=300, 
-            #border=ft.border.all()
-            )
-
-        col_genero=ft.Container(content=ft.Column([
-                ip_genero
-            ]
-            ), width=300, 
-            #border=ft.border.all()
-            )     
-        
-        col_fumador=ft.Container(content=ft.Column([
-                txt_fumador,
-                ip_fumador
-            ]
-            ), width=300,
-            #margin=ft.margin.only(left=10, top=10, right=10),
-            padding=15,
-            border=ft.border.all(color="#cccccc"),
-            border_radius=border_radius  
-            #border=ft.border.all()
-            )
-        col_valid_fumador=ft.Container(content=ft.Row([
-                icon_valid_fumador,
-                txt_valid_fumador    
-            ]
-            ), width=300,
-            height=10,
-            padding=5,
-            border_radius=5, 
-            #border=ft.border.all()
-            )
-        
-        col_bebedor=ft.Container(content=ft.Column([
-                txt_bebedor,
-                ip_bebedor
-            ]
-            ), width=300,
-            #margin=ft.margin.only(left=10, top=10, right=10),
-            padding=15,
-            border=ft.border.all(color="#cccccc"),
-            border_radius=border_radius  
-            #border=ft.border.all()
-            )
-        col_valid_bebedor=ft.Container(content=ft.Row([
-                icon_valid_bebedor,
-                txt_valid_bebedor
-            ]
-            ), width=300,
-            height=10,
-            padding=5,
-            border_radius=5,
-            #border=ft.border.all()
-            )
-        
-        col_fisica=ft.Container(content=ft.Column([
-                txt_fisica,
-                ip_fisica
-            ]
-            ), width=300,
-            #margin=ft.margin.only(left=10, top=10, right=10),
-            padding=15,
-            border=ft.border.all(color="#cccccc"),
-            border_radius=border_radius  
-            #border=ft.border.all()
-            )
-        col_valid_fisica=ft.Container(content=ft.Row([
-                icon_valid_fisica,
-                txt_valid_fisica
-            ]
-            ), width=300,
-            height=10,
-            padding=5,
-            border_radius=5,
-        )
-
-        col_horas=ft.Container(content=ft.Column([
-                ip_horas
-            ]
-            ), width=300,
-            #border=ft.border.all()
-            )  
-        col_valid_horas=ft.Container(content=ft.Row([
-                icon_valid_horas,
-                txt_valid_horas
-            ]
-            ), width=300,
-            height=10,
-            padding=5,
-            border_radius=5,
-        )
-        
-        col_etnia=ft.Container(content=ft.Column([
-                txt_etnia,
-                ip_etnia
-            ]
-            ), width=300,
-            #margin=ft.margin.only(left=10, top=10, right=10),
-            padding=15,
-            border=ft.border.all(color="#cccccc"),
-            border_radius=border_radius  
-            #border=ft.border.all()
-            )
-        col_valid_etnia=ft.Container(content=ft.Row([
-                icon_valid_etnia,
-                txt_valid_etnia    
-            ]
-            ), width=300,
-            height=10,
-            padding=5,
-            border_radius=5, 
-            #border=ft.border.all()
-            )
-        
-        col_boton=ft.Container(content=ft.Column([
-                btn_diagnosticar
-            ]
-            ), width=300, 
-            margin=10, 
-            #border=ft.border.all()
-            )
-        
-        col_t_resultado=ft.Container(content=ft.Column([
-                txt_sub_resultado,
-            ]
-            ), width=300,
-            height=40, 
-            margin=ft.margin.only(left=10,top=10,right=10),
-            )
-        col_resultado=ft.Container(content=ft.Column([
-                prediccion_resultado
-            ]
-            ), width=300,
-            height=150, 
-            margin=10,
-            padding=20, 
-            border_radius=10,
-            border=ft.border.all(
-                color=ft.colors.BLUE_200,  # Color del borde
-                width=1  # Ancho del borde)
+                rows.append(
+                    ft.DataRow(cells=[
+                        ft.DataCell(ft.Container(ft.Text(antecedents, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD), padding=ft.padding.all(2), height=100)),
+                        ft.DataCell(ft.Container(ft.Text(consequents, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD), padding=ft.padding.all(2), height=100)),
+                        ft.DataCell(ft.Container(ft.Text(f"{row['confidence'] * 100:.2f}%", color=ft.colors.BLACK, weight=ft.FontWeight.BOLD), padding=ft.padding.all(2), height=100, expand=True)),
+                        #ft.DataCell(eye_icon)  # Agregar el botón a la fila
+                    ])
                 )
-            )
 
+        # Actualizar la tabla con las filas creadas
+        table.rows = rows
+        page.update()
 
-        #----------------------------------------------------------------------------------------------------------------------------------------------  
-        #CONTAINERS PARA SEPARAR FILAS DE ELEMENTOS
-        row_volver_container=ft.Container(content=ft.Column([
-              col_volver
-        ]
-        ), 
-        border=None,
-        )
-        row_titulo_container=ft.Container(content=ft.Row([
-              col_derecha,
-              col_izquierda
-        ], spacing=0, alignment=ft.MainAxisAlignment.CENTER
-        ), 
-        border=None,
-        )
-
-        row_titulo_form=ft.Container(content=ft.Column([
-              col_titulo_form
-        ]
-        ), 
-        #width=360,
-        alignment=ft.alignment.center,
-        #border=ft.border.all()
-        )
-        row_paciente=ft.Container(content=ft.Column([
-                col_paciente
-        ], spacing=0
+    # Crear las columnas para la tabla de reglas de asociación
+    columns = [
+        ft.DataColumn(
+            ft.Text('Producto\nComprado', 
+                    color=ft.colors.BLACK, 
+                    weight=ft.FontWeight.BOLD),
+            on_sort=lambda e: print("Ordenar por 'Producto Comprado'")
         ),
-        padding=ft.padding.only(left=10, top=10, right=10),
-        margin=ft.margin.only(top=10),
-        alignment=ft.alignment.center, 
-        #border=ft.border.all()
-        )
-        row_genero=ft.Container(content=ft.Column([       
-                col_genero
-        ], spacing=0
+        ft.DataColumn(
+            ft.Text("Producto\nSugerido", 
+                    color=ft.colors.BLACK, 
+                    weight=ft.FontWeight.BOLD),
+            on_sort=lambda e: print("Ordenar por 'Producto Sugerido'")
         ),
-        padding=ft.padding.only(left=10, top=10, right=10),
-        margin=ft.margin.only(top=10, bottom=10), 
-        alignment=ft.alignment.center,
-        #border=ft.border.all()
-        )
-
-        row_edad=ft.Container(content=ft.Column([         
-                col_edad
-        ], spacing=0
+        ft.DataColumn(
+            ft.Text("Probabilidad\n de Compra", 
+                    color=ft.colors.BLACK, 
+                    weight=ft.FontWeight.BOLD),
+            on_sort=lambda e: print("Ordenar por 'Probabilidad de Compra'")
         ),
-        padding=ft.padding.only(left=10, top=10, right=10),
-        margin=ft.margin.only(top=10),  
-        alignment=ft.alignment.center,
-        #border=ft.border.all()
-        )
 
-        row_fumador=ft.Container(content=ft.Column([
-              col_fumador,
-              col_valid_fumador
-        ], spacing = 0
-        ),
-        padding=ft.padding.only(left=10, top=10, right=10), 
-        alignment=ft.alignment.center, 
-        )
+    ]
 
-        row_bebedor=ft.Container(content=ft.Column([
-              col_bebedor,
-              col_valid_bebedor
-        ], spacing = 0
-        ),
-        padding=ft.padding.only(left=10, top=10, right=10), 
-        alignment=ft.alignment.center, 
-        )
+    # Titulo de Resultados
+    txt_resultados = ft.Text("RESULTADOS", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK)
 
-        row_fisica=ft.Container(content=ft.Column([
-              col_fisica,
-              col_valid_fisica
-        ], spacing = 0
-        ),
-        padding=ft.padding.only(left=10, top=10, right=10), 
-        alignment=ft.alignment.center,
-        #border=ft.border.all() 
-        )
-
-        row_horas=ft.Container(content=ft.Column([
-              col_horas,
-              col_valid_horas
-        ], spacing=0
-        ),
-        padding=ft.padding.only(left=10, top=10, right=10),  
-        alignment=ft.alignment.center,
-        )
-
-        row_etnia=ft.Container(content=ft.Column([
-              col_etnia,
-              col_valid_etnia
-        ], spacing = 0
-        ),
-        padding=ft.padding.only(left=10, top=10, right=10), 
-        alignment=ft.alignment.center, 
-        )
-        row_boton=ft.Container(content=ft.Column([
-              col_boton
-        ]
-        ),
-        alignment=ft.alignment.center,
-        #border=ft.border.all() 
-        #width=360,
-        )
-        row_resultado=ft.Container(content=ft.Column([
-                col_t_resultado,
-                col_resultado,
-        ]
-        ),
-        alignment=ft.alignment.center,
-        #border=ft.border.all() ,
-        width=300,
-        )
-
-
-        
-        #----------------------------------------------------------------------------------------------------------------------------------------------       
-        #CONTAINER PRINCIPAL
-
-        row_superior=ft.Container(content=ft.Column([
-              row_volver_container,
-              row_titulo_container,
-              
-        ],spacing=0, horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        ), bgcolor=color_primary, 
-        padding=ft.padding.only(left=20, top=10, bottom=20, right=20),
-        )
-
-        row_form=ft.Container(content=ft.Column([
-              row_titulo_form,
-              row_paciente,
-              row_edad,
-              row_genero,
-              row_etnia,
-              row_horas,
-              row_fisica,
-              row_fumador,
-              row_bebedor,
-              row_boton,
-              row_resultado
-        ],
-              spacing=0,
-              alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
-              horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
-              ),
-              bgcolor=ft.colors.WHITE,
-              margin=10,
-              padding=10,
-              width=350,
-              alignment=ft.alignment.center,
-              border_radius=20
-
-              )
-
-        principal_container=ft.Container(content=ft.Column([
-              row_superior,
-              row_form
-        ],
-        spacing=0,
-        alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
-        ), 
-        width=360,
-        alignment=ft.alignment.center,
-        )
-
-        objetive3_scrollable = ft.ListView(
-        controls=[principal_container],
-        expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
+    # Tabla inicial
+    table = ft.DataTable(
+        columns=columns,
+        rows=[],
+        column_spacing=8,  # Ajustar espaciado entre columnas
+        heading_text_style=ft.TextStyle(size=11),  # Ajustar tamaño del texto de las cabeceras
+        data_text_style=ft.TextStyle(size=10),     # Ajustar tamaño del texto de las celdas
+    
     )
 
-        #page.controls.clear()
-        page.controls.append(objetive3_scrollable)
-        page.update()
+    txt_grupo=ft.Row(
+            [
+                ft.Icon(name=ft.icons.CATEGORY, color=color_hint),
+                ft.Text("Grupo", color=color, weight="bold")            
+            ]
+        )
+    
+    # Campo de búsqueda
+    txt_busqueda = ft.TextField(
+        hint_text="Buscar grupo...",
+        hint_style=ft.TextStyle(color=color_hint, size=13),  # Color y tamaño del texto de sugerencia
+        text_style=ft.TextStyle(color=color, size=13),  # Color y tamaño del texto que escribe el usuario
+        prefix_icon=ft.icons.SEARCH,  # Ícono de búsqueda antes del texto
+        on_change=lambda e: actualizar_dropdown(e.control.value, item_selection, df['Grupo'].unique()),  # Cambiado para buscar en los grupos
+        height=45  # Ajusta la altura del campo
+    )
+
+    item_selection = ft.Dropdown(
+        label="Elija",
+        options=[ft.dropdown.Option(item) for item in df['Grupo'].unique()],  # Cambiado para opciones de grupos
+        width=160,  # Ajusta el ancho
+        color="#6dbadc",
+        suffix_icon=ft.icons.ARROW_DROP_DOWN,  # Ícono de desplegable
+        height=45,  # Ajusta la altura del Dropdown
+        text_style=ft.TextStyle(size=12)  # Ajusta el tamaño de la letra a 12
+    )
+
+
+    def actualizar_dropdown(busqueda, dropdown, opciones):
+            dropdown.options = [ft.dropdown.Option(opcion) for opcion in opciones if busqueda.lower() in opcion.lower()]
+            dropdown.update() 
+
+    # Función para mostrar las reglas de asociación según el grupo seleccionado
+    def show_associated_rules(e):
+        selected_item = item_selection.value
+        print(selected_item)
+        
+        # Aplicar Apriori a todos los productos
+        basket = df.groupby(['NroRecibo', 'Descripcion Producto'])['Cantidad'].sum().unstack(fill_value=0)
+        basket = basket.astype(bool).astype(int)
+        print(basket)
+
+        # Aplicar Apriori y generar reglas para todos los productos
+        frequent_itemsets = apriori(basket, min_support=0.001, use_colnames=True)
+        rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.001)
+        print(rules)
+
+
+    # Filtrar reglas para mostrar solo antecedentes que contengan productos del grupo seleccionado
+        if selected_item:
+            # Obtener solo los productos que pertenecen al grupo seleccionado
+            products_in_group = df[df['Grupo'] == selected_item]['Descripcion Producto'].unique()
+            # Filtrar reglas donde los antecedentes contengan solo productos del grupo seleccionado
+            filtered_rules = rules[rules['antecedents'].apply(lambda x: any(item in products_in_group for item in x))]
+        else:
+            filtered_rules = rules  # Sin filtro si no hay selección
+
+        print(filtered_rules)
+        print(filtered_rules[['antecedents', 'consequents', 'confidence']])
+
+        # Actualizar la tabla con las reglas filtradas
+        update_table(filtered_rules)
+
+        # Mostrar mensaje si no hay reglas para generar el gráfico
+        if filtered_rules.empty:
+            # Mostrar un mensaje flotante (snack bar) en la parte inferior de la pantalla
+            page.show_snack_bar(ft.SnackBar(content=ft.Text("Nada que generar. No hay registros.")))
+        else:
+            # Generar el gráfico de calor si hay reglas
+            page.show_snack_bar(ft.SnackBar(content=ft.Text("Generando Imagen!! Espere ....")))
+            generar_grafico_calor(filtered_rules)
+            page.update()
+                
+    def generar_grafico_calor(rules, metric='confidence'):
+        # Convertir antecedentes y consecuentes en strings
+        rules['antecedents_str'] = rules['antecedents'].apply(lambda x: ', '.join(list(x)))
+        rules['consequents_str'] = rules['consequents'].apply(lambda x: ', '.join(list(x)))
+        
+        # Crear una matriz de calor basada en la métrica seleccionada (confidence en este caso)
+        heatmap_data = rules.pivot_table(index='antecedents_str', columns='consequents_str', values=metric, fill_value=0)
+        # Crear el mapa de calor
+        plt.figure(figsize=(20, 15))
+        sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap="YlGnBu", cbar_kws={'label': 'Confidence'},
+                    linewidths=.5, linecolor='black', annot_kws={"size": 10})
+        plt.title('Mapa de Calor de las Reglas de Asociación', fontsize=16)
+        plt.xlabel('Consecuentes', fontsize=12)
+        plt.ylabel('Antecedentes', fontsize=12)
+        plt.xticks(rotation=45, ha='right', fontsize=12)
+        plt.yticks(rotation=0, fontsize=12)
+        plt.tight_layout()
+        #plt.show()
+        # Guardar la figura como imagen
+        plt.savefig("heatmap_rules.png")
+        plt.show()
+
+
+    # Actualiza el botón para mostrar las reglas de asociación del grupo seleccionado
+    show_associations_button = ft.ElevatedButton(
+        text="Filtrar",
+        on_click=show_associated_rules,
+        bgcolor="#808080",
+        color=ft.colors.WHITE,
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=5),
+        )
+    )
+
+    # Función para manejar la descarga
+    def download_action(e):
+        print('Descargando Imagen')
+
+
+    # Botón para descargar
+    download_button = ft.ElevatedButton(
+        text="Descargar",
+        on_click=download_action,  # Función que maneja la descarga
+        bgcolor="#e78ead",
+        color=ft.colors.WHITE,
+        icon=ft.icons.DOWNLOAD,  # Icono de descarga
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=5),
+        ),
+        tooltip="Descargar Grafico de Calor"  # Tooltip
+    )
+
+        # Contenedor para el botón de descarga con margen
+    download_container = ft.Container(
+        content=download_button,
+        margin=ft.Margin(left=0, top=10, right=0, bottom=10)   # Aquí se aplica el margen superior
+    )
+
+
+    # Colocar ambos en una fila con alineación
+    row_combo_boton = ft.Row(
+        [
+            item_selection,  # Combo a la izquierda
+            ft.Container(expand=True),  # Espacio flexible para empujar el botón a la derecha
+            show_associations_button  # Botón a la derecha
+        ],
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Distribuye los elementos en los extremos
+    )
+
+    # Inicializar tabla con todas las reglas
+    # update_table(rules)
+    
+
+    #CONTAINERS PARA SEPARAR COLUMNAS DE ELEMENTOS
+    col_volver=ft.Container(content=ft.Row([
+            texto_volver
+        ], alignment=ft.MainAxisAlignment.END
+        ), width=360, 
+        margin=2, 
+        #border=ft.border.all()
+        )
+            
+    col_derecha=ft.Container(content=ft.Column([
+                txt_objetivo,
+                txt_descripcion
+            ]), width=200, margin=ft.margin.only(top=2, bottom=2), )
+            
+            
+    col_izquierda=ft.Container(content=ft.Column([
+                imagen_principal
+        ]), width=100)
+            
+    col_titulo_form=ft.Container(content=ft.Column([
+            txt_formulario
+        ]
+        ), width=300, 
+        alignment=ft.alignment.center, 
+        margin=ft.margin.only(top=4, bottom=3),
+        )
+    
+    col_resultados_form=ft.Container(content=ft.Column([
+            txt_resultados
+        ]
+        ), width=300, 
+        alignment=ft.alignment.center, 
+        margin=ft.margin.only(top=4, bottom=3),
+        )
+    
+    col_grupos=ft.Container(content=ft.Column([
+                txt_grupo,
+                txt_busqueda,
+                row_combo_boton,
+                
+            ]
+            ), width=300,
+            padding=10,
+            border=ft.border.all(color="#cccccc"),
+            border_radius=10 
+            #border=ft.border.all()
+            )    
+    
+    col_table_data = ft.Container(
+        content=ft.Column(
+            [
+                table
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,  # Centra el contenido en el eje principal
+        ),
+        width=300,
+        padding=2,
+        border=ft.border.all(color="#cccccc"),
+        border_radius=10,
+        alignment=ft.alignment.center,  # Centra el contenido del Container
+    ) 
+
+        
+            
+#----------------------------------------------------------------------------------------------------------------------------------------------  
+
+    #CONTAINERS PARA SEPARAR FILAS DE ELEMENTOS
+    row_volver_container=ft.Container(content=ft.Column([
+            col_volver
+    ]
+    ), 
+    border=None,
+    )
+
+    row_titulo_container=ft.Container(content=ft.Row([
+            col_derecha,
+            col_izquierda
+    ], spacing=0, alignment=ft.MainAxisAlignment.CENTER
+    ), 
+    border=None,
+    )
+
+    row_titulo_form=ft.Container(content=ft.Column([
+            col_titulo_form
+    ]
+    ), 
+    #width=360,
+    alignment=ft.alignment.center,
+    #border=ft.border.all()
+    )
+
+    row_resultados_form=ft.Container(content=ft.Column([
+            col_resultados_form
+    ]
+    ), 
+    #width=360,
+    alignment=ft.alignment.center,
+    #border=ft.border.all()
+    )
+    
+    row_grupo=ft.Container(content=ft.Column([
+                col_grupos,
+        ], spacing=0
+        ),
+        padding=ft.padding.only(top=10, bottom=10, left=8, right=8),  
+        alignment=ft.alignment.center,
+        #border=ft.border.all()
+        )
+
+    row_resultado=ft.Container(content=ft.Column([
+            col_table_data
+    ]
+    ),
+    alignment=ft.alignment.center,
+    width=300,
+    )
+
+    #CONTAINER PRINCIPAL
+    row_superior=ft.Container(content=ft.Column([
+            row_volver_container,
+            row_titulo_container,              
+    ],spacing=0, horizontal_alignment=ft.CrossAxisAlignment.CENTER
+    ), 
+    bgcolor=color_primary,
+    padding=ft.padding.only(left=20, top=10, bottom=20, right=20),
+    )
+
+    row_form=ft.Container(content=ft.Column([
+                    row_titulo_form,
+                    row_grupo,
+                    row_resultados_form,
+                    row_resultado],
+                    spacing=0,
+                    alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
+                    ),
+                    bgcolor=ft.colors.WHITE,
+                    #margin=,
+                    #padding=2,
+                    width=450,
+                    alignment=ft.alignment.center,
+                    border_radius=20
+                    )
+
+
+    principal_container=ft.Container(content=ft.Column([
+                    row_superior,                    
+                    row_form,
+                    download_container
+
+            ],
+            spacing=0,
+            alignment=ft.MainAxisAlignment.CENTER,  # Centrar verticalmente
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrar horizontalmente
+            ), 
+            width=450,
+            alignment=ft.alignment.center,
+            #border=ft.border.all(),
+            )
+            
+    objetive2_scrollable = ft.ListView(
+            controls=[principal_container],
+            expand=True,  # Permitir que el contenedor ocupe todo el espacio disponible
+            )
+
+            #page.controls.clear()
+    page.controls.append(objetive2_scrollable)
+    page.update()
+
+
+
+
+
+

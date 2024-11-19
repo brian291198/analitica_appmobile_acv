@@ -34,7 +34,4 @@ def logout_user(e):
 def logout_action(page, app_state):
     
     page.controls.append(ft.Text("probando LOGOUT"))
-    
-    
-    
     page.update()

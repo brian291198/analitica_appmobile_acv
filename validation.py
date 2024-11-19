@@ -2,7 +2,27 @@ import flet as ft
 from datetime import datetime
 import re
 
+def valid_radiobutton(page, col_control, text_control, control, icon):
+    col_control.height=40
+    text_control.value= "Campo válido"
+    text_control.color=ft.colors.BLUE_300
+    text_control.size=12
+    control.border = ft.border.all(color=ft.colors.BLUE_300)
+    icon.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
+    icon.color=ft.colors.BLUE_300
+    icon.size=15
+    page.update()
 
+def error_radiobutton(page, col_control, text_control, control, icon, message):
+    col_control.height=40
+    text_control.value= message
+    text_control.color=ft.colors.RED_300
+    text_control.size=12
+    control.border = ft.border.all(color=ft.colors.RED_300)
+    icon.name=ft.icons.ERROR_OUTLINE_ROUNDED
+    icon.color=ft.colors.RED_300
+    icon.size=15
+    page.update()
 
 def valid_textfield(page, col_control, text_control, control, icon):
     col_control.height=40
@@ -28,26 +48,26 @@ def error_textfield(page, col_control, text_control, control, icon, message):
     icon.size=15
     page.update()
 
-def valid_radiobutton(page, col_control, text_control, control, icon):
-    col_control.height=40
-    text_control.value= "Campo válido"
-    text_control.color=ft.colors.BLUE_300
-    text_control.size=12
-    control.border = ft.border.all(color=ft.colors.BLUE_300)
-    icon.name=ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
-    icon.color=ft.colors.BLUE_300
-    icon.size=15
+def valid_dropdown(page, col_control, text_control, control, icon):
+    col_control.height = 40
+    text_control.value = "Campo válido"
+    text_control.color = ft.colors.BLUE_300
+    text_control.size = 12
+    control.border = ft.border.all(color=ft.colors.BLUE_300)  # Resaltar el borde del combo
+    icon.name = ft.icons.CHECK_CIRCLE_OUTLINE_ROUNDED
+    icon.color = ft.colors.BLUE_300
+    icon.size = 15
     page.update()
 
-def error_radiobutton(page, col_control, text_control, control, icon, message):
-    col_control.height=40
-    text_control.value= message
-    text_control.color=ft.colors.RED_300
-    text_control.size=12
-    control.border = ft.border.all(color=ft.colors.RED_300)
-    icon.name=ft.icons.ERROR_OUTLINE_ROUNDED
-    icon.color=ft.colors.RED_300
-    icon.size=15
+def error_dropdown(page, col_control, text_control, control, icon, message):
+    col_control.height = 40
+    text_control.value = message
+    text_control.color = ft.colors.RED_300
+    text_control.size = 12
+    control.border = ft.border.all(color=ft.colors.RED_300)  # Resaltar el borde del combo con color de error
+    icon.name = ft.icons.ERROR_OUTLINE_ROUNDED
+    icon.color = ft.colors.RED_300
+    icon.size = 15
     page.update()
 
 def validate_texto(page, value, tamano, col_control, text_control, control, icon):
@@ -105,6 +125,13 @@ def validate_password(page, value, tamano, col_control, text_control, control, i
                 error_textfield(page, col_control, text_control, control, icon, '''Caracteres no permitidos: ' " ; % ( ) ` - & | =''')
                 return '''Caracteres no permitidos: ' " ; % ( ) ` - & | ='''
 
+def validate_radiobutton(page, value, col_control, text_control, control, icon):
+            if value is None:
+                error_radiobutton(page, col_control, text_control, control, icon, "El campo no puede estar vacío.")
+                return "El campo no puede estar vacío."
+            else:
+                valid_radiobutton(page, col_control, text_control, control, icon)
+                return None
 
 def validate_email(page, value, tamano, col_control, text_control, control, icon):
             if not value:
@@ -145,13 +172,13 @@ def validate_celular(page, value, col_control, text_control, control, icon):
                 error_textfield(page, col_control, text_control, control, icon, "El campo debe contener solo números.")
                 return "El campo debe contener solo números."
 
-def validate_radiobutton(page, value, col_control, text_control, control, icon):
-            if value is None:
-                error_radiobutton(page, col_control, text_control, control, icon, "El campo no puede estar vacío.")
-                return "El campo no puede estar vacío."
-            else:
-                valid_radiobutton(page, col_control, text_control, control, icon)
-                return None
+def validate_dropdown(page, value, col_control, text_control, control, icon):
+    if value is None or value == "":
+        error_dropdown(page, col_control, text_control, control, icon, "El campo no puede estar vacío.")
+        return "El campo no puede estar vacío."
+    else:
+        valid_dropdown(page, col_control, text_control, control, icon)
+        return None
 
 def validate_fecha_nacimiento(page, value, col_control, text_control, control, icon):
             if not value:

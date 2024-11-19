@@ -9,7 +9,6 @@ from ia_chatbot2 import chatbot
 from login import login_view
 from register import registration_view
 from view_data_diagnostico import view_data_diagnostico
-from chart_diagnostico import view_chart
 from urlsapi import API_BACK
 from setting_profile import view_setting
 
@@ -56,11 +55,6 @@ class AppState:
     def show_data_diagnostico(self):
         if self.page:
             view_data_diagnostico(self.page, self)
-            
-    def show_chart(self):
-        if self.page:
-            view_chart(self.page, self)
-
     def show_setting(self):
         if self.page:
             view_setting(self.page, self)
@@ -69,7 +63,7 @@ def main (page: ft.Page):
    
 
     #Configuraciones de la interfaz en general
-    page.title = "App de predicción de ACV"
+    page.title = "TIENDA CHIKITINES S.A.C"
     page.window.width = 360  # Ajusta esto según el dispositivo
     page.window.height = 720
     page.bgcolor = "#dddddd"

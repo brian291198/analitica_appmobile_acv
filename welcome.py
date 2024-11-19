@@ -1,7 +1,7 @@
 import flet as ft
 from flet import *
 from login import login_view
-from styles import color, color_hint, color_primary, color_secondary, color_hovered
+from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_boton, color_titulo
 from menubar import menubar
 
 #VISTA PRINCIPAL
@@ -31,9 +31,9 @@ def welcome_view (page, app_state):
         spans=[
                 ft.TextSpan(
                     f"Bienvenido {username} a ",
-                    ft.TextStyle(size=30, color=color, height=1)),
+                    ft.TextStyle(size=30, color=color, height=1 )),
                 ft.TextSpan(
-                    "NEURO IA-ACV, ",
+                    "CHIKITINES S.A.C ",
                     ft.TextStyle(
                         font_family="RoundsNeue-4",
                         size=30,
@@ -41,17 +41,14 @@ def welcome_view (page, app_state):
                         weight=ft.FontWeight.BOLD,
                         foreground=ft.Paint(
                             gradient=ft.PaintLinearGradient(
-                                (0, 20), (150, 20), [color_primary, ft.colors.LIGHT_BLUE]
+                                (0, 20), (150, 20), [color_titulo, ft.colors.LIGHT_BLUE]
                             )
                         ),
                     ),),
-                    ft.TextSpan(
-                    f"la mejor APP para predecir el riesgo de ACV.",
-                    ft.TextStyle(size=30, color=color, height=1)),
                         
         ])
-    t_s = ft.Text(value='"Cuida tu futuro hoy"',size=18, color=color, font_family="RoundsNeue-1")
-    i_p= ft.Image(src=f"/principal3.png", width=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
+    t_s = ft.Text(value='"App para la prediccion de la demanda"',size=18, color=color, font_family="RoundsNeue-1", text_align="center")
+    i_p= ft.Image(src=f"/logo_pequeño.jpg", width=300, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
     b_p = ft.FilledButton(
         text="Continuar",
         width=300, 
@@ -66,7 +63,7 @@ def welcome_view (page, app_state):
             },
             bgcolor={
                 ft.ControlState.HOVERED: color_hovered,
-                ft.ControlState.DEFAULT: color_primary,
+                ft.ControlState.DEFAULT: color_boton,
             }
         )
         )
@@ -117,4 +114,3 @@ def welcome_view (page, app_state):
     page.update()
 
 
- 

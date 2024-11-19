@@ -1,12 +1,14 @@
 import flet as ft
 import requests
 from validation import validate_login
-from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error
+from styles import color, color_hint, color_primary, color_secondary, color_hovered, color_check, color_error, color_boton
 import time
 from urlsapi import HTTP_LOGIN
 
 def login_view(page, app_state):
+    
     page.bgcolor = ft.colors.WHITE
+    
     API_URL = HTTP_LOGIN
 
     overlay = ft.Container(
@@ -23,8 +25,7 @@ def login_view(page, app_state):
     )
 
     def ir_register(e):
-        page.controls.clear()
-        app_state.show_register()
+        page.controls.clear()        
         page.update()
 
     def handle_login(e):
@@ -45,19 +46,8 @@ def login_view(page, app_state):
         filtro_valid_login(page, datos_values, datos_keys, errores)
 
         if not errores:
-            if not chbx_terminos.value:
-                error_alert = ft.AlertDialog(
-                    content=ft.Text("Por favor, para continuar debe aceptar los términos y condiciones de uso.", color=color),
-                    # actions=[ft.TextButton(text="Aceptar", on_click=lambda e: page.close(error_alert))],
-                    bgcolor=ft.colors.WHITE,
-                    shape=ft.RoundedRectangleBorder(10),
-                )
-                page.open(error_alert)
-                page.update()
-            else:
-
                 headers = {'Content-Type': 'application/json'}
-  
+
                 contenedor_stack.controls.append(overlay)
                 overlay.visible=True
                 page.update()
@@ -80,11 +70,9 @@ def login_view(page, app_state):
                         response_json = response.json()
                         token = response_json.get('token')
                         user_data = response_json.get('user')
-                        paciente_data = response_json.get('paciente')  
-
+                    
                         app_state.token = token
                         app_state.user_data = user_data
-                        app_state.paciente_data = paciente_data  
 
                         # Redirigir a la vista de bienvenida
                         page.controls.clear()
@@ -123,12 +111,12 @@ def login_view(page, app_state):
             for i in range(len(data_values)):
                 value = data_values[i]
                 key = data_keys[i]
-                      
+                
                 if key == "username":
                     error = validate_login(page, value, col_valid_username, txt_valid_username, username_field, icon_valid_username)
                 elif key == "password":
                     error = validate_login(page, value, col_valid_password, txt_valid_password, password_field, icon_valid_password)
-               
+            
                 else:
                     error = None
 
@@ -201,14 +189,6 @@ def login_view(page, app_state):
     #texto para validacion de campo password_field
     txt_valid_password=ft.Text()
 
-    chbx_terminos=ft.Checkbox(
-        active_color=color_primary,
-        fill_color={
-        ft.ControlState.HOVERED: color_hovered,
-        ft.ControlState.FOCUSED: color_primary,
-        },
-        check_color=ft.colors.WHITE
-        )
     
     login_button = ft.FilledButton(
         text="Iniciar Sesión", 
@@ -224,31 +204,10 @@ def login_view(page, app_state):
             },
             bgcolor={
                 ft.ControlState.HOVERED: color_hovered,
-                ft.ControlState.DEFAULT: color_primary,
+                ft.ControlState.DEFAULT: color_boton,
             },
     ))
 
-    back_button = ft.TextButton(
-        text="Registrarse",
-        width=300,
-        on_click=ir_register, # Ajuste para registro
-        style=ft.ButtonStyle(
-            shape=ft.StadiumBorder(),
-            color={
-                ft.ControlState.HOVERED: color_primary,
-                ft.ControlState.FOCUSED: color_primary,
-                ft.ControlState.DEFAULT: color,
-            },
-            bgcolor={
-                ft.ControlState.HOVERED: color_secondary,
-                ft.ControlState.DEFAULT: color_secondary,
-            },
-            #side={
-            #        ft.ControlState.DEFAULT: ft.BorderSide(1, "#333333"),
-            #        ft.ControlState.HOVERED: ft.BorderSide(2, "#0165BD"),
-            #    },
-        )
-    )
 
     #Contenedores para columnas
     col_username=ft.Container(content=ft.Column([
@@ -318,20 +277,16 @@ def login_view(page, app_state):
         ),margin=ft.margin.only(bottom=10), width=300
         # margin=ft.margin.only(bottom=10)  # Margen inferior para separar del formulario
     )
-    imagen= ft.Image(src=f"/logo-neuroiaacv.png", width=200,height=50, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
+    imagen= ft.Image(src=f"/logo_chikitines.jpg", width=500,height=90, repeat=ft.ImageRepeat.NO_REPEAT,fit=ft.ImageFit.FIT_HEIGHT)
 
     row_imagen = ft.Container(
         content=ft.Column(controls=[imagen], alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-        width=300, height=50, margin=ft.margin.only(top=30, bottom=20),
+        width=300, height=50, margin=ft.margin.only(top=30, bottom=40),
     )
 
-    terminos_privacidad = ft.Container(
-        content=ft.Row(controls=[chbx_terminos, ft.Text("Acepto los términos y condiciones.",color=color)],spacing=0),
-        width=300,
-    )
     
     botones = ft.Container(
-        content=ft.Column(controls=[ login_button, back_button], alignment=ft.MainAxisAlignment.CENTER),
+        content=ft.Column(controls=[ login_button], alignment=ft.MainAxisAlignment.CENTER),
         width=300, margin=ft.margin.only(top=10)
     )
 
@@ -340,7 +295,7 @@ def login_view(page, app_state):
     # Container principal de la vista de inicio de sesión
     contenedor_principal = ft.Container(
         content=ft.Column(
-            controls=[row_imagen, titulo_principal, row_username, row_password, terminos_privacidad, botones],
+            controls=[row_imagen, titulo_principal, row_username, row_password, botones],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),

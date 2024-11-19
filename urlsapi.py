@@ -2,7 +2,7 @@
 #VARIABLES DE ENTORNO para URLs de API
 
 #Si deseas probar en tu entorno local solo cambia estas dos URLs! ;)
-API_BACK = 'http://35.188.119.0:8080'
+API_BACK = 'http://localhost:8080'
 API_WSP = 'http://35.188.119.0:3000'
 
 
@@ -11,6 +11,8 @@ SEND_WSP = f'{API_WSP}/send-message'
 
 #Solicitud a chatBOT
 SEND_CHATBOT = f'{API_BACK}/api/acv1/chatbot/'
+
+HTTP_GRUPO = f'{API_BACK}/api/grupos/'
 
 #Iniciar sesión
 HTTP_LOGIN = f'{API_BACK}/login/'
@@ -25,7 +27,7 @@ HTTP_UPDATE_PACIENTE = f'{API_BACK}/paciente/edit/'
 HTTP_LOGOUT = f"{API_BACK}/logout/"
 
 #Realizar predicción para el objetivo 1 y Guardar
-HTTP_OBJ_1 = f'{API_BACK}/api/acv1/create/'
+HTTP_OBJ_1 = f'{API_BACK}/api/prediccion/'
 
 #Realizar predicción para el objetivo 2
 HTTP_OBJ_2 = f'{API_BACK}/api/acv2/create/'
